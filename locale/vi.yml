@@ -1,0 +1,10 @@
+vietvan-ca-flarum-themes:
+  forum:
+    hero:
+      title: "Chào mừng bạn đến với Diễn đàn Cộng đồng Vietvan"
+      description: "Nơi để chia sẻ và kết nối giữa các thành viên trong cộng đồng."
+    custom-discussion-header:
+      topic: "Chủ đề"
+      replies: "Phản hồi"
+      views: "Lượt xem"
+      activity: "Hoạt động"

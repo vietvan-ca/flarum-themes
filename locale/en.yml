@@ -1,0 +1,10 @@
+vietvan-ca-flarum-themes:
+  forum:
+    hero:
+      title: "Welcome to Vietvan Community Forum"
+      description: "A place to share and connect between community members."
+    custom-discussion-header:
+      topic: "Topic"
+      replies: "Replies"
+      views: "Views"
+      activity: "Activity"

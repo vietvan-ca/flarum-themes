@@ -1,0 +1,154 @@
+.discussion-row {
+  display: flex;
+  border-bottom: 1px solid var(--control-bg);
+  padding: 15px 0;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.discussion-topic {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20px;
+  text-align: left;
+}
+
+.discussion-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.discussion-title a {
+  color: var(--heading-color);
+  text-decoration: none;
+}
+
+.discussion-title a:hover {
+  text-decoration: underline;
+}
+
+.discussion-tags {
+  margin-bottom: 5px;
+}
+
+.discussion-tag {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--control-bg);
+  font-size: 12px;
+}
+
+.discussion-tag.colored {
+  color: #fff;
+}
+
+.discussion-excerpt {
+  color: var(--muted-color);
+  font-size: 13px;
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 40px;
+}
+
+.discussion-reply,
+.discussion-view,
+.discussion-work {
+  width: 80px;
+  font-size: 14px;
+  color: var(--neutral-50);
+
+  justify-content: center;
+  text-align: center;
+}
+
+.time-since {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--neutral-50);
+
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.active-users {
+  display: flex;
+  justify-content: center;
+}
+
+.user-avatar {
+  position: relative;
+  margin-left: -8px;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+}
+
+.user-avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid var(--body-bg);
+  border-radius: 50%;
+}
+
+.user-initial {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  border: 2px solid var(--body-bg);
+  border-radius: 50%;
+}
+
+.color-1 {
+  background-color: #1abc9c;
+}
+.color-2 {
+  background-color: #2ecc71;
+}
+.color-3 {
+  background-color: #3498db;
+}
+.color-4 {
+  background-color: #9b59b6;
+}
+.color-5 {
+  background-color: #e67e22;
+}
+
+.DiscussionListItem {
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.Discussion-icon {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--muted-color);
+}
+
+.Discussion-icon.sticky {
+  color: #e67e22; // or your preferred color for sticky
+}
+
+.Discussion-icon.locked {
+  color: #c0392b; // or your preferred color for locked
+}

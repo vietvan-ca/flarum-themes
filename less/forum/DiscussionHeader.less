@@ -1,0 +1,29 @@
+.CustomDiscussionList-header {
+  display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 500;
+  font-size: 28px;
+  color: var(--muted-color);
+  border-bottom: 1px solid var(--control-bg);
+
+  .DiscussionListItem-info {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--neutral-50);
+
+    &.topic {
+      flex: 1;
+      justify-content: flex-start;
+    }
+
+    &.replies,
+    &.views,
+    &.activity {
+      width: 80px;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+}
