@@ -8,3 +8,22 @@ vietvan-ca-flarum-themes:
       replies: "Replies"
       views: "Views"
       activity: "Activity"
+  admin:
+    settings:
+      title: "Theme Settings"
+      hero:
+        title-en-label: "Hero Title (English)"
+        title-vi-label: "Hero Title (Vietnamese)"
+        description-en-label: "Hero Description (English)"
+        description-vi-label: "Hero Description (Vietnamese)"
+        title-en-placeholder: "Enter hero title in English"
+        title-vi-placeholder: "Enter hero title in Vietnamese"
+        description-en-placeholder: "Enter hero description in English"
+        description-vi-placeholder: "Enter hero description in Vietnamese"
+        title-en-default: "Welcome to Vietvan Community Forum"
+        title-vi-default: "Chào mừng bạn đến với Vietvan Community Forum"
+        description-en-default: "A place to share and connect between community members."
+        description-vi-default: "Nơi chia sẻ và kết nối giữa các thành viên trong cộng đồng."
+        global-placeholder: "If empty, will use the default: "
+
+    

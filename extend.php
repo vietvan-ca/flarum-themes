@@ -4,6 +4,7 @@ namespace VietVan\FlarumThemes;
 
 use Flarum\Extend;
 use VietVan\FlarumThemes\Extend\DiscussionAttributes;
+use VietVan\FlarumThemes\Extend\SettingAttributes;
 
 return [
     // Register the forum interface
@@ -11,10 +12,18 @@ return [
         ->js(__DIR__ . '/js/dist/forum.js')
         ->css(__DIR__ . '/less/forum.less'),
 
+    // Register the admin interface
+    (new Extend\Frontend('admin'))
+        ->js(__DIR__ . '/js/dist/admin.js')
+        ->css(__DIR__ . '/less/admin.less'),
+
     // Register localization files
     (new Extend\Locales(__DIR__ . '/locale')),
 
-    // Register custom attributes for discussions
+
+    // Register extensions
     DiscussionAttributes::extend(),
+    SettingAttributes::extend(),
+
 
 ];

@@ -8,7 +8,7 @@ import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
 import HeroSection from './components/HeroSection';
 
-app.initializers.add('flarum-themes', () => {
+app.initializers.add('vietvan-ca-themes', () => {
   // Extend the DiscussionListItem component to use the custom row
   extend(DiscussionListItem.prototype, 'view', function (vnode) {
     vnode.children = [
