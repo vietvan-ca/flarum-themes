@@ -1,27 +1,15 @@
 // VietVan Theme Colors
 @primary-color: #C22126;  // Red from VietVan logo
 @secondary-color: #555555; // Dark gray for secondary elements
-@body-bg: #FFFFFF; // White background
-@control-bg: #F0F0F0; // Light gray for controls
-@control-color: #333333; // Dark text
-@control-border: #DDDDDD; // Border color for inputs
 @neutral-50: #333333; // Neutral color for text
-
-// Header variables
-@header-bg: #FFFFFF;
-@header-color: #C22126;
-@header-control-color: #333333;
-@header-control-color-hover: #C22126;
-@header-control-bg-hover: rgba(194, 33, 38, 0.1);
 
 :root {
   --primary-color: @primary-color;
   --secondary-color: @secondary-color;
-  --body-bg: @body-bg;
-  --control-bg: @control-bg;
-  --control-color: @control-color;
-  --control-border: @control-border;
-  --muted-color: @secondary-color;
-  --heading-color: @control-color;
   --neutral-50: @neutral-50;
+}
+
+// Override FoF NightMode colors
+.Button--primary {
+  color: #fff !important;
 }
