@@ -83,7 +83,7 @@ var ThemeSettingsPage = /*#__PURE__*/function (_ExtensionPage) {
       }, m("label", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.title-" + code + "-label")), m("input", {
         className: "FormControl",
         type: "text",
-        bidi: _this.setting("vietvanCaFlarumThemes.heroTitle_" + code)
+        bidi: _this.setting("vietvan-ca-themes.hero_title_" + code)
       }), m("div", {
         className: "helpText"
       }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.global-placeholder"), flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.title-" + code + "-default")));
@@ -93,7 +93,7 @@ var ThemeSettingsPage = /*#__PURE__*/function (_ExtensionPage) {
         key: "desc-" + code
       }, m("label", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.description-" + code + "-label")), m("textarea", {
         className: "FormControl",
-        bidi: _this.setting("vietvanCaFlarumThemes.heroDescription_" + code)
+        bidi: _this.setting("vietvan-ca-themes.hero_description_" + code)
       }), m("div", {
         className: "helpText"
       }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.global-placeholder"), flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.description-" + code + "-default")));

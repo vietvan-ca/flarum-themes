@@ -7,8 +7,8 @@ export default class HeroSection extends Component {
   view() {
     // Get settings or fall back to translations if not set
     const locale = app.translator.getLocale() || 'en';
-    const title = app.forum.attribute(`heroTitle_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
-    const description = app.forum.attribute(`heroDescription_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+    const title = app.forum.attribute(`hero_title_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
+    const description = app.forum.attribute(`hero_description_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
 
     return (
       <div className="HeroSection">

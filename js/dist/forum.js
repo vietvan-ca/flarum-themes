@@ -223,8 +223,8 @@ var HeroSection = /*#__PURE__*/function (_Component) {
   _proto.view = function view() {
     // Get settings or fall back to translations if not set
     var locale = app.translator.getLocale() || 'en';
-    var title = app.forum.attribute("heroTitle_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
-    var description = app.forum.attribute("heroDescription_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+    var title = app.forum.attribute("hero_title_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
+    var description = app.forum.attribute("hero_description_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
     return m("div", {
       className: "HeroSection"
     }, m("div", {

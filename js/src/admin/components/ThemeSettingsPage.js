@@ -12,7 +12,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
             {locales.map((code) => (
               <div className="Form-group" key={code}>
                 <label>{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.title-${code}-label`)}</label>
-                <input className="FormControl" type="text" bidi={this.setting(`vietvanCaFlarumThemes.heroTitle_${code}`)} />
+                <input className="FormControl" type="text" bidi={this.setting(`vietvan-ca-themes.hero_title_${code}`)} />
                 <div className="helpText">
                   {app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.global-placeholder`)}
                   {app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.title-${code}-default`)}
@@ -23,7 +23,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
             {locales.map((code) => (
               <div className="Form-group" key={`desc-${code}`}>
                 <label>{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.description-${code}-label`)}</label>
-                <textarea className="FormControl" bidi={this.setting(`vietvanCaFlarumThemes.heroDescription_${code}`)} />
+                <textarea className="FormControl" bidi={this.setting(`vietvan-ca-themes.hero_description_${code}`)} />
                 <div className="helpText">
                   {app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.global-placeholder`)}
                   {app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.hero.description-${code}-default`)}

@@ -14,9 +14,9 @@ class SettingAttributes
   public static function extend(): Extend\Settings
   {
     return (new Extend\Settings)
-      ->serializeToForum('heroTitle_en',       'vietvanCaFlarumThemes.heroTitle_en')
-      ->serializeToForum('heroTitle_vi',       'vietvanCaFlarumThemes.heroTitle_vi')
-      ->serializeToForum('heroDescription_en', 'vietvanCaFlarumThemes.heroDescription_en')
-      ->serializeToForum('heroDescription_vi', 'vietvanCaFlarumThemes.heroDescription_vi');
+      ->serializeToForum('hero_title_en',       'vietvan-ca-themes.hero_title_en')
+      ->serializeToForum('hero_title_vi',       'vietvan-ca-themes.hero_title_vi')
+      ->serializeToForum('hero_description_en', 'vietvan-ca-themes.hero_description_en')
+      ->serializeToForum('hero_description_vi', 'vietvan-ca-themes.hero_description_vi');
   }
 }
