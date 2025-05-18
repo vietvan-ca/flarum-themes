@@ -222,22 +222,29 @@ var HeroSection = /*#__PURE__*/function (_Component) {
   var _proto = HeroSection.prototype;
   _proto.view = function view() {
     // Get settings or fall back to translations if not set
+    var isHeroEnabled = app.forum.attribute('vietvan_ca_hero_enabled') !== '0';
+    if (!isHeroEnabled) {
+      return null; // Don't render if the hero section is disabled
+    }
     var locale = app.translator.getLocale() || 'en';
-    var title = app.forum.attribute("hero_title_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
-    var description = app.forum.attribute("hero_description_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+    var title = app.forum.attribute("vietvan_ca_hero_title_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
+    var description = app.forum.attribute("vietvan_ca_hero_description_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
     var backgroundImage = app.forum.attribute('vietvan_ca_hero_background_imageUrl');
+    var showText = app.forum.attribute('vietvan_ca_hero_show_text') !== '0';
     return m("div", {
       className: "HeroSection",
       style: backgroundImage ? {
         background: "url('" + backgroundImage + "') center/cover no-repeat"
       } : {}
-    }, m("div", {
+    }, showText ? m("div", {
       className: "container"
     }, m("h1", {
       className: "HeroSection-title"
     }, title), m("p", {
       className: "HeroSection-subtitle"
-    }, description)));
+    }, description)) : m("div", {
+      className: "HeroSection-no-text"
+    }));
   };
   return HeroSection;
 }((flarum_common_Component__WEBPACK_IMPORTED_MODULE_1___default()));

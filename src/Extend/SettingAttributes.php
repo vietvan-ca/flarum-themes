@@ -17,10 +17,12 @@ class SettingAttributes
   public static function extend(): Extend\Settings
   {
     return (new Extend\Settings)
-      ->serializeToForum('hero_title_en', 'vietvan-ca-themes.hero_title_en')
-      ->serializeToForum('hero_title_vi', 'vietvan-ca-themes.hero_title_vi')
-      ->serializeToForum('hero_description_en', 'vietvan-ca-themes.hero_description_en')
-      ->serializeToForum('hero_description_vi', 'vietvan-ca-themes.hero_description_vi')
+      ->serializeToForum('vietvan_ca_hero_enabled', 'vietvan-ca-themes.hero_banner_enabled')
+      ->serializeToForum('vietvan_ca_hero_show_text', 'vietvan-ca-themes.show_hero_text')
+      ->serializeToForum('vietvan_ca_hero_title_en', 'vietvan-ca-themes.hero_title_en')
+      ->serializeToForum('vietvan_ca_hero_title_vi', 'vietvan-ca-themes.hero_title_vi')
+      ->serializeToForum('vietvan_ca_hero_description_en', 'vietvan-ca-themes.hero_description_en')
+      ->serializeToForum('vietvan_ca_hero_description_vi', 'vietvan-ca-themes.hero_description_vi')
       ->serializeToForum('vietvan_ca_hero_background_imageUrl', 'vietvan_ca_hero_background_image_path', AddHeroImageUrlToApi::class);
   }
 }

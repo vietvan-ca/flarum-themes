@@ -13,6 +13,10 @@ vietvan-ca-flarum-themes:
       title: "Cài đặt giao diện"
       hero:
         title: "Cài đặt phần Hero"
+        enable-banner-label: "Kích hoạt phần Hero"
+        enable-banner-help: "Kích hoạt hoặc vô hiệu hóa phần hero trên tiêu đề diễn đàn."
+        show-text-label: "Hiển thị tiêu đề và mô tả"
+        show-text-help: "Hiển thị hoặc ẩn văn bản hero trên phần hero, gợi ý vô hiệu hóa nếu sử dụng hình nền có văn bản."
         title-en-label: "Tiêu đề Hero (English)"
         title-vi-label: "Tiêu đề Hero (Tiếng Việt)"
         description-en-label: "Mô tả Hero (English)"

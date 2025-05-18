@@ -60,6 +60,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_admin_components_ExtensionPage__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_admin_components_ExtensionPage__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var flarum_admin_components_UploadImageButton__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! flarum/admin/components/UploadImageButton */ "flarum/admin/components/UploadImageButton");
 /* harmony import */ var flarum_admin_components_UploadImageButton__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(flarum_admin_components_UploadImageButton__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var flarum_common_components_Switch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! flarum/common/components/Switch */ "flarum/common/components/Switch");
+/* harmony import */ var flarum_common_components_Switch__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(flarum_common_components_Switch__WEBPACK_IMPORTED_MODULE_4__);
+
 
 
 
@@ -73,6 +76,8 @@ var ThemeSettingsPage = /*#__PURE__*/function (_ExtensionPage) {
   var _proto = ThemeSettingsPage.prototype;
   _proto.content = function content() {
     var _this = this;
+    // Get the current status of the hero banner toggle
+    var isHeroBannerEnabled = this.setting('vietvan-ca-themes.hero_banner_enabled')() === '1';
     return m("div", {
       className: "ThemeSettingsPage"
     }, m("div", {
@@ -84,6 +89,35 @@ var ThemeSettingsPage = /*#__PURE__*/function (_ExtensionPage) {
     }, m("div", {
       className: "ThemeSettingsPage-section"
     }, m("h3", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.title')), m("div", {
+      className: "Form-group"
+    }, m((flarum_common_components_Switch__WEBPACK_IMPORTED_MODULE_4___default()), {
+      state: isHeroBannerEnabled,
+      onchange: function onchange(value) {
+        _this.setting('vietvan-ca-themes.hero_banner_enabled')(value ? '1' : '0');
+      }
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.enable-banner-label') || 'Enable Hero Banner'), m("div", {
+      className: "helpText"
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.enable-banner-help') || 'Toggle this option to enable or disable the hero banner section.')), isHeroBannerEnabled && m("div", {
+      className: "ThemeSettingsPage-heroConfig"
+    }, m("div", {
+      className: "Form-group ThemeSettingsPage-imageUpload"
+    }, m("label", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-label') || 'Hero Background Image'), m("div", {
+      className: "ThemeSettingsPage-imageContainer"
+    }, m((flarum_admin_components_UploadImageButton__WEBPACK_IMPORTED_MODULE_3___default()), {
+      name: "vietvan_ca_hero_background_image",
+      className: "ThemeSettingsPage-uploadButton"
+    })), m("div", {
+      className: "helpText"
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-help') || 'Upload an image to be displayed as the hero section background.')), m("div", {
+      className: "Form-group"
+    }, m((flarum_common_components_Switch__WEBPACK_IMPORTED_MODULE_4___default()), {
+      state: this.setting('vietvan-ca-themes.show_hero_text')() !== '0',
+      onchange: function onchange(value) {
+        _this.setting('vietvan-ca-themes.show_hero_text')(value ? '1' : '0');
+      }
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.show-text-label') || 'Show Title and Description on Banner'), m("div", {
+      className: "helpText"
+    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.show-text-help') || 'When enabled, the title and description will be displayed on top of the banner image.')), m("div", {
       className: "ThemeSettingsPage-grid"
     }, locales.map(function (code) {
       return m("div", {
@@ -106,16 +140,7 @@ var ThemeSettingsPage = /*#__PURE__*/function (_ExtensionPage) {
       }), m("div", {
         className: "helpText"
       }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.global-placeholder"), flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans("vietvan-ca-flarum-themes.admin.settings.hero.description-" + code + "-default")));
-    })), m("div", {
-      className: "Form-group ThemeSettingsPage-imageUpload"
-    }, m("label", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-label') || 'Hero Background Image'), m("div", {
-      className: "ThemeSettingsPage-imageContainer"
-    }, m((flarum_admin_components_UploadImageButton__WEBPACK_IMPORTED_MODULE_3___default()), {
-      name: "vietvan_ca_hero_background_image",
-      className: "ThemeSettingsPage-uploadButton"
-    })), m("div", {
-      className: "helpText"
-    }, flarum_admin_app__WEBPACK_IMPORTED_MODULE_1___default().translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-help') || 'Upload an image to be displayed as the hero section background.'))), m("div", {
+    })))), m("div", {
       className: "ThemeSettingsPage-footer"
     }, this.submitButton()))));
   };
@@ -174,6 +199,17 @@ module.exports = flarum.core.compat['admin/components/ExtensionPage'];
 
 "use strict";
 module.exports = flarum.core.compat['admin/components/UploadImageButton'];
+
+/***/ }),
+
+/***/ "flarum/common/components/Switch":
+/*!*****************************************************************!*\
+  !*** external "flarum.core.compat['common/components/Switch']" ***!
+  \*****************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['common/components/Switch'];
 
 /***/ })
 

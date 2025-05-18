@@ -13,6 +13,10 @@ vietvan-ca-flarum-themes:
       title: "Theme Settings"
       hero:
         title: "Hero Section Settings"
+        enable-banner-label: "Enable Hero Section"
+        enable-banner-help: "Enable or disable the hero section on the forum header."
+        show-text-label: "Show Title and Description"
+        show-text-help: "Show or hide the hero text on the hero section, suggested to disable if using a background image with text."
         title-en-label: "Hero Title (English)"
         title-vi-label: "Hero Title (Vietnamese)"
         description-en-label: "Hero Description (English)"
