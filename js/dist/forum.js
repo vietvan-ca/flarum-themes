@@ -225,8 +225,12 @@ var HeroSection = /*#__PURE__*/function (_Component) {
     var locale = app.translator.getLocale() || 'en';
     var title = app.forum.attribute("hero_title_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
     var description = app.forum.attribute("hero_description_" + locale) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+    var backgroundImage = app.forum.attribute('vietvan_ca_hero_background_imageUrl');
     return m("div", {
-      className: "HeroSection"
+      className: "HeroSection",
+      style: backgroundImage ? {
+        background: "url('" + backgroundImage + "') center/cover no-repeat"
+      } : {}
     }, m("div", {
       className: "container"
     }, m("h1", {

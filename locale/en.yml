@@ -12,6 +12,7 @@ vietvan-ca-flarum-themes:
     settings:
       title: "Theme Settings"
       hero:
+        title: "Hero Section Settings"
         title-en-label: "Hero Title (English)"
         title-vi-label: "Hero Title (Vietnamese)"
         description-en-label: "Hero Description (English)"
@@ -25,5 +26,7 @@ vietvan-ca-flarum-themes:
         description-en-default: "A place to share and connect between community members."
         description-vi-default: "Nơi chia sẻ và kết nối giữa các thành viên trong cộng đồng."
         global-placeholder: "If empty, will use the default: "
+        background-image-label: "Background Image"
+        background-image-help: "Upload a background image for the hero section."
 
     

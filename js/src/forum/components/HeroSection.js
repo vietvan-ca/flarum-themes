@@ -9,9 +9,10 @@ export default class HeroSection extends Component {
     const locale = app.translator.getLocale() || 'en';
     const title = app.forum.attribute(`hero_title_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
     const description = app.forum.attribute(`hero_description_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+    const backgroundImage = app.forum.attribute('vietvan_ca_hero_background_imageUrl');
 
     return (
-      <div className="HeroSection">
+      <div className="HeroSection" style={backgroundImage ? { background: `url('${backgroundImage}') center/cover no-repeat` } : {}}>
         <div className="container">
           <h1 className="HeroSection-title">{title}</h1>
           <p className="HeroSection-subtitle">{description}</p>

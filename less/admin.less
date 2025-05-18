@@ -1,3 +1,123 @@
+/* Full-screen Theme Settings Page styles */
 .ThemeSettingsPage {
-  margin-top: 20px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: calc(100vh - 50px); /* Account for the admin header */
+}
+
+.ThemeSettingsPage-title {
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--control-bg);
+}
+
+.ThemeSettingsPage-section {
+  margin-bottom: 30px;
+  background: var(--body-bg);
+}
+
+.ThemeSettingsPage-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.ThemeSettingsPage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Creates two equal-width columns */
+  gap: 20px;
+}
+
+.ThemeSettingsPage-formGroup {
+  margin-bottom: 15px;
+}
+
+.ThemeSettingsPage-textarea {
+  min-height: 100px;
+}
+
+.ThemeSettingsPage-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--control-bg);
+}
+
+/* Make sure the submit button is visible */
+.ThemeSettingsPage-footer .Button {
+  margin-left: 0;
+}
+
+/* Fix for image upload and preview */
+.ThemeSettingsPage .UploadImageButton {
+  margin-bottom: 15px;
+}
+
+/* Ensure the image container is properly contained */
+.ThemeSettingsPage .UploadImageButton--uploaded {
+  position: relative;
+  overflow: hidden;
+  max-width: 75% !important; /* Restrict to 75% width as requested */
+  margin-bottom: 20px;
+  display: block;
+}
+
+/* Ensure the image preview displays properly */
+.ThemeSettingsPage .UploadImageButton--uploaded img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 10px;
+  border: 1px solid var(--control-bg);
+  border-radius: 4px;
+}
+
+/* Better layout for the button and image section */
+.ThemeSettingsPage-imageUpload {
+  max-width: 100%;
+  overflow: visible;
+  padding-bottom: 20px;
+  margin-top: 30px;
+  clear: both;
+}
+
+.ThemeSettingsPage-imageContainer {
+  width: 75%;
+  max-width: 75%;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Prevent text from overlapping with the uploaded image */
+.ThemeSettingsPage .UploadImageButton + .helpText,
+.ThemeSettingsPage-imageContainer + .helpText {
+  clear: both;
+  display: block;
+  margin-top: 10px;
+  max-width: 75%;
+}
+
+/* Style for the Remove button */
+.ThemeSettingsPage .Button--icon {
+  margin-top: 10px;
+  clear: both;
+  display: block !important;
+}
+
+/* Ensure any text inside the image upload section doesn't overflow */
+.ThemeSettingsPage-imageUpload * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Media query for mobile devices (adjust the breakpoint as needed) */
+@media (max-width: 768px) {
+  .ThemeSettingsPage-grid {
+    grid-template-columns: 1fr; /* Sets a single column */
+  }
+
+  .ThemeSettingsPage-formGroup {
+    margin-bottom: 0px;
+  }
 }
