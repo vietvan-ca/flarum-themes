@@ -32,5 +32,7 @@ vietvan-ca-flarum-themes:
         global-placeholder: "If empty, will use the default: "
         background-image-label: "Background Image"
         background-image-help: "Upload a background image for the hero section."
+        background-image-dark-label: "Background Image (Dark Mode)"
+        background-image-dark-help: "Upload a background image for the hero section in dark mode."
 
     

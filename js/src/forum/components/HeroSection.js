@@ -1,33 +1,54 @@
 import Component from 'flarum/common/Component';
 
-/**
- * Renders the hero section of the page
- */
 export default class HeroSection extends Component {
+  oninit(vnode) {
+    super.oninit(vnode);
+
+    const forum = app.forum;
+    // enabled?
+    this.enabled = forum.attribute('vietvan_ca_hero_enabled') === '1';
+    if (!this.enabled) return;
+
+    // locale-specific text
+    this.locale = app.translator.getLocale() || 'en';
+    const titleKey = `vietvan_ca_hero_title_${this.locale}`;
+    const descKey  = `vietvan_ca_hero_description_${this.locale}`;
+
+    this.title       = forum.attribute(titleKey) ?? app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
+    this.description = forum.attribute(descKey)  ?? app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
+
+    // show or hide text overlay?
+    this.showText = forum.attribute('vietvan_ca_hero_show_text') === '1';
+
+    // pick light vs dark background
+    const mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
+    const bgAttr = mode === 'dark'
+      ? 'vietvan_ca_hero_background_image_darkUrl'
+      : 'vietvan_ca_hero_background_imageUrl';
+
+    const bgUrl = forum.attribute(bgAttr);
+
+    // prebuild the style object
+    this.style = bgUrl
+      ? {
+          backgroundImage: `url(${bgUrl})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }
+      : undefined;
+  }
+
   view() {
-    // Get settings or fall back to translations if not set
-    const isHeroEnabled = app.forum.attribute('vietvan_ca_hero_enabled') !== '0';
-
-    if (!isHeroEnabled) {
-      return null; // Don't render if the hero section is disabled
-    }
-
-    const locale = app.translator.getLocale() || 'en';
-    const title = app.forum.attribute(`vietvan_ca_hero_title_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.title');
-    const description =
-      app.forum.attribute(`vietvan_ca_hero_description_${locale}`) || app.translator.trans('vietvan-ca-flarum-themes.forum.hero.description');
-    const backgroundImage = app.forum.attribute('vietvan_ca_hero_background_imageUrl');
-    const showText = app.forum.attribute('vietvan_ca_hero_show_text') !== '0';
+    if (!this.enabled) return null;
 
     return (
-      <div className="HeroSection" style={backgroundImage ? { background: `url('${backgroundImage}') center/cover no-repeat` } : {}}>
-        {showText ? (
+      <div className="HeroSection" style={this.style}>
+        {this.showText && (
           <div className="container">
-            <h1 className="HeroSection-title">{title}</h1>
-            <p className="HeroSection-subtitle">{description}</p>
+            <h1 className="HeroSection-title">{this.title}</h1>
+            <p className="HeroSection-subtitle">{this.description}</p>
           </div>
-        ) : (
-          <div className="HeroSection-no-text"></div>
         )}
       </div>
     );

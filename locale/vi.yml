@@ -32,4 +32,6 @@ vietvan-ca-flarum-themes:
         global-placeholder: "Nếu để trống, sẽ sử dụng mặc định: "
         background-image-label: "Hình nền"
         background-image-help: "Tải lên một hình nền cho phần hero."
+        background-image-dark-label: "Hình nền (Chế độ tối)"
+        background-image-dark-help: "Tải lên một hình nền cho phần hero trong chế độ tối."
 

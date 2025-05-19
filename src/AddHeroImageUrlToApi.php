@@ -2,40 +2,30 @@
 
 namespace VietVan\FlarumThemes;
 
-use Flarum\Http\UrlGenerator;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Filesystem\Factory;
-use Illuminate\Contracts\Filesystem\Cloud;
 
 class AddHeroImageUrlToApi
 {
     /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
-     * @var Cloud
+     * @var \Illuminate\Contracts\Filesystem\Filesystem
      */
     protected $uploadDir;
 
-    /**
-     * @var UrlGenerator
-     */
-    protected $url;
-
-    public function __construct(SettingsRepositoryInterface $settings, UrlGenerator $url, Factory $filesystemFactory)
+    public function __construct(Factory $filesystemFactory)
     {
-        $this->settings = $settings;
-        $this->url = $url;
+        // 'flarum-assets' is the disk that holds your uploaded images
         $this->uploadDir = $filesystemFactory->disk('flarum-assets');
     }
 
-    public function __invoke()
+    /**
+     * @param string|null $path
+     * @return string|null
+     */
+    public function __invoke($path)
     {
-        $settingKey = 'vietvan_ca_hero_background_image_path';
-        $imagePath = $this->settings->get($settingKey);
-
-        return $imagePath ? $this->uploadDir->url($imagePath) : null;
+        // $path is exactly what you stored in settings for this key
+        return $path
+            ? $this->uploadDir->url($path)
+            : null;
     }
 }

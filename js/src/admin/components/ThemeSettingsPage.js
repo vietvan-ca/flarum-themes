@@ -38,6 +38,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
               {/* Show the hero banner configuration only if the banner is enabled */}
               {isHeroBannerEnabled && (
                 <div className="ThemeSettingsPage-heroConfig">
+                  {/* Light Hero Banner */}
                   <div className="Form-group ThemeSettingsPage-imageUpload">
                     <label>
                       {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-label') || 'Hero Background Image'}
@@ -47,6 +48,20 @@ export default class ThemeSettingsPage extends ExtensionPage {
                     </div>
                     <div className="helpText">
                       {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-help') ||
+                        'Upload an image to be displayed as the hero section background.'}
+                    </div>
+                  </div>
+
+                  {/* Dark Hero Banner */}
+                  <div className="Form-group ThemeSettingsPage-imageUpload">
+                    <label>
+                      {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-dark-label') || 'Hero Background Image'}
+                    </label>
+                    <div className="ThemeSettingsPage-imageContainer">
+                      <UploadImageButton name="vietvan_ca_hero_background_image_dark" className="ThemeSettingsPage-uploadButton" />
+                    </div>
+                    <div className="helpText">
+                      {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.background-image-dark-help') ||
                         'Upload an image to be displayed as the hero section background.'}
                     </div>
                   </div>

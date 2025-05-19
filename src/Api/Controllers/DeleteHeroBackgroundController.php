@@ -11,36 +11,44 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DeleteHeroBackgroundController implements RequestHandlerInterface
 {
-  protected $settings;
-  protected $filesystem;
+    /** @var SettingsRepositoryInterface */
+    protected $settings;
 
-  public function __construct(SettingsRepositoryInterface $settings, Factory $filesystem)
-  {
-    $this->settings = $settings;
-    $this->filesystem = $filesystem;
-  }
+    /** @var \Illuminate\Contracts\Filesystem\Filesystem */
+    protected $disk;
 
-  public function handle(ServerRequestInterface $request): ResponseInterface
-  {
-    $actor = $request->getAttribute('actor');
-
-    if (!$actor->isAdmin()) {
-      return new EmptyResponse(403);
+    public function __construct(SettingsRepositoryInterface $settings, Factory $filesystem)
+    {
+        $this->settings = $settings;
+        // both light & dark uploads live on the same disk
+        $this->disk = $filesystem->disk('flarum-assets');
     }
 
-    $settingKey = 'vietvan_ca_hero_background_image_path';
-    $path = $this->settings->get($settingKey);
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $actor = $request->getAttribute('actor');
+        if (! $actor->isAdmin()) {
+            return new EmptyResponse(403);
+        }
 
-    if ($path) {
-      $disk = $this->filesystem->disk('flarum-assets');
+        // figure out if this was the “dark” endpoint
+        $path = $request->getUri()->getPath();
+        $isDark = str_ends_with($path, '_dark');
 
-      if ($disk->exists($path)) {
-        $disk->delete($path);
-      }
+        // choose the matching setting key
+        $settingKey = $isDark
+            ? 'vietvan_ca_hero_background_image_dark_path'
+            : 'vietvan_ca_hero_background_image_path';
 
-      $this->settings->delete($settingKey);
+        // delete the file if it exists
+        $file = $this->settings->get($settingKey);
+        if ($file && $this->disk->exists($file)) {
+            $this->disk->delete($file);
+        }
+
+        // clear the setting
+        $this->settings->delete($settingKey);
+
+        return new EmptyResponse(204);
     }
-
-    return new EmptyResponse(204); // No content
-  }
 }

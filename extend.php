@@ -25,7 +25,9 @@ return [
     // Register the API routes
     (new Extend\Routes('api'))
         ->post('/vietvan_ca_hero_background_image', 'vietvan-ca-themes.upload', UploadHeroBackgroundController::class)
-        ->delete('/vietvan_ca_hero_background_image', 'vietvan-ca-themes.delete', DeleteHeroBackgroundController::class),
+        ->post('/vietvan_ca_hero_background_image_dark', 'vietvan-ca-themes.dark.upload', UploadHeroBackgroundController::class)
+        ->delete('/vietvan_ca_hero_background_image', 'vietvan-ca-themes.delete', DeleteHeroBackgroundController::class)
+        ->delete('/vietvan_ca_hero_background_image_dark', 'vietvan-ca-themes.dark.delete', DeleteHeroBackgroundController::class),
 
     // Register extensions
     DiscussionAttributes::extend(),
