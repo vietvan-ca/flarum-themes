@@ -9,6 +9,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
   content() {
     // Get the current status of the hero banner toggle
     const isHeroBannerEnabled = this.setting('vietvan-ca-themes.hero_banner_enabled')() === '1';
+    const isTextVisible = this.setting('vietvan-ca-themes.show_hero_text')() === '1';
 
     return (
       <div className="ThemeSettingsPage">
@@ -69,7 +70,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
                   {/* Toggle for showing/hiding title and description when banner image exists */}
                   <div className="Form-group">
                     <Switch
-                      state={this.setting('vietvan-ca-themes.show_hero_text')() !== '0'}
+                      state={isTextVisible}
                       onchange={(value) => {
                         this.setting('vietvan-ca-themes.show_hero_text')(value ? '1' : '0');
                       }}

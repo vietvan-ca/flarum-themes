@@ -3,10 +3,19 @@
 @secondary-color: #555555; // Dark gray for secondary elements
 @neutral-50: #333333; // Neutral color for text
 
+// VietVan Theme Font
+@import url('https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400..800&display=swap');
+@font-family-base: 'Wix Madefor Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
 :root {
   --primary-color: @primary-color;
   --secondary-color: @secondary-color;
   --neutral-50: @neutral-50;
+}
+
+body {
+  font-family: "Wix Madefor Display", sans-serif;
+  font-optical-sizing: auto;
 }
 
 // Override FoF NightMode colors

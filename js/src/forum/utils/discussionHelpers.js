@@ -4,7 +4,8 @@
 export function getTimeSince(date) {
   const now = new Date();
   const diffTime = Math.abs(now - date);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Use Math.floor instead of Math.ceil to match the first function
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
   if (diffDays < 1) {
     // Less than a day, show hours
