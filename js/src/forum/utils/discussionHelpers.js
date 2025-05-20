@@ -2,23 +2,46 @@
  * Helper function to calculate time since in days
  */
 export function getTimeSince(date) {
+  if (!date) return '-';
+
+  // Convert to Date object if string
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Check if date is valid
+  if (isNaN(dateObj.getTime())) return '-';
+
   const now = new Date();
-  const diffTime = Math.abs(now - date);
-  // Use Math.floor instead of Math.ceil to match the first function
+  const diffTime = now - dateObj;
+
+  // If time is in the future, return placeholder
+  if (diffTime < 0) return '-';
+
+  // Calculate time differences
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
-  if (diffDays < 1) {
-    // Less than a day, show hours
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    return diffHours + 'h';
-  } else if (diffDays < 30) {
-    // Less than a month, show days
-    return diffDays + 'd';
-  } else {
+  const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+  // Return only the largest time unit
+  if (diffDays >= 30) {
     // More than a month, show months
     const diffMonths = Math.floor(diffDays / 30);
     return diffMonths + 'mo';
   }
+
+  if (diffDays > 0) {
+    return diffDays + 'd';
+  }
+
+  if (diffHours > 0) {
+    return diffHours + 'h';
+  }
+
+  if (diffMinutes > 0) {
+    return diffMinutes + 'm';
+  }
+
+  // If less than a minute
+  return 'now';
 }
 
 /**
@@ -42,24 +65,30 @@ export function getColorClass(index) {
  */
 export function renderUserAvatar(user, index) {
   if (!user) return null;
-  
+
   const userName = user.username || '';
   const avatarUrl = user.avatar_url;
-  
+
   if (avatarUrl) {
     // If avatar URL exists, render the image
-    return m('span.user-avatar', { title: userName }, 
+    return m(
+      'span.user-avatar',
+      { title: userName },
       m('img.avatar-image', {
         src: avatarUrl,
-        alt: userName
+        alt: userName,
       })
     );
   } else {
     // If no avatar URL, show initials with color background
-    return m('span.user-avatar', { title: userName },
-      m('span.user-initial', { 
-        className: getColorClass(index)
-      }, 
+    return m(
+      'span.user-avatar',
+      { title: userName },
+      m(
+        'span.user-initial',
+        {
+          className: getColorClass(index),
+        },
         getInitials(userName)
       )
     );
