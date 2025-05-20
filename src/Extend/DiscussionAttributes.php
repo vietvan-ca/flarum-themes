@@ -29,9 +29,7 @@ class DiscussionAttributes
                     ->unique('id')
                     ->values();
 
-                $attributes['latestPosters'] = $serializer->getActor()->can('viewUserList', $discussion)
-                    ? $latestPosters
-                    : new Collection();
+                $attributes['latestPosters'] = $latestPosters;
 
                 return $attributes;
             });
