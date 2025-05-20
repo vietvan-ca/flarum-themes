@@ -34,5 +34,9 @@ vietvan-ca-flarum-themes:
         background-image-help: "Upload a background image for the hero section."
         background-image-dark-label: "Background Image (Dark Mode)"
         background-image-dark-help: "Upload a background image for the hero section in dark mode."
+      header:
+        title: "Header Settings"
+        show-register-button-label: "Show Register Button"
+        show-register-button-help: "When disabled, the registration button will be hidden from the forum header."
 
     

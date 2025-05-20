@@ -34,4 +34,7 @@ vietvan-ca-flarum-themes:
         background-image-help: "Tải lên một hình nền cho phần hero."
         background-image-dark-label: "Hình nền (Chế độ tối)"
         background-image-dark-help: "Tải lên một hình nền cho phần hero trong chế độ tối."
-
+      header:
+        title: "Cài đặt tiêu đề"
+        show-register-button-label: "Hiển thị nút Đăng ký"
+        show-register-button-help: "Khi vô hiệu hóa, nút đăng ký sẽ bị ẩn khỏi tiêu đề diễn đàn."

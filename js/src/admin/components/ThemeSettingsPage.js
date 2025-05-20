@@ -112,6 +112,23 @@ export default class ThemeSettingsPage extends ExtensionPage {
               )}
             </div>
 
+            {/* New section for Register Button Settings */}
+            <div className="ThemeSettingsPage-section">
+              <h3>{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.header.title`)}</h3>
+
+              <div className="Form-group">
+                <Switch
+                  state={this.setting('vietvan-ca-themes.show_register_button')() === '1'}
+                  onchange={(value) => {
+                    this.setting('vietvan-ca-themes.show_register_button')(value ? '1' : '0');
+                  }}
+                >
+                  {app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.header.show-register-button-label`)}
+                </Switch>
+                <div className="helpText">{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.header.show-register-button-help`)}</div>
+              </div>
+            </div>
+
             <div className="ThemeSettingsPage-footer">{this.submitButton()}</div>
           </div>
         </div>

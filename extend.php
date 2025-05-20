@@ -32,6 +32,4 @@ return [
     // Register extensions
     DiscussionAttributes::extend(),
     SettingAttributes::extend(),
-
-
 ];
