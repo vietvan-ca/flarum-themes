@@ -1,3 +1,54 @@
+// LESS variables for easy customization
+@aside-width-mobile: 100%;
+@aside-width-tablet: 400px;
+@aside-width-desktop: 600px;
+@aside-width-large: 700px;
+
+// Main aside styling
+.paneShowing .DiscussionPage-list,
+.panePinned .DiscussionPage-list {
+    // Base width
+    flex: 0 0 @aside-width-tablet !important;
+    width: @aside-width-tablet !important;
+    min-width: 300px !important;
+    
+    // Styling
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    overflow-y: auto !important;
+    
+    // Responsive breakpoints
+    @media (min-width: 1200px) {
+        flex: 0 0 @aside-width-desktop !important;
+        width: @aside-width-desktop !important;
+    }
+    
+    @media (min-width: 1600px) {
+        flex: 0 0 @aside-width-large !important;
+        width: @aside-width-large !important;
+    }
+    
+    // Mobile handling
+    @media (max-width: 768px) {
+        width: @aside-width-mobile !important;
+        flex: 1 1 auto !important;
+        min-width: auto !important;
+        border-right: none !important;
+        border-top: 1px solid var(--flarum-border-color, #e8e8e8) !important;
+        order: 2 !important;
+    }
+}
+
+// Ensure main discussion content adjusts accordingly
+.DiscussionPage-discussion {
+    flex: 1 1 auto !important;
+    min-width: 0 !important; // Prevents flex item from overflowing
+    
+    @media (max-width: 768px) {
+        order: 1 !important;
+    }
+}
+
 .DiscussionList {
   margin: 0;
   padding: 0;
