@@ -3,6 +3,16 @@
   text-align: center;
   background: var(--body-bg);
   border-bottom: 1px solid var(--control-bg);
+  height: 300px; /* Fixed height to give space for the full image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 20px;
+  }
 
   .HeroSection-title {
     font-size: 32px;
@@ -13,9 +23,29 @@
   .HeroSection-subtitle {
     font-size: 18px;
     color: var(--muted-color);
+    margin-bottom: 20px;
   }
 
-  .HeroSection-no-text {
-    height: 15vh;
+  /* Mobile specific adjustments */
+  @media (max-width: 768px) {
+    .HeroSection-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    
+    .HeroSection-subtitle {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .HeroSection-title {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    
+    .HeroSection-subtitle {
+      font-size: 13px;
+    }
   }
 }

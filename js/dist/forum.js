@@ -239,12 +239,14 @@ var HeroSection = /*#__PURE__*/function (_Component) {
     var bgAttr = mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
     var bgUrl = forum.attribute(bgAttr);
 
-    // prebuild the style object
+    // prebuild the style object with proper background sizing
     this.style = bgUrl ? {
       backgroundImage: "url(" + bgUrl + ")",
       backgroundPosition: 'center',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat'
+      backgroundSize: '100% auto',
+      // Width 100%, height auto to maintain aspect ratio
+      backgroundRepeat: 'no-repeat',
+      height: '20vh'
     } : undefined;
   };
   _proto.view = function view() {

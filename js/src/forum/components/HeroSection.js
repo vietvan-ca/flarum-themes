@@ -26,13 +26,14 @@ export default class HeroSection extends Component {
 
     const bgUrl = forum.attribute(bgAttr);
 
-    // prebuild the style object
+    // prebuild the style object with proper background sizing
     this.style = bgUrl
       ? {
           backgroundImage: `url(${bgUrl})`,
           backgroundPosition: 'center',
-          backgroundSize: 'cover',
+          backgroundSize: '100% auto', // Width 100%, height auto to maintain aspect ratio
           backgroundRepeat: 'no-repeat',
+          height: '20vh'
         }
       : undefined;
   }
