@@ -1,5 +1,8 @@
 vietvan-ca-flarum-themes:
   forum:
+    header:
+      back_button_text: "Go to Main Site" 
+      back_button_tooltip: "Back to Vietvan Main Site"
     hero:
       title: "Welcome to Vietvan Community Forum"
       description: "A place to share and connect between community members."
@@ -38,5 +41,8 @@ vietvan-ca-flarum-themes:
         title: "Header Settings"
         show-register-button-label: "Show Register Button"
         show-register-button-help: "When disabled, the registration button will be hidden from the forum header."
+        back-button-url-label: "Custom Back to Main Site URL"
+        back-button-url-placeholder: "e.g., /all or https://vietvan.ca"
+        back-button-url-help: "If set, the back button will navigate to this URL. Leave empty to hide the back button."
 
     

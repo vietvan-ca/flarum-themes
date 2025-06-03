@@ -3,10 +3,12 @@ import { extend } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
+import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
 import HeroSection from './components/HeroSection';
+import BackButton from './components/BackButton';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // Check for register button visibility using document events
@@ -44,6 +46,16 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Also run when route changes, which is when app.forum might be ready
   app.history.initialized?.then(() => {
     app.history.router.on('changed', checkRegisterButtonVisibility);
+  });
+
+  // Extend the HeaderPrimary component to add a custom button
+  extend(HeaderPrimary.prototype, 'items', function (items) {
+    // Add back button with high priority to appear early in the header
+    items.add(
+      'back-button',
+      <BackButton />,
+      90 // High priority to appear near the logo
+    );
   });
 
   // Extend the DiscussionListItem component to use the custom row

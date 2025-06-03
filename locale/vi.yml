@@ -1,5 +1,8 @@
 vietvan-ca-flarum-themes:
   forum:
+    header:
+      back_button_text: "Trở về Trang Chính" 
+      back_button_tooltip: "Trở về Trang Chính Vietvan"
     hero:
       title: "Chào mừng bạn đến với Diễn đàn Cộng đồng Vietvan"
       description: "Nơi để chia sẻ và kết nối giữa các thành viên trong cộng đồng."
@@ -38,3 +41,6 @@ vietvan-ca-flarum-themes:
         title: "Cài đặt tiêu đề"
         show-register-button-label: "Hiển thị nút Đăng ký"
         show-register-button-help: "Khi vô hiệu hóa, nút đăng ký sẽ bị ẩn khỏi tiêu đề diễn đàn."
+        back-button-url-label: "URL tùy chỉnh Trở về Trang Chính"
+        back-button-url-placeholder: "ví dụ: /all hoặc https://vietvan.ca"
+        back-button-url-help: "Nếu được đặt, nút trở về sẽ điều hướng đến URL này. Để trống để ẩn nút trở về."

@@ -130,6 +130,22 @@ export default class ThemeSettingsPage extends ExtensionPage {
               </div>
             </div>
 
+            {/* New Setting for Back Button URL */}
+              <div className="Form-group">
+                <label>
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.header.back-button-url-label')}
+                </label>
+                <input
+                  className="FormControl"
+                  type="text"
+                  bidi={this.setting('vietvan-ca-themes.back_button_custom_url')}
+                  placeholder={app.translator.trans('vietvan-ca-flarum-themes.admin.settings.header.back-button-url-placeholder')}
+                />
+                <div className="helpText">
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.header.back-button-url-help')}
+                </div>
+              </div>
+
             <div className="ThemeSettingsPage-footer">{this.submitButton()}</div>
           </div>
         </div>
