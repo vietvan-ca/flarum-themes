@@ -50,3 +50,7 @@ vietvan-ca-flarum-themes:
         logo-light-help: "Tải lên logo của bạn cho chế độ sáng. Nếu không có logo chế độ tối được đặt, logo này sẽ được sử dụng làm dự phòng. Nếu không tải lên logo ở đây, logo mặc định của Flarum sẽ được sử dụng."
         logo-dark-label: "Logo (Cho Chế độ Tối)"
         logo-dark-help: "Tải lên logo của bạn cho chế độ tối. Logo này sẽ được hiển thị khi chế độ tối được kích hoạt."
+      default_scale_label: Tỷ lệ phông chữ mặc định
+      default_scale_help: Đặt tỷ lệ phông chữ mặc định cho người dùng mới (1.0 = kích thước bình thường)
+      quick_controls_label: Hiển thị điều khiển phóng to nhanh
+      quick_controls_help: Hiển thị các nút A+/A-/A trong tiêu đề để điều chỉnh kích thước phông chữ nhanh chón

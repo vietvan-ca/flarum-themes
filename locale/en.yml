@@ -11,6 +11,14 @@ vietvan-ca-flarum-themes:
       replies: "Replies"
       views: "Views"
       activity: "Activity"
+    settings:
+      font_zoom_label: Font Size
+      font_zoom_help: Adjust the font size across the entire forum. Use the slider to find your preferred reading size.
+      reset_button: Reset to Normal
+    quick_controls:
+      zoom_in: Increase font size
+      zoom_out: Decrease font size  
+      zoom_reset: Reset font size
   admin:
     settings:
       title: "Theme Settings"
@@ -50,5 +58,9 @@ vietvan-ca-flarum-themes:
         logo-light-help: "Upload your logo for the light color scheme. If no dark mode logo is set, this will be used as a fallback. If no logo is uploaded here, the Flarum default logo will be used."
         logo-dark-label: "Logo (For Dark Mode)"
         logo-dark-help: "Upload your logo for the dark color scheme. This will be displayed when dark mode is active."
+      default_scale_label: Default Font Scale
+      default_scale_help: Set the default font scale for new users (1.0 = normal size)
+      quick_controls_label: Show Quick Zoom Controls
+      quick_controls_help: Display A+/A-/A buttons in the header for quick font size adjustment
 
     

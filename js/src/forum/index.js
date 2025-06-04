@@ -1,6 +1,7 @@
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
+import SettingsPage from 'flarum/forum/components/SettingsPage';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
@@ -143,4 +144,66 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Run component checks after render
     setTimeout(runComponentChecks, 100);
   });
+
+  // Adding scale font size feature
+  let currentScale = 1.02;
+
+  // Apply initial font zoom
+  applyFontZoom(currentScale);
 });
+
+function applyFontZoom(scale) {
+  // Remove existing font zoom styles
+  const existingStyle = document.getElementById('font-zoom-style');
+  if (existingStyle) {
+    existingStyle.remove();
+  }
+
+  // Create new style element
+  const style = document.createElement('style');
+  style.id = 'font-zoom-style';
+  
+  // Apply zoom to various elements
+  style.textContent = `
+    .App {
+      font-size: ${scale}rem !important;
+    }
+    
+    /* Ensure consistent scaling across all text elements */
+    .Post-body,
+    .PostPreview-body,
+    .UserCard-info,
+    .NotificationGrid-content,
+    .Dropdown-menu,
+    .Modal-body,
+    .Form-group label,
+    .Form-group input,
+    .Form-group textarea,
+    .Button,
+    .Button-label,
+    .Button-badge,
+    .TagLabel,
+    .Badge {
+      font-size: ${scale}em !important;
+    }
+    
+    /* Scale headings proportionally */
+    h1 { font-size: ${scale * 2}rem !important; }
+    h2 { font-size: ${scale * 1.5}rem !important; }
+    h3 { font-size: ${scale * 1.25}rem !important; }
+    h4 { font-size: ${scale * 1.125}rem !important; }
+    h5 { font-size: ${scale * 1}rem !important; }
+    h6 { font-size: ${scale * 0.875}rem !important; }
+    
+    /* Scale code blocks */
+    code,
+    pre {
+      font-size: ${scale * 0.875}em !important;
+    }
+  `;
+  
+  document.head.appendChild(style);
+  
+  // Store for guests as mitigate if improved
+  localStorage.setItem('flarum-font-zoom-scale', scale.toString());
+}
