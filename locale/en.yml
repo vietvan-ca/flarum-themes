@@ -1,7 +1,7 @@
 vietvan-ca-flarum-themes:
   forum:
     header:
-      back_button_text: "Go to Main Site" 
+      back_button_text: "Main Site" 
       back_button_tooltip: "Back to Vietvan Main Site"
     hero:
       title: "Welcome to Vietvan Community Forum"

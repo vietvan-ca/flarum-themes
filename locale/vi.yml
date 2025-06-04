@@ -1,7 +1,7 @@
 vietvan-ca-flarum-themes:
   forum:
     header:
-      back_button_text: "Trở về Trang Chính" 
+      back_button_text: "Trang Chính" 
       back_button_tooltip: "Trở về Trang Chính Vietvan"
     hero:
       title: "Chào mừng bạn đến với Diễn đàn Cộng đồng Vietvan"
