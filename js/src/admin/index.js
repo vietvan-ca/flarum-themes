@@ -53,5 +53,21 @@ app.initializers.add('vietvan-ca-themes', () => {
     }
   });
 
-  app.extensionData.for('vietvan-ca-themes').registerPage(ThemeSettingsPage);
+  app.extensionData.for('vietvan-ca-themes')
+    .registerPage(ThemeSettingsPage)
+    .registerSetting({
+      setting: 'font-zoom.default-scale',
+      type: 'number',
+      label: app.translator.trans('font-zoom.admin.settings.default_scale_label'),
+      help: app.translator.trans('font-zoom.admin.settings.default_scale_help'),
+      min: 0.5,
+      max: 3.0,
+      step: 0.1
+    })
+    .registerSetting({
+      setting: 'font-zoom.show-quick-controls',
+      type: 'boolean',
+      label: app.translator.trans('font-zoom.admin.settings.quick_controls_label'),
+      help: app.translator.trans('font-zoom.admin.settings.quick_controls_help')
+    });
 });
