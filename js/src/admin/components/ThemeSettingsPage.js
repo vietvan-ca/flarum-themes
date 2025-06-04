@@ -3,7 +3,7 @@ import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import UploadImageButton from 'flarum/admin/components/UploadImageButton';
 import Switch from 'flarum/common/components/Switch';
 
-const locales = ['en', 'vi']; // whatever locales you support
+const locales = ['en', 'vi'];
 
 export default class ThemeSettingsPage extends ExtensionPage {
   content() {
@@ -113,7 +113,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
               )}
             </div>
 
-            {/* New section for Register Button Settings */}
+            {/* New section for Header setting */}
             <div className="ThemeSettingsPage-section">
               <h3>{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.header.title`)}</h3>
 
@@ -128,9 +128,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
                 </Switch>
                 <div className="helpText">{app.translator.trans(`vietvan-ca-flarum-themes.admin.settings.header.show-register-button-help`)}</div>
               </div>
-            </div>
 
-            {/* New Setting for Back Button URL */}
               <div className="Form-group">
                 <label>
                   {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.header.back-button-url-label')}
@@ -145,7 +143,39 @@ export default class ThemeSettingsPage extends ExtensionPage {
                   {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.header.back-button-url-help')}
                 </div>
               </div>
+            </div>
 
+            {/* New Section for Logo Settings */}
+            <div className="ThemeSettingsPage-section">
+              <h3>{app.translator.trans('vietvan-ca-flarum-themes.admin.settings.logo.title')}</h3>
+
+              <div className="Form-group ThemeSettingsPage-imageUpload">
+                <label>
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.logo.logo-light-label')}
+                </label>
+                <div className="ThemeSettingsPage-imageContainer">
+                  {/* Flarum saves this as 'vietvan-ca-themes.logo_light_path_setting' if name is 'logo_light_path_setting' */}
+                  <UploadImageButton name="vietvan_ca_logo" />
+                </div>
+                <div className="helpText">
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.logo.logo-light-help')}
+                </div>
+              </div>
+
+              <div className="Form-group ThemeSettingsPage-imageUpload">
+                <label>
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.logo.logo-dark-label')}
+                </label>
+                <div className="ThemeSettingsPage-imageContainer">
+                  <UploadImageButton name="vietvan_ca_logo_dark" />
+                </div>
+                <div className="helpText">
+                  {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.logo.logo-dark-help')}
+                </div>
+              </div>
+            </div>
+
+            
             <div className="ThemeSettingsPage-footer">{this.submitButton()}</div>
           </div>
         </div>

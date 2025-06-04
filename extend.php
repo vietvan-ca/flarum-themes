@@ -5,6 +5,8 @@ namespace VietVan\FlarumThemes;
 use Flarum\Extend;
 use VietVan\FlarumThemes\Api\Controllers\UploadHeroBackgroundController;
 use VietVan\FlarumThemes\Api\Controllers\DeleteHeroBackgroundController;
+use VietVan\FlarumThemes\Api\Controllers\UploadLogoController;
+use VietVan\FlarumThemes\Api\Controllers\DeleteLogoController;
 use VietVan\FlarumThemes\Extend\DiscussionAttributes;
 use VietVan\FlarumThemes\Extend\SettingAttributes;
 
@@ -27,7 +29,11 @@ return [
         ->post('/vietvan_ca_hero_background_image', 'vietvan-ca-themes.upload', UploadHeroBackgroundController::class)
         ->post('/vietvan_ca_hero_background_image_dark', 'vietvan-ca-themes.dark.upload', UploadHeroBackgroundController::class)
         ->delete('/vietvan_ca_hero_background_image', 'vietvan-ca-themes.delete', DeleteHeroBackgroundController::class)
-        ->delete('/vietvan_ca_hero_background_image_dark', 'vietvan-ca-themes.dark.delete', DeleteHeroBackgroundController::class),
+        ->delete('/vietvan_ca_hero_background_image_dark', 'vietvan-ca-themes.dark.delete', DeleteHeroBackgroundController::class)
+        ->post('/vietvan_ca_logo', 'vietvan-ca-themes.logo.upload', UploadLogoController::class)
+        ->post('/vietvan_ca_logo_dark', 'vietvan-ca-themes.logo.dark.upload', UploadLogoController::class)
+        ->delete('/vietvan_ca_logo', 'vietvan-ca-themes.logo.delete', DeleteLogoController::class)
+        ->delete('/vietvan_ca_logo_dark', 'vietvan-ca-themes.logo.dark.delete', DeleteLogoController::class),
 
     // Register extensions
     DiscussionAttributes::extend(),

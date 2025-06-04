@@ -44,5 +44,11 @@ vietvan-ca-flarum-themes:
         back-button-url-label: "Custom Back to Main Site URL"
         back-button-url-placeholder: "e.g., /all or https://vietvan.ca"
         back-button-url-help: "If set, the back button will navigate to this URL. Leave empty to hide the back button."
+      logo:
+        title: "Logo Settings"
+        logo-light-label: "Logo (For Light Mode)"
+        logo-light-help: "Upload your logo for the light color scheme. If no dark mode logo is set, this will be used as a fallback. If no logo is uploaded here, the Flarum default logo will be used."
+        logo-dark-label: "Logo (For Dark Mode)"
+        logo-dark-help: "Upload your logo for the dark color scheme. This will be displayed when dark mode is active."
 
     

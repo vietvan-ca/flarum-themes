@@ -4,7 +4,7 @@ namespace VietVan\FlarumThemes;
 
 use Illuminate\Contracts\Filesystem\Factory;
 
-class AddHeroImageUrlToApi
+class AddImageUrlToApi
 {
     /**
      * @var \Illuminate\Contracts\Filesystem\Filesystem

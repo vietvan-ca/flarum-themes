@@ -2,7 +2,7 @@
 
 namespace VietVan\FlarumThemes\Extend;
 
-use VietVan\FlarumThemes\AddHeroImageUrlToApi;
+use VietVan\FlarumThemes\AddImageUrlToApi;
 
 
 use Flarum\Extend;
@@ -23,9 +23,11 @@ class SettingAttributes
             ->serializeToForum('vietvan_ca_hero_title_vi', 'vietvan-ca-themes.hero_title_vi')
             ->serializeToForum('vietvan_ca_hero_description_en', 'vietvan-ca-themes.hero_description_en')
             ->serializeToForum('vietvan_ca_hero_description_vi', 'vietvan-ca-themes.hero_description_vi')
-            ->serializeToForum('vietvan_ca_hero_background_imageUrl', 'vietvan_ca_hero_background_image_path', AddHeroImageUrlToApi::class)
-            ->serializeToForum('vietvan_ca_hero_background_image_darkUrl', 'vietvan_ca_hero_background_image_dark_path', AddHeroImageUrlToApi::class)
+            ->serializeToForum('vietvan_ca_hero_background_imageUrl', 'vietvan_ca_hero_background_image_path', AddImageUrlToApi::class)
+            ->serializeToForum('vietvan_ca_hero_background_image_darkUrl', 'vietvan_ca_hero_background_image_dark_path', AddImageUrlToApi::class)
             ->serializeToForum('vietvan_ca_show_register_button', 'vietvan-ca-themes.show_register_button')
+            ->serializeToForum('vietvan_ca_logoUrl', 'vietvan_ca_logo_path', AddImageUrlToApi::class)
+            ->serializeToForum('vietvan_ca_logo_darkUrl', 'vietvan_ca_logo_dark_path', AddImageUrlToApi::class)
             ->serializeToForum('vietvan_ca_back_button_custom_url', 'vietvan-ca-themes.back_button_custom_url');
     }
 }

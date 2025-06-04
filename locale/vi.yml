@@ -44,3 +44,9 @@ vietvan-ca-flarum-themes:
         back-button-url-label: "URL tùy chỉnh Trở về Trang Chính"
         back-button-url-placeholder: "ví dụ: /all hoặc https://vietvan.ca"
         back-button-url-help: "Nếu được đặt, nút trở về sẽ điều hướng đến URL này. Để trống để ẩn nút trở về."
+      logo:
+        title: "Cài đặt Logo"
+        logo-light-label: "Logo (Cho Chế độ Sáng)"
+        logo-light-help: "Tải lên logo của bạn cho chế độ sáng. Nếu không có logo chế độ tối được đặt, logo này sẽ được sử dụng làm dự phòng. Nếu không tải lên logo ở đây, logo mặc định của Flarum sẽ được sử dụng."
+        logo-dark-label: "Logo (Cho Chế độ Tối)"
+        logo-dark-help: "Tải lên logo của bạn cho chế độ tối. Logo này sẽ được hiển thị khi chế độ tối được kích hoạt."
