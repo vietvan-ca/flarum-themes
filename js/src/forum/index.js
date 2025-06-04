@@ -10,25 +10,39 @@ import DiscussionListHeader from './components/DiscussionListHeader';
 import HeroSection from './components/HeroSection';
 import BackButton from './components/BackButton';
 import Logo from './components/Logo';
+import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 
 app.initializers.add('vietvan-ca-themes', () => {
+  // Utility function to find element by class path
+  const findElementByPath = (vnode, path) => {
+    let current = vnode;
+    
+    for (const className of path) {
+      if (!current?.children || !Array.isArray(current.children)) {
+        return null;
+      }
+      
+      const found = current.children.find(child => 
+        child?.attrs?.className?.includes(className)
+      );
+      
+      if (!found) return null;
+      current = found;
+    }
+    
+    return current;
+  };
+
   // Check for register button visibility using document events
-  // This ensures the DOM is fully loaded
   const checkRegisterButtonVisibility = () => {
     try {
-      // Make sure app.forum exists and is initialized
-      if (app.forum && app.forum.attribute) {
+      if (app.forum?.attribute) {
         const showRegisterButton = app.forum.attribute('vietvan_ca_show_register_button') === '1';
 
         if (!showRegisterButton) {
-          // remove the register button
           const registerButton = document.querySelector('.item-signUp');
-          if (registerButton) {
-            registerButton.remove();
-          }
+          registerButton?.remove();
         }
-      } else {
-        console.log('app.forum not ready yet');
       }
     } catch (error) {
       console.error('Error checking register button visibility:', error);
@@ -42,11 +56,8 @@ app.initializers.add('vietvan-ca-themes', () => {
       const darkLogoPath = app.forum.attribute('vietvan_ca_logo_darkUrl');
 
       if (lightLogoPath || darkLogoPath) {
-        // Remove the default logo
         const defaultLogo = document.querySelector('.Header-title');
-        if (defaultLogo) {
-          defaultLogo.remove();
-        }
+        defaultLogo?.remove();
       }
     } catch (error) {
       console.error('Error checking custom logo:', error);
@@ -59,19 +70,24 @@ app.initializers.add('vietvan-ca-themes', () => {
     checkCustomLogo();
   };
 
-  // Run once when the document is ready
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(runComponentChecks, 100);
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
+  // Initialize component checks
+  const initializeChecks = () => {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
       setTimeout(runComponentChecks, 100);
-    });
-  }
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(runComponentChecks, 100);
+      });
+    }
 
-  // Also run when route changes, which is when app.forum might be ready
-  app.history.initialized?.then(() => {
-    app.history.router.on('changed', runComponentChecks);
-  });
+    // Run when route changes
+    app.history.initialized?.then(() => {
+      app.history.router.on('changed', runComponentChecks);
+    });
+  };
+
+  // Initialize checks
+  initializeChecks();
 
   // Extend the HeaderPrimary component to replace the logo with a custom one
   extend(HeaderPrimary.prototype, 'items', function (items) {
@@ -79,14 +95,12 @@ app.initializers.add('vietvan-ca-themes', () => {
     const darkLogoPath = app.forum.attribute('vietvan_ca_logo_darkUrl');
 
     if (lightLogoPath || darkLogoPath) {
-      // Use the custom Logo component
       items.add('logo', <Logo />, 90);
     }
   });
 
   // Extend the HeaderPrimary component to add a custom button
   extend(HeaderPrimary.prototype, 'items', function (items) {
-    // Add back button with high priority to appear early in the header
     items.add('back-button', <BackButton />, 90);
   });
 
@@ -105,13 +119,28 @@ app.initializers.add('vietvan-ca-themes', () => {
     vnode.children = [m('ul.DiscussionList', [m(DiscussionListHeader), ...originalChildren])];
   });
 
-  // Extend the IndexPage component to add a hero section
+  // Extend the IndexPage component to add a hero section and custom tabs
   extend(IndexPage.prototype, 'view', function (vnode) {
-    const heroSection = m(HeroSection);
+    // Add HeroSection at the beginning
+    const heroSectionInstance = m(HeroSection);
     const originalChildren = vnode.children;
-    vnode.children = [heroSection, ...originalChildren];
+    vnode.children = [heroSectionInstance, ...originalChildren];
 
-    // Check visibility again when index page renders
-    setTimeout(checkRegisterButtonVisibility, 100);
+    // Create custom tabs instance
+    const customTabsInstance = <CustomDiscussionTabNavigation />;
+
+    // Find toolbar using optimized path traversal
+    const toolbarPath = ['container', 'sideNavContainer', 'IndexPage-results', 'IndexPage-toolbar', 'IndexPage-toolbar-view'];
+    const toolbarDiv = findElementByPath({ children: originalChildren }, toolbarPath);
+
+    if (toolbarDiv) {
+      // Replace toolbar content with custom tabs
+      toolbarDiv.children = [customTabsInstance];
+    } else {
+      console.warn('IndexPage-toolbar-view not found. CustomTabNavigation not added.');
+    }
+
+    // Run component checks after render
+    setTimeout(runComponentChecks, 100);
   });
 });
