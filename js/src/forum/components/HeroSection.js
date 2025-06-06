@@ -1,4 +1,5 @@
 import Component from 'flarum/common/Component';
+import Search from 'flarum/forum/components/Search';
 
 export default class HeroSection extends Component {
   oninit(vnode) {
@@ -54,6 +55,9 @@ export default class HeroSection extends Component {
             <p className="HeroSection-subtitle">{this.description}</p>
           </div>
         )}
+        <div className='container'>
+          <Search state={app.search} />{' '}
+        </div>
       </div>
     );
   }

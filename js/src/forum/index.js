@@ -5,6 +5,7 @@ import SettingsPage from 'flarum/forum/components/SettingsPage';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
+import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -100,9 +101,16 @@ app.initializers.add('vietvan-ca-themes', () => {
     }
   });
 
-  // Extend the HeaderPrimary component to add a custom button
-  extend(HeaderPrimary.prototype, 'items', function (items) {
-    items.add('back-button', <BackButton />, 90);
+  // Extend the HeaderPrimary component to add a custom button, for now it is disabled
+  // extend(HeaderPrimary.prototype, 'items', function (items) {
+  //   items.add('back-button', <BackButton />, 90);
+  // });
+
+  // Extend the HeaderSecondary component to remove the search component
+  extend(HeaderSecondary.prototype, 'items', function(items) {
+    if (items.has('search')) {
+      items.remove('search');
+    }
   });
 
   // Extend the DiscussionListItem component to use the custom row

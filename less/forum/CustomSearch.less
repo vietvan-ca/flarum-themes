@@ -1,0 +1,70 @@
+.Search {
+  width: 50%;
+  margin-right: auto;
+  margin-left: auto;
+}
+.Search input {
+  width: 100%;
+  font-size: 15px;
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
+  border-radius: 8px;
+  background-color: var(--body-bg);
+  border: 1px solid var(--muted-color);
+  color: var(--text-color) !important;
+}
+
+.Search-input:before {
+  padding-top: 11px !important;
+  padding-bottom: 11px !important;
+  padding-left: 4px !important;
+}
+
+.Search-clear {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+.Search.focused {
+  width: 50%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.Search.focused input,
+.Search-results {
+  width: 100% !important;
+}
+
+.Search input::placeholder {
+  color: var(--muted-color) !important;
+}
+
+.Search input:focus {
+  border: 1px solid var(--primary-color) !important; /* Ubah warna border, tapi jaga lebarnya tetap 1px */
+  outline: 1px solid var(--primary-color) !important; /* Tambahkan outline yang terlihat seperti border tambahan */
+}
+
+/* For better browser support, you might also want to include: */
+.Search input::-webkit-input-placeholder {
+  color: var() !important;
+}
+
+.Search input::-moz-placeholder {
+  color: var(--muted-color) !important;
+}
+
+.Search input:-ms-input-placeholder {
+  color: var(--muted-color) !important;
+}
+
+@media (max-width: 480px) {
+  .Search {
+    width: 85%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .Search input {
+    font-size: 12px;
+  }
+}

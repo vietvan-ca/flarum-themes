@@ -1,6 +1,5 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
-import Link from 'flarum/common/components/Link';
 
 export default class Logo extends Component {
   oninit(vnode) {
@@ -13,15 +12,14 @@ export default class Logo extends Component {
     const logoAttr = mode === 'dark' ? 'vietvan_ca_logo_darkUrl' : 'vietvan_ca_logoUrl';
     const logoUrl = app.forum.attribute(logoAttr);
 
-    if (!logoUrl) return null; 
+    if (!logoUrl) return null;
+
+    const customUrl = app.forum.attribute('vietvan_ca_back_button_custom_url') || app.route('index');
 
     return (
-      <Link href={app.route('index')} className="Header-logo CustomHeaderLogo">
-        <img
-          src={logoUrl}
-          alt={'VietVan CA'}
-        />
-      </Link>
+      <a href={customUrl} className="Header-logo CustomHeaderLogo">
+        <img src={logoUrl} alt={'VietVan CA'} />
+      </a>
     );
   }
 }

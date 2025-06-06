@@ -3,8 +3,9 @@
   text-align: center;
   background: var(--body-bg);
   border-bottom: 1px solid var(--control-bg);
-  height: 300px; /* Fixed height to give space for the full image */
+  height: 275px; /* Fixed height to give space for the full image */
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
@@ -17,6 +18,7 @@
   .HeroSection-title {
     font-size: 32px;
     font-weight: bold;
+    margin-top: 0;
     margin-bottom: 10px;
   }
 
@@ -40,12 +42,20 @@
 
   @media (max-width: 480px) {
     .HeroSection-title {
-      font-size: 18px;
+      font-size: 24px !important;
       margin-bottom: 6px;
     }
     
     .HeroSection-subtitle {
-      font-size: 13px;
+      font-size: 14px;
     }
   }
 }
+
+@media (max-width: 480px) {
+    .HeroSection {
+      padding: 20px 10px !important;
+      height: 250px; /* Reduced height for smaller screens */
+    }
+   
+  }
