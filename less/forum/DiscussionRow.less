@@ -65,43 +65,32 @@
 
 .discussion-reply,
 .discussion-view,
-.discussion-work {
+.discussion-activity {
   width: 80px;
   font-size: 14px;
   color: var(--heading-color);
-
   justify-content: center;
-  text-align: center;
-}
-
-.time-since {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--heading-color);
-
-  margin-bottom: 5px;
   text-align: center;
 }
 
 .active-users {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  min-width: 80px; /* Minimum width to accommodate at least 3 avatars */
+  max-width: 96px; /* Allows for 3 avatars (30px + 2px margin each) */
+  gap: 2px; /* Consistent spacing between avatars */
 }
 
 .user-avatar {
   position: relative;
-  margin-left: -8px;
   border-radius: 50%;
   overflow: hidden;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   flex: none;
   border: 0.5px solid var(--neutral-50);
   display: inline-block;
-}
-
-.user-avatar:first-child {
-  margin-left: 0;
 }
 
 .avatar-image {
@@ -152,9 +141,9 @@
 }
 
 .Discussion-icon.sticky {
-  color: #e67e22; // or your preferred color for sticky
+  color: #e67e22;
 }
 
 .Discussion-icon.locked {
-  color: #c0392b; // or your preferred color for locked
+  color: #c0392b;
 }

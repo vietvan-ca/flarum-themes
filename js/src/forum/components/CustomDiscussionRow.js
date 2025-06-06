@@ -5,6 +5,7 @@ import TopicColumn from './TopicColumn';
 import ReplyColumn from './ReplyColumn';
 import ViewColumn from './ViewColumn';
 import ActivityColumn from './ActivityColumn';
+import LastUsersColumn from './LastUsersColumn';
 
 /**
  * The main row component for discussions in the discussion list
@@ -18,6 +19,7 @@ export default class CustomDiscussionRow extends Component {
       href: app.route.discussion(discussion),
     }, [
       m(TopicColumn, { discussion }),
+      m(LastUsersColumn, { discussion }),
       m(ReplyColumn, { discussion }),
       m(ViewColumn, { discussion }),
       m(ActivityColumn, { discussion }),
