@@ -2,14 +2,14 @@
     :root {
         --primary-color: #c22126;
         --secondary-color: #555;
-        --body-bg: #393b3d;
+        --body-bg: rgb(31, 35, 38);
         --body-bg-shaded: #0e1115;
         --body-bg-light: #1f252e;
         --body-bg-faded: rgba(20,25,31,0.93);
         --text-color: #ddd;
         --link-color: #d83e3e;
         --heading-color: #ddd;
-        --muted-color: #a6a6a6;
+        --muted-color: rgb(165.75, 165.75, 165.75);
         --muted-color-light: #8a97a8;
         --muted-color-dark: #000;
         --shadow-color: rgba(0,0,0,0.5);
@@ -21,7 +21,7 @@
         --text-on-dark: #fff;
         --text-on-light: #1a1a1a;
         --yiq-threshold: 108;
-        --header-bg: #34363a;
+        --header-bg: #333639;
         --header-color: #c22126;
         --header-control-bg: #1b2028;
         --header-control-color: #6c7d93;
@@ -50,11 +50,11 @@
         --tooltip-color: #fff;
         --online-user-circle-color: #7fba00;
         --discussion-title-color: #838587;
-        --discussion-list-item-bg-hover: #212327;
-        --button-color: #6c7d93;
-        --button-bg: #1b2028;
-        --button-bg-hover: #101418;
-        --button-bg-active: #060709;
+        --discussion-list-item-bg-hover: #333639;
+        --button-color: #fff;
+        --button-bg: #c22126;
+        --button-bg-hover: #c22126;
+        --button-bg-active: #c22126;
         --button-bg-disabled: #1b2028;
         --button-primary-color: #14191f;
         --button-primary-bg: #c22126;
@@ -106,5 +106,9 @@
         --screen-desktop: 992px;
         --screen-desktop-max: 1099.98px;
         --screen-desktop-hd: 1100px
+    }
+
+    .LinksButton-title{
+        color: var(--text-color) !important;
     }
 }
