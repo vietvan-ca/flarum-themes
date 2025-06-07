@@ -147,3 +147,70 @@
 .Discussion-icon.locked {
   color: #c0392b;
 }
+
+@media (max-width: 767px) {
+  /* 1. Set the main container to wrap the rows */
+  .discussion-row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 15px 0;
+  }
+
+  /* 2. Topic column takes full width as the first row */
+  .discussion-topic {
+    flex-basis: 100%;
+    order: 1; /* Becomes the first row */
+    padding-bottom: 10px; /* Spacing to the statistics row */
+  }
+
+  /* 3. Reorder visual arrangement for items in the second row */
+  .discussion-reply,
+  .discussion-view,
+  .discussion-activity {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    color: var(--muted-color);
+    font-size: 14px;
+    width: auto; /* Let width be automatic */
+    
+    /* Place this statistics group in second order (leftmost) */
+    order: 2; 
+  }
+
+  /* 4. Move avatar column to the last visual order */
+  .discussion-users {
+    display: flex;
+    align-items: center;
+
+    /* Make avatar column the last order (rightmost) */
+    order: 3; 
+
+    /* Push this last-order item to the right */
+    margin-left: auto; 
+  }
+
+  /* 5. Styling for statistics icons */
+  .discussion-reply::before,
+  .discussion-view::before,
+  .discussion-activity::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 5px;
+  }
+  
+  .discussion-reply::before { content: "\f3e5"; } /* fa-comment-dots */
+  .discussion-view::before { content: "\f06e"; }  /* fa-eye */
+  .discussion-activity::before { content: "\f017"; } /* fa-clock */
+  
+  /* 6. Avatar styling to keep it tidy */
+  .active-users {
+    justify-content: flex-end;
+    max-width: fit-content;
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+  }
+}

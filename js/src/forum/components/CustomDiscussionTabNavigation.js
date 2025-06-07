@@ -36,18 +36,20 @@ export default class CustomDiscussionTabNavigation extends Component {
   }
 
   navigateTo(tab) {
-    const params = { ...app.search.params }; // Copy current search parameter
+    // 1. Get the current URL path (e.g., /t/general?sort=newest)
+    const currentPath = m.route.get();
 
-    if (tab.routeName) {
-      m.route.set(app.route(tab.routeName));
-    } else if (tab.isFilter) {
-      params.q = tab.filterParam;
-      delete params.sort; // Delete sort if change to specific filter
-      m.route.set(app.route(app.current.get('routeName'), params));
-    } else {
-      params.sort = tab.sortParam;
-      delete params.q; // Delete filter 'q' if change to sort
-      m.route.set(app.route(app.current.get('routeName'), params));
+    // 2. Remove any existing query parameters by splitting the string at the '?'
+    const basePath = currentPath.split('?')[0]; // Result: /t/general
+
+    // 3. Build the new URL path string
+    let newPath = basePath;
+    if (!tab.default) {
+      // Add the sort parameter if this tab is not the default one
+      newPath += '?sort=' + tab.sortParam;
     }
+
+    // 4. Use m.route.set() to navigate to the new URL without a full page reload
+    m.route.set(newPath);
   }
 }
