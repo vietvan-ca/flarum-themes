@@ -45,6 +45,12 @@ vietvan-ca-flarum-themes:
         background-image-help: "Upload a background image for the hero section."
         background-image-dark-label: "Background Image (Dark Mode)"
         background-image-dark-help: "Upload a background image for the hero section in dark mode."
+        enable-custom-color-label: "Enable Custom Text Colors"
+        enable-custom-color-help: "If enabled, you can set custom colors for the title and description. If disabled, default theme colors will be used."
+        title-color-label: "Title Text Color"
+        title-color-help: "Choose a color for the hero banner title text."
+        description-color-label: "Description Text Color"
+        description-color-help: "Choose a color for the hero banner description text."
       header:
         title: "Header Settings"
         show-register-button-label: "Show Register Button"

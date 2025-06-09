@@ -21,6 +21,19 @@ export default class HeroSection extends Component {
     // show or hide text overlay?
     this.showText = forum.attribute('vietvan_ca_hero_show_text') === '1';
 
+    // has custom text color?
+    this.hasCustomColor = forum.attribute('vietvan_ca_hero_custom_color_enabled') === '1';
+    this.titleStyle = {};
+    this.descriptionStyle = {};
+
+    if (this.hasCustomColor) {
+      const titleColor = forum.attribute('vietvan_ca_hero_title_color') || '#ffffff';
+      const subtitleColor = forum.attribute('vietvan_ca_hero_subtitle_color') || '#ffffff';
+
+      this.titleStyle = { color: titleColor };
+      this.descriptionStyle = { color: subtitleColor };
+    }
+
     // pick light vs dark background
     const mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
     const bgAttr = mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
@@ -34,7 +47,7 @@ export default class HeroSection extends Component {
           backgroundPosition: 'center',
           backgroundSize: '100% auto', // Width 100%, height auto to maintain aspect ratio
           backgroundRepeat: 'no-repeat',
-          height: '20vh'
+          height: '20vh',
         }
       : undefined;
   }
@@ -51,11 +64,15 @@ export default class HeroSection extends Component {
       <div className="HeroSection" style={this.style}>
         {this.showText && (
           <div className="container">
-            <h1 className="HeroSection-title">{this.title}</h1>
-            <p className="HeroSection-subtitle">{this.description}</p>
+            <h1 className="HeroSection-title" style={this.titleStyle}>
+              {this.title}
+            </h1>
+            <p className="HeroSection-subtitle" style={this.descriptionStyle}>
+              {this.description}
+            </p>
           </div>
         )}
-        <div className='container'>
+        <div className="container">
           <Search state={app.search} />{' '}
         </div>
       </div>

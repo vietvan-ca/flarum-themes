@@ -10,6 +10,7 @@ export default class ThemeSettingsPage extends ExtensionPage {
     // Get the current status of the hero banner toggle
     const isHeroBannerEnabled = this.setting('vietvan-ca-themes.hero_banner_enabled')() === '1';
     const isTextVisible = this.setting('vietvan-ca-themes.show_hero_text')() === '1';
+    const isCustomColorEnabled = this.setting('vietvan-ca-themes.hero_custom_color_enabled')() === '1'; // State for custom color switch
 
     return (
       <div className="ThemeSettingsPage">
@@ -82,6 +83,51 @@ export default class ThemeSettingsPage extends ExtensionPage {
                         'When enabled, the title and description will be displayed on top of the banner image.'}
                     </div>
                   </div>
+
+                   {/* New switch for enabling custom colors */}
+                  <div className="Form-group">
+                    <Switch
+                      state={isCustomColorEnabled}
+                      onchange={(value) => {
+                        this.setting('vietvan-ca-themes.hero_custom_color_enabled')(value ? '1' : '0');
+                      }}
+                    >
+                      {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.enable-custom-color-label') || 'Enable Custom Text Colors'}
+                    </Switch>
+                    <div className="helpText">
+                      {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.enable-custom-color-help') || 'If disabled, default theme colors will be used.'}
+                    </div>
+                  </div>
+                  {/* New switch */}
+
+                  {/* Conditional rendering for color pickers */}
+                  {isCustomColorEnabled && (
+                    <div className="ThemeSettingsPage-grid">
+                      <div className="Form-group">
+                        <label>{app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.title-color-label') || 'Title Text Color'}</label>
+                        <input
+                          className="FormControl"
+                          type="color"
+                          bidi={this.setting('vietvan-ca-themes.hero_title_color')}
+                          />
+                        <div className="helpText">
+                          {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.title-color-help') || 'Choose a color for the hero banner title text.'}
+                        </div>
+                      </div>
+                      <div className="Form-group">
+                        <label>{app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.description-color-label') || 'Description Text Color'}</label>
+                        <input
+                          className="FormControl"
+                          type="color"
+                          bidi={this.setting('vietvan-ca-themes.hero_description_color')}
+                        />
+                        <div className="helpText">
+                          {app.translator.trans('vietvan-ca-flarum-themes.admin.settings.hero.description-color-help') || 'Choose a color for the hero banner description text.'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Conditional rendering */}
 
                   <div className="ThemeSettingsPage-grid">
                     {locales.map((code) => (

@@ -37,6 +37,12 @@ vietvan-ca-flarum-themes:
         background-image-help: "Tải lên một hình nền cho phần hero."
         background-image-dark-label: "Hình nền (Chế độ tối)"
         background-image-dark-help: "Tải lên một hình nền cho phần hero trong chế độ tối."
+        enable-custom-color-label: "Kích hoạt màu văn bản tùy chỉnh"
+        enable-custom-color-help: "Nếu được kích hoạt, bạn có thể đặt màu tùy chỉnh cho tiêu đề và mô tả. Nếu không, sẽ sử dụng màu mặc định của giao diện."
+        title-color-label: "Color Tiêu đề Văn bản"
+        title-color-help: "Chọn một màu cho văn bản tiêu đề của phần hero."
+        description-color-label: "Màu Văn bản Mô tả"
+        description-color-help: "Chọn một màu cho văn bản mô tả của phần hero."
       header:
         title: "Cài đặt tiêu đề"
         show-register-button-label: "Hiển thị nút Đăng ký"
