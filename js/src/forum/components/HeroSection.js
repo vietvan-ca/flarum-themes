@@ -33,19 +33,19 @@ export default class HeroSection extends Component {
       this.titleStyle = { color: titleColor };
       this.descriptionStyle = { color: subtitleColor };
     }
+  }
 
-    // pick light vs dark background
+  getBackgroundStyle() {
+    const forum = app.forum;
     const mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
     const bgAttr = mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
-
     const bgUrl = forum.attribute(bgAttr);
 
-    // prebuild the style object with proper background sizing
-    this.style = bgUrl
+    return bgUrl
       ? {
           backgroundImage: `url(${bgUrl})`,
           backgroundPosition: 'center',
-          backgroundSize: 'cover', // Cover the entire container while maintaining aspect ratio
+          backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           height: '30vh',
         }
@@ -60,8 +60,11 @@ export default class HeroSection extends Component {
     const currentPath = window.location.pathname;
     if (currentPath !== '/' && currentPath !== '') return null;
 
+    // Get background style dynamically on each render
+    const backgroundStyle = this.getBackgroundStyle();
+
     return (
-      <div className="HeroSection" style={this.style}>
+      <div className="HeroSection" style={backgroundStyle}>
         {this.showText && (
           <div className="container">
             <h1 className="HeroSection-title" style={this.titleStyle}>
