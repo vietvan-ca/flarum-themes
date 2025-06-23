@@ -154,7 +154,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   });
 
   // Adding scale font size feature
-  let currentScale = 1.02;
+  let currentScale = 1.05;
 
   // Apply initial font zoom
   applyFontZoom(currentScale);

@@ -45,9 +45,9 @@ export default class HeroSection extends Component {
       ? {
           backgroundImage: `url(${bgUrl})`,
           backgroundPosition: 'center',
-          backgroundSize: '100% auto', // Width 100%, height auto to maintain aspect ratio
+          backgroundSize: 'cover', // Cover the entire container while maintaining aspect ratio
           backgroundRepeat: 'no-repeat',
-          height: '20vh',
+          height: '30vh',
         }
       : undefined;
   }
