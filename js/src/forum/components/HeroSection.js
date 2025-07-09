@@ -47,7 +47,7 @@ export default class HeroSection extends Component {
           backgroundPosition: 'center',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
-          height: '30vh',
+          height: '35vh',
         }
       : undefined;
   }
