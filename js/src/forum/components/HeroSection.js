@@ -10,6 +10,13 @@ export default class HeroSection extends Component {
     this.enabled = forum.attribute('vietvan_ca_hero_enabled') === '1';
     if (!this.enabled) return;
 
+    // Initialize mode from session as fallback
+    this.mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
+
+    if (flarum.extensions['fof-nightmode']) {
+      this.setupNightModeListener();
+    }
+
     // locale-specific text
     this.locale = app.translator.getLocale() || 'en';
     const titleKey = `vietvan_ca_hero_title_${this.locale}`;
@@ -35,10 +42,17 @@ export default class HeroSection extends Component {
     }
   }
 
+  setupNightModeListener() {
+    document.addEventListener('fofnightmodechange', (event) => {
+      this.mode = event.detail === 'day' ? 'light' : 'dark';
+      console.log('Hero mode changed to:', this.mode);
+      m.redraw();
+    });
+  }
+
   getBackgroundStyle() {
     const forum = app.forum;
-    const mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
-    const bgAttr = mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
+    const bgAttr = this.mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
     const bgUrl = forum.attribute(bgAttr);
 
     return bgUrl
