@@ -187,9 +187,6 @@ function applyFontZoom(scale) {
     .Form-group label,
     .Form-group input,
     .Form-group textarea,
-    .Button,
-    .Button-label,
-    .Button-badge,
     .TagLabel,
     .Badge {
       font-size: ${scale}em !important;
