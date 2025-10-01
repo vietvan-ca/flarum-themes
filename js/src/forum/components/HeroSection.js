@@ -10,33 +10,23 @@ export default class HeroSection extends Component {
     this.enabled = forum.attribute('vietvan_ca_hero_enabled') === '1';
     if (!this.enabled) return;
 
-    // Initialize mode from user preferences or cookie
-    if (app.session.user) {
-      // User is logged in - use preferences
-      this.mode = app.session.user.preferences().fofNightMode === 2 ? 'dark' : 'light';
-    } else {
-      // User is not logged in - use cookie
-      const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('flarum_nightmode='))
-        ?.split('=')[1];
-      
-      if (cookieValue === '2') {
-        this.mode = 'dark';
-      } else if (cookieValue === '1') {
-        this.mode = 'light';
-      } else if (cookieValue === '0') {
-        // System preference
-        this.mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      } else {
-        // Default to light if no cookie or invalid value
-        this.mode = 'light';
-      }
-    }
+    // Compute initial mode
+    this.mode = this.computeMode();
 
+    // Setup listeners
     if (flarum.extensions['fof-nightmode']) {
       this.setupNightModeListener();
     }
+    this.setupSystemModeListener();
+
+    // Re-check mode after a short delay (in case FoF extension hasn't initialized yet)
+    setTimeout(() => {
+      const newMode = this.computeMode();
+      if (newMode !== this.mode) {
+        this.mode = newMode;
+        m.redraw();
+      }
+    }, 100);
 
     // locale-specific text
     this.locale = app.translator.getLocale() || 'en';
@@ -63,18 +53,74 @@ export default class HeroSection extends Component {
     }
   }
 
+  computeMode() {
+    // Check if user is logged in
+    const user = app.session.user;
+    
+    if (user) {
+      // Logged in: use user preference from FoF Night Mode
+      const pref = user.preferences().fofNightMode;
+      if (pref === '2') return 'dark';
+      if (pref === '1') return 'light';
+      if (pref === '0') {
+        // System preference for logged-in user
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return 'light';
+    }
+
+    // Guest: check cookie
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('flarum_nightmode='))
+      ?.split('=')[1];
+
+    if (cookieValue === '2') return 'dark';
+    if (cookieValue === '1') return 'light';
+    if (cookieValue === '0' || !cookieValue) {
+      // System preference
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    // Default
+    return 'light';
+  }
+
   setupNightModeListener() {
-    document.addEventListener('fofnightmodechange', (event) => {
+    this.nightModeHandler = (event) => {
       this.mode = event.detail === 'day' ? 'light' : 'dark';
       m.redraw();
-    });
+    };
+    document.addEventListener('fofnightmodechange', this.nightModeHandler);
+  }
+
+  setupSystemModeListener() {
+    // Listen to OS-level dark mode changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    this.systemModeHandler = (e) => {
+      const newMode = this.computeMode();
+      if (newMode !== this.mode) {
+        this.mode = newMode;
+        m.redraw();
+      }
+    };
+    mediaQuery.addEventListener('change', this.systemModeHandler);
+  }
+
+  onremove() {
+    // Clean up listeners
+    if (this.nightModeHandler) {
+      document.removeEventListener('fofnightmodechange', this.nightModeHandler);
+    }
+    if (this.systemModeHandler) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.removeEventListener('change', this.systemModeHandler);
+    }
   }
 
   getBackgroundStyle() {
     const forum = app.forum;
     const bgAttr = this.mode === 'dark' ? 'vietvan_ca_hero_background_image_darkUrl' : 'vietvan_ca_hero_background_imageUrl';
     const bgUrl = forum.attribute(bgAttr);
-
 
     return bgUrl
       ? {
@@ -111,7 +157,7 @@ export default class HeroSection extends Component {
           </div>
         )}
         <div className="container">
-          <Search state={app.search} />{' '}
+          <Search state={app.search} />
         </div>
       </div>
     );
