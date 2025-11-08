@@ -18,6 +18,7 @@ export default class HeroSection extends Component {
       this.setupNightModeListener();
     }
     this.setupSystemModeListener();
+    this.setupBodyClassObserver();
 
     // Re-check mode after a short delay (in case FoF extension hasn't initialized yet)
     setTimeout(() => {
@@ -54,15 +55,22 @@ export default class HeroSection extends Component {
   }
 
   computeMode() {
+    // First, check if FoF Night Mode is active by checking the body class
+    // This is the most reliable way to detect actual dark mode state
+    if (document.body.classList.contains('flarum--night')) {
+      return 'dark';
+    }
+    
     // Check if user is logged in
     const user = app.session.user;
     
     if (user) {
       // Logged in: use user preference from FoF Night Mode
       const pref = user.preferences().fofNightMode;
-      if (pref === '2') return 'dark';
-      if (pref === '1') return 'light';
-      if (pref === '0') {
+      // FoF Night Mode stores as integers: 0 = auto, 1 = light, 2 = dark
+      if (pref === 2 || pref === '2') return 'dark';
+      if (pref === 1 || pref === '1') return 'light';
+      if (pref === 0 || pref === '0' || pref === null || pref === undefined) {
         // System preference for logged-in user
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       }
@@ -106,6 +114,22 @@ export default class HeroSection extends Component {
     mediaQuery.addEventListener('change', this.systemModeHandler);
   }
 
+  setupBodyClassObserver() {
+    // Watch for changes to body class (when FoF Night Mode toggles)
+    this.bodyObserver = new MutationObserver(() => {
+      const newMode = this.computeMode();
+      if (newMode !== this.mode) {
+        this.mode = newMode;
+        m.redraw();
+      }
+    });
+    
+    this.bodyObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+
   onremove() {
     // Clean up listeners
     if (this.nightModeHandler) {
@@ -114,6 +138,9 @@ export default class HeroSection extends Component {
     if (this.systemModeHandler) {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       mediaQuery.removeEventListener('change', this.systemModeHandler);
+    }
+    if (this.bodyObserver) {
+      this.bodyObserver.disconnect();
     }
   }
 
