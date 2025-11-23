@@ -1,42 +1,41 @@
-
-// Move drawer to the right side
-#drawer.App-drawer {
-  left: auto !important;
-  right: 0 !important;
-  transform: translateX(100%);
-  transition: transform 0.3s;
-
-  &.in {
-    transform: translateX(0);
-  }
-}
-
-// When drawer is open
-.drawerOpen {
-  #drawer.App-drawer {
-    transform: translateX(0);
-  }
-}
-
-// Animation states
-.drawer-enter {
-  transform: translateX(100%) !important;
-}
-
-.drawer-enter-active {
-  transform: translateX(0) !important;
-}
-
-.drawer-exit {
-  transform: translateX(0) !important;
-}
-
-.drawer-exit-active {
-  transform: translateX(100%) !important;
-}
-
 // Ensure it works on mobile
 @media (max-width: 768px) {
+  // Move drawer to the right side
+  #drawer.App-drawer {
+    left: auto !important;
+    right: 0 !important;
+    transform: translateX(100%);
+    transition: transform 0.3s;
+
+    &.in {
+      transform: translateX(0);
+    }
+  }
+
+  // When drawer is open
+  .drawerOpen {
+    #drawer.App-drawer {
+      transform: translateX(0);
+    }
+  }
+
+  // Animation states
+  .drawer-enter {
+    transform: translateX(100%) !important;
+  }
+
+  .drawer-enter-active {
+    transform: translateX(0) !important;
+  }
+
+  .drawer-exit {
+    transform: translateX(0) !important;
+  }
+
+  .drawer-exit-active {
+    transform: translateX(100%) !important;
+  }
+
   .App-drawer {
     left: auto !important;
     right: 0 !important;

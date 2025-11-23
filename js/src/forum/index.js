@@ -12,6 +12,7 @@ import HeroSection from './components/HeroSection';
 import BackButton from './components/BackButton';
 import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
+import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // Utility function to find element by class path
@@ -127,6 +128,9 @@ app.initializers.add('vietvan-ca-themes', () => {
     const originalChildren = vnode.children;
     vnode.children = [heroSectionInstance, ...originalChildren];
 
+    // Create custom mobile discussion toolbar instance
+    const customMobileDiscussionToolbarInstance = <CustomMobileDiscussionToolbar />;
+
     // Create custom tabs instance
     const customTabsInstance = <CustomDiscussionTabNavigation />;
 
@@ -136,7 +140,7 @@ app.initializers.add('vietvan-ca-themes', () => {
 
     if (toolbarDiv) {
       // Replace toolbar content with custom tabs
-      toolbarDiv.children = [customTabsInstance];
+      toolbarDiv.children = [customMobileDiscussionToolbarInstance, customTabsInstance];
     } else {
       console.warn('IndexPage-toolbar-view not found. CustomTabNavigation not added.');
     }
@@ -187,6 +191,16 @@ app.initializers.add('vietvan-ca-themes', () => {
       }
     }
   };
+
+  extend(IndexPage.prototype, 'onremove', function () {
+    const navElement = document.getElementById('app-navigation');
+    const logoElement = navElement?.querySelector('.Navigation-logo');
+    
+    if (logoElement) {
+      m.mount(logoElement, null); // Unmount the component
+      logoElement.remove();
+    }
+  });
 
   // Adding scale font size feature
   let currentScale = 1.05;

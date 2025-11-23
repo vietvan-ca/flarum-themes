@@ -1,9 +1,8 @@
 // Mobile toolbar - only visible on mobile
 .CustomMobileDiscussionToolbar {
   display: none; // Hidden by default (desktop)
-  position: absolute;
-  bottom: 0;
-  padding: 0 10px !important;
+  border-bottom: 1px solid var(--control-bg);
+  padding-bottom: 10px !important;
 
   @media (max-width: 768px) {
     display: flex;
@@ -13,7 +12,7 @@
     padding: 0;
     margin-bottom: 0.5rem;
 
-    // Left side container (date + dropdown)
+    // Left side container
     &-left {
       display: flex;
       align-items: center;
@@ -66,14 +65,10 @@
     }
   }
 
-  // Extra small screens - adjust date font
+  // Extra small screens
   @media (max-width: 480px) {
-    &-date {
-      font-size: 11px;
-    }
-
     &-left {
-      gap: 8px;
+      gap: 2px;
     }
   }
 }
@@ -113,12 +108,16 @@
   }
 
   // Position App-backControl only if it also has Navigation class
+  // make it right if it has children Navigation-drawer
   .Navigation.App-backControl {
-    position: absolute !important;
+    
+    &:has(.Navigation-drawer) {
+      position: absolute !important;
     right: 0 !important;
     left: auto !important;
     margin-left: auto !important;
     transform: none !important;
+    }
   }
 
   // Ensure parent container has relative positioning for absolute children
