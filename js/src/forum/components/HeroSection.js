@@ -1,5 +1,6 @@
 import Component from 'flarum/common/Component';
 import Search from 'flarum/forum/components/Search';
+import CustomMobileDiscussionToolbar from './CustomMobileDiscussionToolbar';
 
 export default class HeroSection extends Component {
   oninit(vnode) {
@@ -151,11 +152,13 @@ export default class HeroSection extends Component {
 
     return bgUrl
       ? {
-          backgroundImage: `url(${bgUrl})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
           height: '35vh',
+          '@media (max-width: 768px)': {
+            backgroundImage: `url(${bgUrl})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          },
         }
       : undefined;
   }
@@ -186,6 +189,7 @@ export default class HeroSection extends Component {
         <div className="container">
           <Search state={app.search} />
         </div>
+        <CustomMobileDiscussionToolbar />
       </div>
     );
   }
