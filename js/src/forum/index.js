@@ -1,7 +1,6 @@
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
-import SettingsPage from 'flarum/forum/components/SettingsPage';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
@@ -13,25 +12,24 @@ import HeroSection from './components/HeroSection';
 import BackButton from './components/BackButton';
 import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
+import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // Utility function to find element by class path
   const findElementByPath = (vnode, path) => {
     let current = vnode;
-    
+
     for (const className of path) {
       if (!current?.children || !Array.isArray(current.children)) {
         return null;
       }
-      
-      const found = current.children.find(child => 
-        child?.attrs?.className?.includes(className)
-      );
-      
+
+      const found = current.children.find((child) => child?.attrs?.className?.includes(className));
+
       if (!found) return null;
       current = found;
     }
-    
+
     return current;
   };
 
@@ -101,13 +99,8 @@ app.initializers.add('vietvan-ca-themes', () => {
     }
   });
 
-  // Extend the HeaderPrimary component to add a custom button, for now it is disabled
-  // extend(HeaderPrimary.prototype, 'items', function (items) {
-  //   items.add('back-button', <BackButton />, 90);
-  // });
-
   // Extend the HeaderSecondary component to remove the search component
-  extend(HeaderSecondary.prototype, 'items', function(items) {
+  extend(HeaderSecondary.prototype, 'items', function (items) {
     if (items.has('search')) {
       items.remove('search');
     }
@@ -135,6 +128,9 @@ app.initializers.add('vietvan-ca-themes', () => {
     const originalChildren = vnode.children;
     vnode.children = [heroSectionInstance, ...originalChildren];
 
+    // Create custom mobile discussion toolbar instance
+    const customMobileDiscussionToolbarInstance = <CustomMobileDiscussionToolbar />;
+
     // Create custom tabs instance
     const customTabsInstance = <CustomDiscussionTabNavigation />;
 
@@ -144,13 +140,66 @@ app.initializers.add('vietvan-ca-themes', () => {
 
     if (toolbarDiv) {
       // Replace toolbar content with custom tabs
-      toolbarDiv.children = [customTabsInstance];
+      toolbarDiv.children = [customMobileDiscussionToolbarInstance, customTabsInstance];
     } else {
       console.warn('IndexPage-toolbar-view not found. CustomTabNavigation not added.');
     }
 
     // Run component checks after render
     setTimeout(runComponentChecks, 100);
+  });
+
+  // Add mobile logo using DOM manipulation
+  extend(IndexPage.prototype, 'oncreate', function () {
+    const lightLogoPath = app.forum.attribute('vietvan_ca_logoUrl');
+    const darkLogoPath = app.forum.attribute('vietvan_ca_logo_darkUrl');
+
+    if (lightLogoPath || darkLogoPath) {
+      this.addMobileLogo();
+    }
+  });
+
+  extend(IndexPage.prototype, 'onupdate', function () {
+    const lightLogoPath = app.forum.attribute('vietvan_ca_logoUrl');
+    const darkLogoPath = app.forum.attribute('vietvan_ca_logo_darkUrl');
+
+    if (lightLogoPath || darkLogoPath) {
+      this.addMobileLogo();
+    }
+  });
+
+  // Add method to IndexPage prototype
+  IndexPage.prototype.addMobileLogo = function () {
+    const navElement = document.getElementById('app-navigation');
+
+    if (navElement && !navElement.querySelector('.Navigation-logo')) {
+      // Create logo container
+      const logoDiv = document.createElement('div');
+      logoDiv.className = 'Navigation-logo Mobile-only';
+
+      // Mount Logo component into the div
+      m.mount(logoDiv, {
+        view: () => m(Logo, { imageStyle: { height: '30px' } }),
+      });
+
+      // Insert at the beginning of navigation (before App-backControl)
+      const backControl = navElement.querySelector('.App-backControl');
+      if (backControl) {
+        navElement.insertBefore(logoDiv, backControl);
+      } else {
+        navElement.insertBefore(logoDiv, navElement.firstChild);
+      }
+    }
+  };
+
+  extend(IndexPage.prototype, 'onremove', function () {
+    const navElement = document.getElementById('app-navigation');
+    const logoElement = navElement?.querySelector('.Navigation-logo');
+    
+    if (logoElement) {
+      m.mount(logoElement, null); // Unmount the component
+      logoElement.remove();
+    }
   });
 
   // Adding scale font size feature
@@ -170,7 +219,7 @@ function applyFontZoom(scale) {
   // Create new style element
   const style = document.createElement('style');
   style.id = 'font-zoom-style';
-  
+
   // Apply zoom to various elements
   style.textContent = `
     .App {
@@ -206,9 +255,9 @@ function applyFontZoom(scale) {
       font-size: ${scale * 0.875}em !important;
     }
   `;
-  
+
   document.head.appendChild(style);
-  
+
   // Store for guests as mitigate if improved
   localStorage.setItem('flarum-font-zoom-scale', scale.toString());
 }

@@ -1,0 +1,134 @@
+// Mobile toolbar - only visible on mobile
+.CustomMobileDiscussionToolbar {
+  display: none; // Hidden by default (desktop)
+  border-bottom: 1px solid var(--control-bg);
+  padding-bottom: 10px !important;
+
+  @media (max-width: 768px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 0.5rem;
+
+    // Left side container
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0; // Allow flex items to shrink
+    }
+
+    // Dropdown styling
+    .App-titleControl {
+      flex: 0 1 auto;
+      min-width: 0;
+
+      .Dropdown-toggle {
+        justify-content: flex-start;
+      }
+    }
+
+    // Icon-only button styling
+    .CustomMobileDiscussionToolbar-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      min-width: auto;
+      flex-shrink: 0;
+
+      // Hide button label if it exists
+      .Button-label {
+        display: none;
+      }
+
+      // Ensure icon is visible
+      .Button-icon {
+        margin: 0;
+      }
+    }
+
+    // Change the dropdown position
+    .ButtonGroup.Dropdown.dropdown.App-titleControl {
+      position: static !important;
+      margin-left: 0 !important;
+      padding: 0 !important;
+      width: auto !important;
+    }
+
+    .ButtonGroup.Dropdown.dropdown.App-titleControl .Button {
+      padding: 0 !important;
+      height: auto !important;
+    }
+  }
+
+  // Extra small screens
+  @media (max-width: 480px) {
+    &-left {
+      gap: 2px;
+    }
+  }
+}
+
+// Hide the default new discussion button on mobile
+@media (max-width: 768px) {
+  // Ensure the toolbar view is full width
+  .IndexPage-toolbar-view {
+    width: 100% !important;
+  }
+
+  // Hide the toolbar-action container (contains the default button)
+  .IndexPage-toolbar-action {
+    display: none !important;
+  }
+
+  // Hide the button directly if it's elsewhere
+  .IndexPage-newDiscussion {
+    display: none !important;
+  }
+
+  // Hide if it's in a list item
+  li .item-newDiscussion,
+  .item-newDiscussion {
+    display: none !important;
+  }
+
+  // Hide if it's in HeaderSecondary
+  .Header-secondary .item-newDiscussion,
+  .Header-secondary .IndexPage-newDiscussion {
+    display: none !important;
+  }
+
+  // Hide if it's in a item-nav
+  .item-nav .Dropdown {
+    display: none !important;
+  }
+
+  // Position App-backControl only if it also has Navigation class
+  // make it right if it has children Navigation-drawer
+  .Navigation.App-backControl {
+    
+    &:has(.Navigation-drawer) {
+      position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    margin-left: auto !important;
+    transform: none !important;
+    }
+  }
+
+  // Ensure parent container has relative positioning for absolute children
+  .App-content,
+  .IndexPage,
+  .IndexPage-results,
+  .IndexPage-toolbar {
+    position: relative;
+  }
+
+  .ComposerBody-header {
+    font-size: 10px !important;
+  }
+}

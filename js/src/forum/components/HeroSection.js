@@ -1,5 +1,6 @@
 import Component from 'flarum/common/Component';
 import Search from 'flarum/forum/components/Search';
+import CustomMobileDiscussionToolbar from './CustomMobileDiscussionToolbar';
 
 export default class HeroSection extends Component {
   oninit(vnode) {
@@ -60,10 +61,10 @@ export default class HeroSection extends Component {
     if (document.body.classList.contains('flarum--night')) {
       return 'dark';
     }
-    
+
     // Check if user is logged in
     const user = app.session.user;
-    
+
     if (user) {
       // Logged in: use user preference from FoF Night Mode
       const pref = user.preferences().fofNightMode;
@@ -80,7 +81,7 @@ export default class HeroSection extends Component {
     // Guest: check cookie
     const cookieValue = document.cookie
       .split('; ')
-      .find(row => row.startsWith('flarum_nightmode='))
+      .find((row) => row.startsWith('flarum_nightmode='))
       ?.split('=')[1];
 
     if (cookieValue === '2') return 'dark';
@@ -123,10 +124,10 @@ export default class HeroSection extends Component {
         m.redraw();
       }
     });
-    
+
     this.bodyObserver.observe(document.body, {
       attributes: true,
-      attributeFilter: ['class']
+      attributeFilter: ['class'],
     });
   }
 
@@ -151,11 +152,11 @@ export default class HeroSection extends Component {
 
     return bgUrl
       ? {
+          height: '35vh',
           backgroundImage: `url(${bgUrl})`,
           backgroundPosition: 'center',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
-          height: '35vh',
         }
       : undefined;
   }
