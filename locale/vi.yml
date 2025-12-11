@@ -8,7 +8,7 @@ vietvan-ca-flarum-themes:
       description: "Nơi để chia sẻ và kết nối giữa các thành viên trong cộng đồng."
     custom-discussion-header:
       topic: "Chủ đề"
-      replies: "Trả lời
+      replies: "Trả lời"
       views: "Lượt xem"
       activity: "Hoạt động"
   admin:
