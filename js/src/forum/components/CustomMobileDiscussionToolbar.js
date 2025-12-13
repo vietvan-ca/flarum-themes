@@ -32,7 +32,9 @@ export default class CustomMobileDiscussionToolbar extends Component {
           onclick={() => this.newDiscussionAction()}
         >
           <i aria-hidden="true" class="icon fas fa-edit Button-icon"></i>
-          <span class="Button-label"></span>
+          <span class="Button-label">
+            {app.translator.trans('core.forum.index.start_discussion_button')}
+          </span>
         </button>
       </div>
     );
