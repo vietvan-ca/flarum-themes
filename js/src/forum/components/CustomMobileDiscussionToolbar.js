@@ -26,7 +26,7 @@ export default class CustomMobileDiscussionToolbar extends Component {
 
         {/* Start Discussion Button */}
         <button
-          class="Button Button--icon CustomMobileDiscussionToolbar-button"
+          class="Button CustomMobileDiscussionToolbar-button"
           type="button"
           aria-label="Start Discussion"
           onclick={() => this.newDiscussionAction()}
