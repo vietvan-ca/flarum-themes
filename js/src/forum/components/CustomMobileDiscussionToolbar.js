@@ -49,7 +49,7 @@ export default class CustomMobileDiscussionToolbar extends Component {
           href: app.route('index'),
           icon: 'fas fa-comments',
         },
-        'All Discussions'
+        app.translator.trans('core.forum.index.all_discussions_link')
       ),
       100
     );
@@ -62,7 +62,7 @@ export default class CustomMobileDiscussionToolbar extends Component {
           href: app.route('tags'),
           icon: 'fas fa-th-large',
         },
-        'Tags'
+        app.translator.trans('flarum-tags.forum.index.tags_link')
       ),
       90
     );
