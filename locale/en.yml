@@ -69,4 +69,7 @@ vietvan-ca-flarum-themes:
       quick_controls_label: Show Quick Zoom Controls
       quick_controls_help: Display A+/A-/A buttons in the header for quick font size adjustment
 
-    
+core:
+  forum:
+    ref:
+      start_a_discussion: "Create a Topic"
