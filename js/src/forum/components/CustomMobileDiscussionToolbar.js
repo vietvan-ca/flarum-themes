@@ -18,7 +18,7 @@ export default class CustomMobileDiscussionToolbar extends Component {
           {SelectDropdown.component(
             {
               buttonClassName: 'Button Button--text',
-              className: 'App-titleControl',
+              className: 'all-discussion-select',
             },
             this.getNavigationItems().toArray()
           )}
