@@ -3,6 +3,20 @@ vietvan-ca-flarum-themes:
     header:
       back_button_text: "Trang Chính" 
       back_button_tooltip: "Trở về Trang Chính Vietvan"
+    mobile_drawer:
+      home: "Trang Chủ"
+      forum: "Diễn Đàn"
+      guidelines: "Lưu ý"
+      appearance: "Giao Diện"
+      register: "Đăng ký"
+      login: "Đăng nhập"
+      or: "Hoặc:"
+      login_facebook: "Đăng nhập bằng Facebook"
+      login_google: "Đăng nhập bằng Google"
+      profile: "Trang cá nhân"
+      settings: "Cài đặt tài khoản"
+      logout: "Đăng xuất"
+      logout_confirm: "Bạn có chắc chắn muốn đăng xuất?"
     hero:
       title: "Chào mừng bạn đến với Diễn đàn Cộng đồng Vietvan"
       description: "Nơi để chia sẻ và kết nối giữa các thành viên trong cộng đồng."

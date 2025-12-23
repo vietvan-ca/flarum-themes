@@ -3,6 +3,20 @@ vietvan-ca-flarum-themes:
     header:
       back_button_text: "Main Site" 
       back_button_tooltip: "Back to Vietvan Main Site"
+    mobile_drawer:
+      home: "Home"
+      forum: "Forum"
+      guidelines: "Guidelines"
+      appearance: "Appearance"
+      register: "Register"
+      login: "Login"
+      or: "Or:"
+      login_facebook: "Login with Facebook"
+      login_google: "Login with Google"
+      profile: "Profile"
+      settings: "Account Settings"
+      logout: "Logout"
+      logout_confirm: "Are you sure you want to logout?"
     hero:
       title: "Welcome to Vietvan Community Forum"
       description: "A place to share and connect between community members."

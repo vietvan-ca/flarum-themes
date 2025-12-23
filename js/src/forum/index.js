@@ -5,6 +5,7 @@ import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
+import Drawer from 'flarum/forum/components/Drawer';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -13,8 +14,21 @@ import BackButton from './components/BackButton';
 import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
+import CustomMobileDrawer from './components/CustomMobileDrawer';
 
 app.initializers.add('vietvan-ca-themes', () => {
+  // Extend Drawer component to use custom mobile drawer
+  extend(Drawer.prototype, 'view', function (vnode) {
+    // Add custom mobile drawer to the drawer content
+    if (vnode && vnode.children) {
+      // Prepend custom mobile drawer
+      vnode.children = [
+        m(CustomMobileDrawer),
+        ...vnode.children
+      ];
+    }
+  });
+
   // Utility function to find element by class path
   const findElementByPath = (vnode, path) => {
     let current = vnode;
