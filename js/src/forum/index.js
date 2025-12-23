@@ -1,11 +1,10 @@
 import app from 'flarum/forum/app';
-import { extend } from 'flarum/common/extend';
+import { extend, override } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
-import Drawer from 'flarum/forum/components/Drawer';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -17,17 +16,36 @@ import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionTo
 import CustomMobileDrawer from './components/CustomMobileDrawer';
 
 app.initializers.add('vietvan-ca-themes', () => {
-  // Extend Drawer component to use custom mobile drawer
-  extend(Drawer.prototype, 'view', function (vnode) {
-    // Add custom mobile drawer to the drawer content
-    if (vnode && vnode.children) {
-      // Prepend custom mobile drawer
-      vnode.children = [
-        m(CustomMobileDrawer),
-        ...vnode.children
-      ];
-    }
+  // Use oncreate to inject custom mobile drawer after IndexPage is created
+  extend(IndexPage.prototype, 'oncreate', function() {
+    this.injectCustomDrawer();
   });
+
+  extend(IndexPage.prototype, 'onupdate', function() {
+    this.injectCustomDrawer();
+  });
+
+  // Add method to inject custom drawer
+  IndexPage.prototype.injectCustomDrawer = function() {
+    const drawer = document.getElementById('drawer');
+    if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
+      const drawerContent = drawer.querySelector('.Drawer-content, .App-drawer');
+      if (drawerContent) {
+        // Create container if it doesn't exist
+        let customDrawerContainer = drawerContent.querySelector('.CustomMobileDrawer-container');
+        if (!customDrawerContainer) {
+          customDrawerContainer = document.createElement('div');
+          customDrawerContainer.className = 'CustomMobileDrawer-container';
+          
+          // Mount the custom drawer component
+          m.mount(customDrawerContainer, CustomMobileDrawer);
+          
+          // Prepend to drawer content
+          drawerContent.insertBefore(customDrawerContainer, drawerContent.firstChild);
+        }
+      }
+    }
+  };
 
   // Utility function to find element by class path
   const findElementByPath = (vnode, path) => {
