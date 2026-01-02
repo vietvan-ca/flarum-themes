@@ -117,9 +117,14 @@
         border: 2px dashed whitesmoke;
     }
 
-    @media (max-width: 767.98px) {
-        .normal .ComposerBody-header>li:first-child h3 {
-            color: #fff !important;
-        }
+    .normal .ComposerBody-header>li:first-child h3 {
+        color: #fff !important;
+    }
+}
+
+// Runtime dark mode styles (works with FoF NightMode toggle)
+body.dark {
+    .normal .ComposerBody-header>li:first-child h3 {
+        color: #fff !important;
     }
 }
