@@ -5,6 +5,7 @@ import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
+import TextEditor from 'flarum/common/components/TextEditor';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -16,6 +17,57 @@ import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionTo
 import CustomMobileDrawer from './components/CustomMobileDrawer';
 
 app.initializers.add('vietvan-ca-themes', () => {
+  // ==========================================
+  // TextEditor Toolbar Reordering & Cleanup
+  // ==========================================
+  // Reorder and hide items in TextEditor controls
+  extend(TextEditor.prototype, 'controlItems', function(items) {
+    // Hide unwanted items
+    const itemsToHide = [
+      'fof-upload',      // File upload button
+      'rich-text',       // Toggle Rich Text Mode
+      'emoji',           // Insert emoji
+    ];
+    
+    itemsToHide.forEach(key => {
+      if (items.has(key)) {
+        items.remove(key);
+      }
+    });
+
+    // Set priorities (higher = appears first/left)
+    // Order: fof-upload-media, toolbar (B, I, lists, etc.), mention, submit
+    if (items.has('fof-upload-media')) items.setPriority('fof-upload-media', 100);
+    if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
+    if (items.has('mention')) items.setPriority('mention', 80);
+    if (items.has('submit')) items.setPriority('submit', -100); // Move to end (right)
+  });
+
+  // Customize ProseMirror toolbar items
+  extend(TextEditor.prototype, 'toolbarItems', function(items) {
+    // Hide specific toolbar items
+    const toolbarItemsToHide = [
+      'nodeType',        // P/H1-H6 dropdown
+      'code',            // Inline code
+      'quote',           // Quote
+      'link',            // Link dropdown
+      'image',           // Image dropdown
+    ];
+    
+    toolbarItemsToHide.forEach(key => {
+      if (items.has(key)) {
+        items.remove(key);
+      }
+    });
+
+    // Reorder remaining toolbar items (Bold, Italic, Lists, More dropdown)
+    if (items.has('bold')) items.setPriority('bold', 100);
+    if (items.has('italic')) items.setPriority('italic', 90);
+    if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
+    if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
+    if (items.has('more')) items.setPriority('more', 60);
+  });
+
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
     this.injectCustomDrawer();
