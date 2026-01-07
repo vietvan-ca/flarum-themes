@@ -31,17 +31,18 @@ app.initializers.add('vietvan-ca-themes', () => {
     console.log('User exists:', !!app.session.user);
     
     if (app.session.user) {
-      const levelId = app.session.user.attribute('level_id');
-      console.log('level_id value:', levelId);
-      console.log('level_id type:', typeof levelId);
-      console.log('level_id == 1:', levelId == 1);
-      console.log('level_id === 1:', levelId === 1);
-      console.log('level_id === "1":', levelId === "1");
+      const level = app.session.user.attribute('level');
+      const levelId = level ? level.id : null;
+      console.log('level object:', level);
+      console.log('level.id value:', levelId);
+      console.log('level.id type:', typeof levelId);
+      console.log('level.id == 1:', levelId == 1);
+      console.log('level.id === 1:', levelId === 1);
     }
     console.log('================================');
     
-    // Check if user level_id is 1
-    if (app.session.user && app.session.user.attribute('level_id') == 1) {
+    // Check if user level.id is 1
+    if (app.session.user && app.session.user.attribute('level') && app.session.user.attribute('level').id == 1) {
       console.log('Condition TRUE: Changing icons to eye');
       // Change hide button icons in discussion controls
       const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
@@ -62,7 +63,7 @@ app.initializers.add('vietvan-ca-themes', () => {
       });
     } else {
       console.log('Condition FALSE: Hiding buttons and badges');
-      // Hide hide buttons and hidden badges for users with level_id != 1 or guests
+      // Hide hide buttons and hidden badges for users with level.id != 1 or guests
       const hideButtonItems = document.querySelectorAll('.item-hide');
       hideButtonItems.forEach(item => {
         item.style.display = 'none';
