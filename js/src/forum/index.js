@@ -6,6 +6,7 @@ import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 import TextEditor from 'flarum/common/components/TextEditor';
+import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -17,6 +18,18 @@ import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionTo
 import CustomMobileDrawer from './components/CustomMobileDrawer';
 
 app.initializers.add('vietvan-ca-themes', () => {
+  // ==========================================
+  // Change Hide Button Icon to Eye
+  // ==========================================
+  extend(DiscussionControls, 'moderationControls', function(items) {
+    if (items.has('hide')) {
+      const hideItem = items.get('hide');
+      if (hideItem && hideItem.attrs) {
+        hideItem.attrs.icon = 'far fa-eye';
+      }
+    }
+  });
+
   // ==========================================
   // TextEditor Toolbar Reordering & Cleanup
   // ==========================================
