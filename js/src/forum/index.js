@@ -25,8 +25,24 @@ app.initializers.add('vietvan-ca-themes', () => {
   
   // Use DOM manipulation to change the hide button icon after render
   const changeHideButtonIcons = () => {
+    // Debug logging
+    console.log('=== Debug Hide Button Icons ===');
+    console.log('app.session.user:', app.session.user);
+    console.log('User exists:', !!app.session.user);
+    
+    if (app.session.user) {
+      const levelId = app.session.user.attribute('level_id');
+      console.log('level_id value:', levelId);
+      console.log('level_id type:', typeof levelId);
+      console.log('level_id == 1:', levelId == 1);
+      console.log('level_id === 1:', levelId === 1);
+      console.log('level_id === "1":', levelId === "1");
+    }
+    console.log('================================');
+    
     // Check if user level_id is 1
     if (app.session.user && app.session.user.attribute('level_id') == 1) {
+      console.log('Condition TRUE: Changing icons to eye');
       // Change hide button icons in discussion controls
       const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
       hideButtons.forEach(icon => {
@@ -45,6 +61,7 @@ app.initializers.add('vietvan-ca-themes', () => {
         }
       });
     } else {
+      console.log('Condition FALSE: Hiding buttons and badges');
       // Hide hide buttons and hidden badges for users with level_id != 1 or guests
       const hideButtonItems = document.querySelectorAll('.item-hide');
       hideButtonItems.forEach(item => {
