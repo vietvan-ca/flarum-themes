@@ -11,24 +11,30 @@ export default class HeroSection extends Component {
     this.enabled = forum.attribute('vietvan_ca_hero_enabled') === '1';
     if (!this.enabled) return;
 
-    // Compute initial mode
-    this.mode = this.computeMode();
+    // Initial mode - start with light as default
+    this.mode = 'light';
 
-    // Setup listeners
+    // Setup listeners first
     if (flarum.extensions['fof-nightmode']) {
       this.setupNightModeListener();
     }
     this.setupSystemModeListener();
     this.setupBodyClassObserver();
 
-    // Re-check mode after a short delay (in case FoF extension hasn't initialized yet)
+    // Compute actual mode after a delay to ensure theme has initialized
+    setTimeout(() => {
+      this.mode = this.computeMode();
+      m.redraw();
+    }, 100);
+
+    // Re-check mode after a longer delay (in case FoF extension hasn't initialized yet)
     setTimeout(() => {
       const newMode = this.computeMode();
       if (newMode !== this.mode) {
         this.mode = newMode;
         m.redraw();
       }
-    }, 100);
+    }, 500);
 
     // locale-specific text
     this.locale = app.translator.getLocale() || 'en';
@@ -72,8 +78,14 @@ export default class HeroSection extends Component {
       if (pref === 2 || pref === '2') return 'dark';
       if (pref === 1 || pref === '1') return 'light';
       if (pref === 0 || pref === '0' || pref === null || pref === undefined) {
-        // System preference for logged-in user
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        // For auto/null preferences, default to light mode (respecting our default theme setting)
+        // Only use system preference if user explicitly wants auto mode
+        const isExplicitAuto = pref === 0 || pref === '0';
+        if (isExplicitAuto) {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        // Default to light for null/undefined (new users)
+        return 'light';
       }
       return 'light';
     }
@@ -86,11 +98,12 @@ export default class HeroSection extends Component {
 
     if (cookieValue === '2') return 'dark';
     if (cookieValue === '1') return 'light';
-    if (cookieValue === '0' || !cookieValue) {
-      // System preference
+    if (cookieValue === '0') {
+      // Explicit system preference
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    // Default
+    
+    // No cookie found - default to light mode (respecting our default theme setting)
     return 'light';
   }
 
