@@ -25,10 +25,20 @@ app.initializers.add('vietvan-ca-themes', () => {
   
   // Use DOM manipulation to change the hide button icon after render
   const changeHideButtonIcons = () => {
+    // Change hide button icons in discussion controls
     const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
     hideButtons.forEach(icon => {
       if (icon.classList.contains('fa-trash-alt')) {
         icon.classList.remove('fa-trash-alt');
+        icon.classList.add('fa-eye');
+      }
+    });
+    
+    // Change hidden badge icons
+    const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
+    hiddenBadges.forEach(icon => {
+      if (icon.classList.contains('fa-trash')) {
+        icon.classList.remove('fa-trash');
         icon.classList.add('fa-eye');
       }
     });
