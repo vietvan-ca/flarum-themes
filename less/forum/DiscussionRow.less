@@ -48,7 +48,28 @@
 }
 
 .discussion-tag.colored {
-  color: #fff;
+  /* Use color-contrast if supported, fallback to custom property calculation */
+  color: color-contrast(var(--tag-bg, currentColor) vs black, white);
+  
+  /* Fallback for browsers that don't support color-contrast */
+  @supports not (color: color-contrast(white vs black, white)) {
+    /* For light backgrounds (luminance > 0.5), use dark text */
+    /* For dark backgrounds (luminance <= 0.5), use light text */
+    color: light-dark(#000, #fff);
+    
+    /* Additional fallback using filter and mix-blend-mode for older browsers */
+    @supports not (color: light-dark(#000, #fff)) {
+      color: #000; /* Default to black text */
+      mix-blend-mode: difference;
+      filter: invert(1) grayscale(1) contrast(9);
+    }
+  }
+  
+  /* Ensure good contrast with a minimum contrast approach */
+  text-shadow: 
+    0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 1px rgba(0, 0, 0, 0.8);
+  font-weight: 500;
 }
 
 .discussion-excerpt {

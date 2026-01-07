@@ -142,6 +142,66 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeDefaultTheme();
 
   // ==========================================
+  // Auto Text Color for Discussion Tags
+  // ==========================================
+  const adjustTagTextColors = () => {
+    const coloredTags = document.querySelectorAll('.discussion-tag.colored');
+    
+    coloredTags.forEach(tag => {
+      const backgroundColor = window.getComputedStyle(tag).backgroundColor;
+      
+      // Parse RGB values from background color
+      const rgbMatch = backgroundColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (rgbMatch) {
+        const [, r, g, b] = rgbMatch.map(Number);
+        
+        // Calculate relative luminance using WCAG formula
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Set text color based on luminance
+        // If background is light (luminance > 0.5), use dark text
+        // If background is dark (luminance <= 0.5), use light text
+        tag.style.color = luminance > 0.5 ? '#000000' : '#ffffff';
+        
+        // Add subtle text shadow for better readability
+        tag.style.textShadow = luminance > 0.5 
+          ? '0 0 1px rgba(255, 255, 255, 0.5)' 
+          : '0 0 1px rgba(0, 0, 0, 0.5)';
+      }
+    });
+  };
+
+  // Initialize tag color adjustment
+  const initializeTagColors = () => {
+    // Initial run
+    setTimeout(adjustTagTextColors, 200);
+    
+    // Run on route changes
+    if (app.history?.initialized) {
+      app.history.initialized.then(() => {
+        app.history.router.on('changed', () => {
+          setTimeout(adjustTagTextColors, 200);
+        });
+      });
+    }
+    
+    // Run periodically to catch dynamically loaded content
+    setInterval(adjustTagTextColors, 3000);
+    
+    // Watch for DOM changes (new discussions loaded)
+    const observer = new MutationObserver(() => {
+      setTimeout(adjustTagTextColors, 100);
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  };
+
+  initializeTagColors();
+
+  // ==========================================
   // TextEditor Toolbar Reordering & Cleanup
   // ==========================================
   // Reorder and hide items in TextEditor controls
