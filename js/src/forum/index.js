@@ -22,29 +22,37 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
-  override(DiscussionControls, 'hideAction', function(original, discussion) {
-    return original(discussion);
-  });
+  
+  // Use DOM manipulation to change the hide button icon after render
+  const changeHideButtonIcons = () => {
+    const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
+    hideButtons.forEach(icon => {
+      if (icon.classList.contains('fa-trash-alt')) {
+        icon.classList.remove('fa-trash-alt');
+        icon.classList.add('fa-eye');
+      }
+    });
+  };
 
-  extend(DiscussionControls, 'destructiveControls', function(items, discussion) {
-    if (items.has('hide')) {
-      // Get the original button properties
-      const originalButton = items.get('hide');
-      
-      // Remove and re-add with custom icon
-      items.remove('hide');
-      items.add('hide', 
-        <Button 
-          icon="far fa-eye" 
-          onclick={originalButton.attrs.onclick}
-          className={originalButton.attrs.className}
-        >
-          {originalButton.children}
-        </Button>, 
-        100
-      );
+  // Run icon replacement on page load and route changes
+  const initializeHideButtonChanges = () => {
+    // Initial run
+    setTimeout(changeHideButtonIcons, 500);
+    
+    // Run on route changes
+    if (app.history?.initialized) {
+      app.history.initialized.then(() => {
+        app.history.router.on('changed', () => {
+          setTimeout(changeHideButtonIcons, 500);
+        });
+      });
     }
-  });
+    
+    // Also run periodically to catch dynamically loaded content
+    setInterval(changeHideButtonIcons, 2000);
+  };
+
+  initializeHideButtonChanges();
 
   // ==========================================
   // TextEditor Toolbar Reordering & Cleanup
