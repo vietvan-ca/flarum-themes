@@ -21,7 +21,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
-  extend(DiscussionControls, 'moderationControls', function(items) {
+  extend(DiscussionControls, 'destructiveControls', function(items) {
     if (items.has('hide')) {
       const hideItem = items.get('hide');
       if (hideItem && hideItem.attrs) {
