@@ -7,6 +7,7 @@ import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 import TextEditor from 'flarum/common/components/TextEditor';
 import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
+import Button from 'flarum/common/components/Button';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -21,12 +22,19 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
-  extend(DiscussionControls, 'destructiveControls', function(items) {
+  extend(DiscussionControls, 'destructiveControls', function(items, discussion) {
     if (items.has('hide')) {
-      const hideItem = items.get('hide');
-      if (hideItem && hideItem.attrs) {
-        hideItem.attrs.icon = 'far fa-eye';
-      }
+      // Remove the existing hide button
+      items.remove('hide');
+      
+      // Add a new hide button with the eye icon
+      items.add(
+        'hide',
+        <Button icon="far fa-eye" onclick={DiscussionControls.hideAction.bind(discussion)}>
+          {app.translator.trans('core.forum.discussion_controls.delete_button')}
+        </Button>,
+        100
+      );
     }
   });
 
