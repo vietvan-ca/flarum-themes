@@ -22,17 +22,25 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
+  override(DiscussionControls, 'hideAction', function(original, discussion) {
+    return original(discussion);
+  });
+
   extend(DiscussionControls, 'destructiveControls', function(items, discussion) {
     if (items.has('hide')) {
-      // Remove the existing hide button
-      items.remove('hide');
+      // Get the original button properties
+      const originalButton = items.get('hide');
       
-      // Add a new hide button with the eye icon
-      items.add(
-        'hide',
-        <Button icon="far fa-eye" onclick={DiscussionControls.hideAction.bind(discussion)}>
-          {app.translator.trans('core.forum.discussion_controls.delete_button')}
-        </Button>,
+      // Remove and re-add with custom icon
+      items.remove('hide');
+      items.add('hide', 
+        <Button 
+          icon="far fa-eye" 
+          onclick={originalButton.attrs.onclick}
+          className={originalButton.attrs.className}
+        >
+          {originalButton.children}
+        </Button>, 
         100
       );
     }
