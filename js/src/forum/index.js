@@ -26,36 +26,52 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Use DOM manipulation to change the hide button icon after render
   const changeHideButtonIcons = () => {
     // Check if user level.id is 1
-    if (app.session.user && app.session.user.attribute('level') && app.session.user.attribute('level').id == 1) {
-      // Change hide button icons in discussion controls
-      const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
-      hideButtons.forEach(icon => {
-        if (icon.classList.contains('fa-trash-alt')) {
-          icon.classList.remove('fa-trash-alt');
-          icon.classList.add('fa-eye');
-        }
-      });
+    // if (app.session.user && app.session.user.attribute('level') && app.session.user.attribute('level').id == 1) {
+    //   // Change hide button icons in discussion controls
+    //   const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
+    //   hideButtons.forEach(icon => {
+    //     if (icon.classList.contains('fa-trash-alt')) {
+    //       icon.classList.remove('fa-trash-alt');
+    //       icon.classList.add('fa-eye');
+    //     }
+    //   });
       
-      // Change hidden badge icons
-      const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
-      hiddenBadges.forEach(icon => {
-        if (icon.classList.contains('fa-trash')) {
-          icon.classList.remove('fa-trash');
-          icon.classList.add('fa-eye');
-        }
-      });
-    } else {
-      // Hide hide buttons and hidden badges for users with level.id != 1 or guests
-      const hideButtonItems = document.querySelectorAll('.item-hide');
-      hideButtonItems.forEach(item => {
-        item.style.display = 'none';
-      });
+    //   // Change hidden badge icons
+    //   const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
+    //   hiddenBadges.forEach(icon => {
+    //     if (icon.classList.contains('fa-trash')) {
+    //       icon.classList.remove('fa-trash');
+    //       icon.classList.add('fa-eye');
+    //     }
+    //   });
+    // } else {
+    //   // Hide hide buttons and hidden badges for users with level.id != 1 or guests
+    //   const hideButtonItems = document.querySelectorAll('.item-hide');
+    //   hideButtonItems.forEach(item => {
+    //     item.style.display = 'none';
+    //   });
       
-      const hiddenBadgeItems = document.querySelectorAll('.item-hidden');
-      hiddenBadgeItems.forEach(item => {
-        item.style.display = 'none';
-      });
-    }
+    //   const hiddenBadgeItems = document.querySelectorAll('.item-hidden');
+    //   hiddenBadgeItems.forEach(item => {
+    //     item.style.display = 'none';
+    //   });
+    // }
+    const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
+    hideButtons.forEach(icon => {
+      if (icon.classList.contains('fa-trash-alt')) {
+        icon.classList.remove('fa-trash-alt');
+        icon.classList.add('fa-eye');
+      }
+    });
+    
+    // Change hidden badge icons
+    const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
+    hiddenBadges.forEach(icon => {
+      if (icon.classList.contains('fa-trash')) {
+        icon.classList.remove('fa-trash');
+        icon.classList.add('fa-eye');
+      }
+    });
   };
 
   // Run icon replacement on page load and route changes
