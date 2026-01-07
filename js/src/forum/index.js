@@ -159,12 +159,13 @@ app.initializers.add('vietvan-ca-themes', () => {
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         
         // Set text color based on luminance
-        // If background is light (luminance > 0.5), use dark text
-        // If background is dark (luminance <= 0.5), use light text
-        tag.style.color = luminance > 0.5 ? '#000000' : '#ffffff';
+        // Adjusted threshold to 0.6 for better contrast
+        // If background is light (luminance > 0.6), use dark text
+        // If background is dark (luminance <= 0.6), use light text
+        tag.style.color = luminance > 0.6 ? '#000000' : '#ffffff';
         
         // Add subtle text shadow for better readability
-        tag.style.textShadow = luminance > 0.5 
+        tag.style.textShadow = luminance > 0.6 
           ? '0 0 1px rgba(255, 255, 255, 0.5)' 
           : '0 0 1px rgba(0, 0, 0, 0.5)';
       }
