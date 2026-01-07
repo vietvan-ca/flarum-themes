@@ -95,6 +95,53 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeHideButtonChanges();
 
   // ==========================================
+  // Set Light Theme as Default
+  // ==========================================
+  const setDefaultLightTheme = () => {
+    // Only set default if user hasn't explicitly chosen a theme preference
+    if (app.session.user) {
+      const nightModePreference = app.session.user.preferences().fofNightMode;
+      
+      // If night mode preference is null/undefined, set default to light
+      if (nightModePreference === null || nightModePreference === undefined) {
+        app.session.user.savePreferences({
+          fofNightMode: false
+        }).catch(() => {
+          // Ignore errors if preferences can't be saved
+        });
+      }
+    }
+    
+    // For guests, remove any dark theme classes that might be applied by system preferences
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // Check if no explicit theme choice has been made
+    const hasExplicitDarkTheme = localStorage.getItem('fof-nightmode') === 'true' || 
+                                 localStorage.getItem('darkMode') === 'true';
+    
+    if (!hasExplicitDarkTheme) {
+      // Remove potential system-applied dark classes
+      [body, html].forEach(element => {
+        if (element) {
+          const darkClasses = ['dark', 'dark-mode', 'fof-nightmode'];
+          darkClasses.forEach(className => {
+            element.classList.remove(className);
+          });
+        }
+      });
+    }
+  };
+
+  // Initialize default light theme
+  const initializeDefaultTheme = () => {
+    // Set default theme once when app loads
+    setTimeout(setDefaultLightTheme, 100);
+  };
+
+  initializeDefaultTheme();
+
+  // ==========================================
   // TextEditor Toolbar Reordering & Cleanup
   // ==========================================
   // Reorder and hide items in TextEditor controls
