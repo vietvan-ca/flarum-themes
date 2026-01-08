@@ -277,6 +277,7 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Hide unwanted items
     const itemsToHide = [
       'fof-upload',      // File upload button
+      'fof-upload-media', // FoF upload media button
       'rich-text',       // Toggle Rich Text Mode
       'emoji',           // Insert emoji
     ];
@@ -288,8 +289,7 @@ app.initializers.add('vietvan-ca-themes', () => {
     });
 
     // Set priorities (higher = appears first/left)
-    // Order: fof-upload-media, toolbar (B, I, lists, etc.), mention, submit
-    if (items.has('fof-upload-media')) items.setPriority('fof-upload-media', 100);
+    // Order: toolbar (B, I, lists, etc.), mention, submit
     if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
     if (items.has('mention')) items.setPriority('mention', 80);
     if (items.has('submit')) items.setPriority('submit', -100); // Move to end (right)
@@ -304,6 +304,7 @@ app.initializers.add('vietvan-ca-themes', () => {
       'quote',           // Quote
       'link',            // Link dropdown
       'image',           // Image dropdown
+      'more',            // Additional controls dropdown (strikethrough, subscript, etc.)
     ];
     
     toolbarItemsToHide.forEach(key => {
@@ -312,12 +313,11 @@ app.initializers.add('vietvan-ca-themes', () => {
       }
     });
 
-    // Reorder remaining toolbar items (Bold, Italic, Lists, More dropdown)
+    // Reorder remaining toolbar items (Bold, Italic, Lists)
     if (items.has('bold')) items.setPriority('bold', 100);
     if (items.has('italic')) items.setPriority('italic', 90);
     if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
     if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
-    if (items.has('more')) items.setPriority('more', 60);
   });
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
