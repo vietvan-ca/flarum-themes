@@ -335,10 +335,6 @@ app.initializers.add('vietvan-ca-themes', () => {
 
   // Fallback: Use DOM manipulation to hide elements
   const hideTextEditorElements = () => {
-    // Hide upload buttons
-    const uploadButtons = document.querySelectorAll('.item-fof-upload, .fof-upload-button');
-    uploadButtons.forEach(el => el.style.display = 'none');
-    
     // Hide node type dropdown (P/H1-H6)
     const nodeTypeDropdowns = document.querySelectorAll('.NodeTypeButton, .NodeTypeDropdownMenu');
     nodeTypeDropdowns.forEach(el => {
