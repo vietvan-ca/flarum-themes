@@ -280,7 +280,6 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Hide unwanted items - try multiple possible names
     const itemsToHide = [
       'fof-upload',      // File upload button
-      'fof-upload-media', // FoF upload media button
       'fofUpload',       // Alternative naming
       'upload',          // Alternative naming
       'rich-text',       // Toggle Rich Text Mode
