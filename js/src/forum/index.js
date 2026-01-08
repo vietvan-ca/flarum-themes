@@ -173,11 +173,21 @@ app.initializers.add('vietvan-ca-themes', () => {
     let r, g, b;
     
     if (backgroundColor.startsWith('#')) {
-      // Handle hex colors
+      // Handle hex colors - fix the parsing
       const hex = backgroundColor.replace('#', '');
-      r = parseInt(hex.substr(0, 2), 16);
-      g = parseInt(hex.substr(2, 2), 16);
-      b = parseInt(hex.substr(4, 2), 16);
+      if (hex.length === 3) {
+        // Handle short hex like #FFF
+        r = parseInt(hex.substr(0, 1) + hex.substr(0, 1), 16);
+        g = parseInt(hex.substr(1, 1) + hex.substr(1, 1), 16);
+        b = parseInt(hex.substr(2, 1) + hex.substr(2, 1), 16);
+      } else if (hex.length === 6) {
+        // Handle full hex like #FFF300
+        r = parseInt(hex.substr(0, 2), 16);
+        g = parseInt(hex.substr(2, 2), 16);
+        b = parseInt(hex.substr(4, 2), 16);
+      } else {
+        return; // Skip if invalid hex format
+      }
     } else {
       // Handle rgb() colors
       const rgbMatch = backgroundColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
@@ -202,26 +212,28 @@ app.initializers.add('vietvan-ca-themes', () => {
     const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
     const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
     
-    // Be much more conservative about using black text
-    // For highly saturated colors, require even higher brightness
-    const brightnessThreshold = saturation > 0.4 ? 0.75 : 0.65;
+    // For very bright colors like yellow (#FFF300), use lower threshold
+    // Yellow and bright colors should use black text
+    const brightnessThreshold = saturation > 0.8 && wcagLuminance > 0.7 ? 0.6 : 
+                               saturation > 0.4 ? 0.75 : 0.65;
     
     const shouldUseBlackText = wcagLuminance > brightnessThreshold && 
-                               perceivedBrightness > brightnessThreshold && 
-                               averageBrightness > (brightnessThreshold - 0.05) &&
-                               contrastWithBlack > contrastWithWhite &&
-                               saturation < 0.6; // Avoid black text on highly saturated colors
+                               perceivedBrightness > (brightnessThreshold - 0.1) && 
+                               averageBrightness > (brightnessThreshold - 0.15) &&
+                               contrastWithBlack > contrastWithWhite;
     
-    element.style.color = shouldUseBlackText ? '#000000' : '#ffffff';
+    // Apply styles with !important for stronger override
+    element.style.setProperty('color', shouldUseBlackText ? '#000000' : '#ffffff', 'important');
     
     // Add appropriate text shadow with better contrast for colorful backgrounds
-    element.style.textShadow = shouldUseBlackText 
+    const textShadow = shouldUseBlackText 
       ? '0 0 1px rgba(255, 255, 255, 0.6)' 
       : '0 0 1px rgba(0, 0, 0, 0.8)';
+    element.style.setProperty('text-shadow', textShadow, 'important');
     
     // For buttons, also ensure the background color is applied correctly
     if (colorSource === 'customColor' && customColor) {
-      element.style.backgroundColor = customColor;
+      element.style.setProperty('background-color', customColor, 'important');
       // Remove any conflicting classes
       element.classList.remove('text-contrast--dark', 'text-contrast--light');
     }
