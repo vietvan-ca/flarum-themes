@@ -142,73 +142,111 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeDefaultTheme();
 
   // ==========================================
-  // Auto Text Color for Discussion Tags
+  // Auto Text Color for Discussion Tags and Buttons
   // ==========================================
-  const adjustTagTextColors = () => {
+  const adjustTextColors = () => {
+    // Handle discussion tags
     const coloredTags = document.querySelectorAll('.discussion-tag.colored');
+    coloredTags.forEach(tag => adjustElementTextColor(tag, 'backgroundColor'));
     
-    coloredTags.forEach(tag => {
-      const backgroundColor = window.getComputedStyle(tag).backgroundColor;
-      
-      // Parse RGB values from background color
-      const rgbMatch = backgroundColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-      if (rgbMatch) {
-        const [, r, g, b] = rgbMatch.map(Number);
-        
-        // Calculate different brightness metrics
-        const wcagLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        const perceivedBrightness = Math.sqrt(0.241 * r * r + 0.691 * g * g + 0.068 * b * b) / 255;
-        const averageBrightness = (r + g + b) / (3 * 255);
-        
-        // Calculate saturation to detect bright colors
-        const max = Math.max(r, g, b) / 255;
-        const min = Math.min(r, g, b) / 255;
-        const saturation = max === 0 ? 0 : (max - min) / max;
-        
-        // Calculate contrast ratios with black and white text
-        const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
-        const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
-        
-        // Be much more conservative about using black text
-        // For highly saturated colors, require even higher brightness
-        const brightnessThreshold = saturation > 0.4 ? 0.75 : 0.65;
-        
-        const shouldUseBlackText = wcagLuminance > brightnessThreshold && 
-                                   perceivedBrightness > brightnessThreshold && 
-                                   averageBrightness > (brightnessThreshold - 0.05) &&
-                                   contrastWithBlack > contrastWithWhite &&
-                                   saturation < 0.6; // Avoid black text on highly saturated colors
-        
-        tag.style.color = shouldUseBlackText ? '#000000' : '#ffffff';
-        
-        // Add appropriate text shadow with better contrast for colorful backgrounds
-        tag.style.textShadow = shouldUseBlackText 
-          ? '0 0 1px rgba(255, 255, 255, 0.6)' 
-          : '0 0 1px rgba(0, 0, 0, 0.8)';
+    // Handle colored buttons (like create discussion button)
+    const coloredButtons = document.querySelectorAll('.Button--tagColored, .Button--primary[style*="--color"]');
+    coloredButtons.forEach(button => {
+      // Check if button has custom --color property
+      const customColor = button.style.getPropertyValue('--color');
+      if (customColor) {
+        adjustElementTextColor(button, 'customColor', customColor);
       }
     });
   };
 
-  // Initialize tag color adjustment
-  const initializeTagColors = () => {
+  const adjustElementTextColor = (element, colorSource, customColor = null) => {
+    let backgroundColor;
+    
+    if (colorSource === 'customColor' && customColor) {
+      backgroundColor = customColor;
+    } else {
+      backgroundColor = window.getComputedStyle(element).backgroundColor;
+    }
+    
+    // Parse color values - handle both rgb() and hex formats
+    let r, g, b;
+    
+    if (backgroundColor.startsWith('#')) {
+      // Handle hex colors
+      const hex = backgroundColor.replace('#', '');
+      r = parseInt(hex.substr(0, 2), 16);
+      g = parseInt(hex.substr(2, 2), 16);
+      b = parseInt(hex.substr(4, 2), 16);
+    } else {
+      // Handle rgb() colors
+      const rgbMatch = backgroundColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (rgbMatch) {
+        [, r, g, b] = rgbMatch.map(Number);
+      } else {
+        return; // Skip if can't parse color
+      }
+    }
+    
+    // Calculate different brightness metrics
+    const wcagLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    const perceivedBrightness = Math.sqrt(0.241 * r * r + 0.691 * g * g + 0.068 * b * b) / 255;
+    const averageBrightness = (r + g + b) / (3 * 255);
+    
+    // Calculate saturation to detect bright colors
+    const max = Math.max(r, g, b) / 255;
+    const min = Math.min(r, g, b) / 255;
+    const saturation = max === 0 ? 0 : (max - min) / max;
+    
+    // Calculate contrast ratios with black and white text
+    const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
+    const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
+    
+    // Be much more conservative about using black text
+    // For highly saturated colors, require even higher brightness
+    const brightnessThreshold = saturation > 0.4 ? 0.75 : 0.65;
+    
+    const shouldUseBlackText = wcagLuminance > brightnessThreshold && 
+                               perceivedBrightness > brightnessThreshold && 
+                               averageBrightness > (brightnessThreshold - 0.05) &&
+                               contrastWithBlack > contrastWithWhite &&
+                               saturation < 0.6; // Avoid black text on highly saturated colors
+    
+    element.style.color = shouldUseBlackText ? '#000000' : '#ffffff';
+    
+    // Add appropriate text shadow with better contrast for colorful backgrounds
+    element.style.textShadow = shouldUseBlackText 
+      ? '0 0 1px rgba(255, 255, 255, 0.6)' 
+      : '0 0 1px rgba(0, 0, 0, 0.8)';
+    
+    // For buttons, also ensure the background color is applied correctly
+    if (colorSource === 'customColor' && customColor) {
+      element.style.backgroundColor = customColor;
+      // Remove any conflicting classes
+      element.classList.remove('text-contrast--dark', 'text-contrast--light');
+    }
+  };
+
+  // Initialize text color adjustment
+  const initializeTextColors = () => {
     // Initial run
-    setTimeout(adjustTagTextColors, 200);
+    setTimeout(adjustTextColors, 200);
     
     // Run on route changes
     if (app.history?.initialized) {
       app.history.initialized.then(() => {
         app.history.router.on('changed', () => {
-          setTimeout(adjustTagTextColors, 200);
+          setTimeout(adjustTextColors, 200);
         });
       });
     }
     
     // Run periodically to catch dynamically loaded content
-    setInterval(adjustTagTextColors, 3000);
+    setInterval(adjustTextColors, 3000);
     
     // Watch for DOM changes (new discussions loaded)
     const observer = new MutationObserver(() => {
-      setTimeout(adjustTagTextColors, 100);
+      setTimeout(adjustTextColors, 100);
     });
     
     observer.observe(document.body, {
@@ -217,7 +255,7 @@ app.initializers.add('vietvan-ca-themes', () => {
     });
   };
 
-  initializeTagColors();
+  initializeTextColors();
 
   // ==========================================
   // TextEditor Toolbar Reordering & Cleanup
