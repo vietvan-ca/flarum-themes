@@ -359,35 +359,12 @@ app.initializers.add('vietvan-ca-themes', () => {
     // fof-upload-media-toolbar will be at 65 - right after ordered_list
   });
 
-  // Fallback: Use DOM manipulation to hide/move elements
+  // Fallback: Use DOM manipulation to hide elements (media button is handled via toolbarItems)
   const hideTextEditorElements = () => {
-    // Move media upload button to toolbar if it exists in controls
+    // Hide the original media upload button container (since we added it to toolbar)
     const mediaButtonContainer = document.querySelector('.item-fof-upload-media');
-    const mediaButton = document.querySelector('.item-fof-upload-media .fof-upload-button');
-    const numberedListButton = document.querySelector('button[aria-label*="Numbered list" i]');
-    
-    if (mediaButton && numberedListButton && mediaButtonContainer && !document.querySelector('.toolbar-media-button')) {
-      const toolbar = numberedListButton.closest('.ProseMirrorMenu');
-      if (toolbar) {
-        // Clone the media button and style it like toolbar buttons
-        const clonedButton = mediaButton.cloneNode(true);
-        clonedButton.className = 'Button Button--icon Button--link CommandButton';
-        clonedButton.title = mediaButton.getAttribute('aria-label') || 'My media';
-        
-        // Create wrapper like other toolbar buttons
-        const wrapper = document.createElement('div');
-        wrapper.className = 'toolbar-media-button';
-        wrapper.appendChild(clonedButton);
-        
-        // Insert after numbered list button
-        const numberedListParent = numberedListButton.parentNode;
-        numberedListParent.insertBefore(wrapper, numberedListButton.nextSibling);
-        
-        // Hide the original media button container
-        mediaButtonContainer.style.display = 'none';
-        
-        console.log('Moved media button to toolbar');
-      }
+    if (mediaButtonContainer) {
+      mediaButtonContainer.style.display = 'none';
     }
     
     // Hide other upload buttons (but keep media button for moving)
