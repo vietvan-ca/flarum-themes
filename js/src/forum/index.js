@@ -155,19 +155,37 @@ app.initializers.add('vietvan-ca-themes', () => {
       if (rgbMatch) {
         const [, r, g, b] = rgbMatch.map(Number);
         
-        // Calculate relative luminance using WCAG formula
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        // Use multiple brightness calculations for better accuracy
         
-        // Set text color based on luminance
-        // Adjusted threshold to 0.6 for better contrast
-        // If background is light (luminance > 0.6), use dark text
-        // If background is dark (luminance <= 0.6), use light text
-        tag.style.color = luminance > 0.6 ? '#000000' : '#ffffff';
+        // 1. WCAG relative luminance
+        const wcagLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         
-        // Add subtle text shadow for better readability
-        tag.style.textShadow = luminance > 0.6 
+        // 2. Perceived brightness (alternative formula)
+        const perceivedBrightness = Math.sqrt(0.241 * r * r + 0.691 * g * g + 0.068 * b * b) / 255;
+        
+        // 3. Simple average brightness
+        const averageBrightness = (r + g + b) / (3 * 255);
+        
+        // 4. YIQ luma (used by some designers)
+        const yiqLuma = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Calculate contrast ratios with black and white text
+        const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
+        const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
+        
+        // Use the combination that provides better contrast
+        // Also use a lower threshold for edge cases
+        const shouldUseBlackText = wcagLuminance > 0.55 && 
+                                   perceivedBrightness > 0.5 && 
+                                   averageBrightness > 0.5 &&
+                                   contrastWithBlack > contrastWithWhite;
+        
+        tag.style.color = shouldUseBlackText ? '#000000' : '#ffffff';
+        
+        // Add appropriate text shadow
+        tag.style.textShadow = shouldUseBlackText 
           ? '0 0 1px rgba(255, 255, 255, 0.5)' 
-          : '0 0 1px rgba(0, 0, 0, 0.5)';
+          : '0 0 1px rgba(0, 0, 0, 0.7)';
       }
     });
   };
