@@ -277,6 +277,12 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Debug: log all available items
     console.log('Available controlItems:', Array.from(items.toArray().map(item => item.itemName)));
     
+    // Remove fof-upload-media from controlItems so we can add it to toolbar instead
+    if (items.has('fof-upload-media')) {
+      console.log('Removing fof-upload-media from controlItems to move to toolbar');
+      items.remove('fof-upload-media');
+    }
+    
     // Hide unwanted items - try multiple possible names
     const itemsToHide = [
       'fof-upload',      // File upload button
@@ -326,15 +332,68 @@ app.initializers.add('vietvan-ca-themes', () => {
       }
     });
 
+    // Add media upload button to toolbar positioned after numbered list
+    const mediaUploadButton = Button.component({
+      icon: 'fas fa-photo-video',
+      className: 'Button Button--icon Button--link',
+      title: app.translator.trans('fof-upload.forum.buttons.media', {}, 'Media'),
+      onclick: (e) => {
+        e.preventDefault();
+        // Find and trigger the original media upload functionality
+        const originalButton = document.querySelector('.item-fof-upload-media .fof-upload-button');
+        if (originalButton) {
+          originalButton.click();
+        } else {
+          console.warn('Could not find original media upload button');
+        }
+      }
+    });
+    
+    items.add('fof-upload-media-toolbar', mediaUploadButton, 65); // Position between ordered_list (70) and other items
+
     // Reorder remaining toolbar items
     if (items.has('bold')) items.setPriority('bold', 100);
     if (items.has('italic')) items.setPriority('italic', 90);
     if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
     if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
+    // fof-upload-media-toolbar will be at 65 - right after ordered_list
   });
 
-  // Fallback: Use DOM manipulation to hide elements
+  // Fallback: Use DOM manipulation to hide/move elements
   const hideTextEditorElements = () => {
+    // Move media upload button to toolbar if it exists in controls
+    const mediaButtonContainer = document.querySelector('.item-fof-upload-media');
+    const mediaButton = document.querySelector('.item-fof-upload-media .fof-upload-button');
+    const numberedListButton = document.querySelector('button[aria-label*="Numbered list" i]');
+    
+    if (mediaButton && numberedListButton && mediaButtonContainer && !document.querySelector('.toolbar-media-button')) {
+      const toolbar = numberedListButton.closest('.ProseMirrorMenu');
+      if (toolbar) {
+        // Clone the media button and style it like toolbar buttons
+        const clonedButton = mediaButton.cloneNode(true);
+        clonedButton.className = 'Button Button--icon Button--link CommandButton';
+        clonedButton.title = mediaButton.getAttribute('aria-label') || 'My media';
+        
+        // Create wrapper like other toolbar buttons
+        const wrapper = document.createElement('div');
+        wrapper.className = 'toolbar-media-button';
+        wrapper.appendChild(clonedButton);
+        
+        // Insert after numbered list button
+        const numberedListParent = numberedListButton.parentNode;
+        numberedListParent.insertBefore(wrapper, numberedListButton.nextSibling);
+        
+        // Hide the original media button container
+        mediaButtonContainer.style.display = 'none';
+        
+        console.log('Moved media button to toolbar');
+      }
+    }
+    
+    // Hide other upload buttons (but keep media button for moving)
+    const uploadButtons = document.querySelectorAll('.item-fof-upload:not(.item-fof-upload-media)');
+    uploadButtons.forEach(el => el.style.display = 'none');
+
     // Hide node type dropdown (P/H1-H6)
     const nodeTypeDropdowns = document.querySelectorAll('.NodeTypeButton, .NodeTypeDropdownMenu');
     nodeTypeDropdowns.forEach(el => {
@@ -388,7 +447,12 @@ app.initializers.add('vietvan-ca-themes', () => {
           if (dropdown) {
             dropdown.style.display = 'none';
           } else {
-            button.style.display = 'none';
+            // Don't hide the media button if it's the one we want to keep
+            const isMediaButton = icon.classList.contains('fa-photo-video') || 
+                                  button.getAttribute('aria-label')?.toLowerCase().includes('media');
+            if (!isMediaButton) {
+              button.style.display = 'none';
+            }
           }
         }
       });
