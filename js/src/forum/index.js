@@ -274,51 +274,161 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Reorder and hide items in TextEditor controls
   extend(TextEditor.prototype, 'controlItems', function(items) {
-    // Hide unwanted items
+    // Debug: log all available items
+    console.log('Available controlItems:', Array.from(items.toArray().map(item => item.itemName)));
+    
+    // Hide unwanted items - try multiple possible names
     const itemsToHide = [
       'fof-upload',      // File upload button
       'fof-upload-media', // FoF upload media button
+      'fofUpload',       // Alternative naming
+      'upload',          // Alternative naming
       'rich-text',       // Toggle Rich Text Mode
+      'richText',        // Alternative naming
       'emoji',           // Insert emoji
+      'preview',         // Preview button
     ];
     
     itemsToHide.forEach(key => {
       if (items.has(key)) {
+        console.log('Removing controlItem:', key);
         items.remove(key);
       }
     });
 
     // Set priorities (higher = appears first/left)
-    // Order: toolbar (B, I, lists, etc.), mention, submit
     if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
     if (items.has('mention')) items.setPriority('mention', 80);
-    if (items.has('submit')) items.setPriority('submit', -100); // Move to end (right)
+    if (items.has('submit')) items.setPriority('submit', -100);
   });
 
   // Customize ProseMirror toolbar items
   extend(TextEditor.prototype, 'toolbarItems', function(items) {
-    // Hide specific toolbar items
+    // Debug: log all available toolbar items
+    console.log('Available toolbarItems:', Array.from(items.toArray().map(item => item.itemName)));
+    
+    // Hide specific toolbar items - try multiple possible names
     const toolbarItemsToHide = [
       'nodeType',        // P/H1-H6 dropdown
+      'node_type',       // Alternative naming
       'code',            // Inline code
       'quote',           // Quote
       'link',            // Link dropdown
       'image',           // Image dropdown
-      'more',            // Additional controls dropdown (strikethrough, subscript, etc.)
+      'more',            // Additional controls dropdown
+      'additional',      // Alternative naming
+      'extra',           // Alternative naming
     ];
     
     toolbarItemsToHide.forEach(key => {
       if (items.has(key)) {
+        console.log('Removing toolbarItem:', key);
         items.remove(key);
       }
     });
 
-    // Reorder remaining toolbar items (Bold, Italic, Lists)
+    // Reorder remaining toolbar items
     if (items.has('bold')) items.setPriority('bold', 100);
     if (items.has('italic')) items.setPriority('italic', 90);
     if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
     if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
   });
+
+  // Fallback: Use DOM manipulation to hide elements
+  const hideTextEditorElements = () => {
+    // Hide upload buttons
+    const uploadButtons = document.querySelectorAll('.item-fof-upload, .fof-upload-button');
+    uploadButtons.forEach(el => el.style.display = 'none');
+    
+    // Hide node type dropdown (P/H1-H6)
+    const nodeTypeDropdowns = document.querySelectorAll('.NodeTypeButton, .NodeTypeDropdownMenu');
+    nodeTypeDropdowns.forEach(el => {
+      if (el.closest) {
+        const container = el.closest('.ButtonGroup.Dropdown');
+        if (container) container.style.display = 'none';
+      }
+    });
+    
+    // Hide link dropdown
+    const linkDropdowns = document.querySelectorAll('button[aria-label*="link" i], button[title*="link" i]');
+    linkDropdowns.forEach(el => {
+      if (el.querySelector('.fa-link')) {
+        const container = el.closest('.ButtonGroup.Dropdown');
+        if (container) container.style.display = 'none';
+      }
+    });
+    
+    // Hide image dropdown
+    const imageDropdowns = document.querySelectorAll('button[aria-label*="image" i], button[title*="image" i]');
+    imageDropdowns.forEach(el => {
+      if (el.querySelector('.fa-image')) {
+        const container = el.closest('.ButtonGroup.Dropdown');
+        if (container) container.style.display = 'none';
+      }
+    });
+    
+    // Hide additional controls (more dropdown)
+    const moreDropdowns = document.querySelectorAll('button[aria-label*="Additional Controls" i], button[title*="Additional Controls" i]');
+    moreDropdowns.forEach(el => {
+      if (el.querySelector('.fa-plus')) {
+        const container = el.closest('.ButtonGroup.Dropdown');
+        if (container) container.style.display = 'none';
+      }
+    });
+    
+    // Hide any remaining unwanted items by icon
+    const iconsToHide = [
+      '.fa-file-upload',   // Upload icon
+      '.fa-link',          // Link icon (in dropdowns)
+      '.fa-image',         // Image icon (in dropdowns)
+      '.fa-plus',          // More controls icon (in dropdowns)
+    ];
+    
+    iconsToHide.forEach(iconSelector => {
+      const icons = document.querySelectorAll(iconSelector);
+      icons.forEach(icon => {
+        const button = icon.closest('button');
+        if (button) {
+          const dropdown = button.closest('.ButtonGroup.Dropdown');
+          if (dropdown) {
+            dropdown.style.display = 'none';
+          } else {
+            button.style.display = 'none';
+          }
+        }
+      });
+    });
+  };
+
+  // Initialize DOM-based hiding
+  const initializeTextEditorHiding = () => {
+    // Initial run
+    setTimeout(hideTextEditorElements, 300);
+    
+    // Run on route changes
+    if (app.history?.initialized) {
+      app.history.initialized.then(() => {
+        app.history.router.on('changed', () => {
+          setTimeout(hideTextEditorElements, 300);
+        });
+      });
+    }
+    
+    // Watch for TextEditor creation
+    const observer = new MutationObserver(() => {
+      setTimeout(hideTextEditorElements, 100);
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    // Also run periodically
+    setInterval(hideTextEditorElements, 2000);
+  };
+
+  initializeTextEditorHiding();
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
