@@ -155,37 +155,36 @@ app.initializers.add('vietvan-ca-themes', () => {
       if (rgbMatch) {
         const [, r, g, b] = rgbMatch.map(Number);
         
-        // Use multiple brightness calculations for better accuracy
-        
-        // 1. WCAG relative luminance
+        // Calculate different brightness metrics
         const wcagLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        
-        // 2. Perceived brightness (alternative formula)
         const perceivedBrightness = Math.sqrt(0.241 * r * r + 0.691 * g * g + 0.068 * b * b) / 255;
-        
-        // 3. Simple average brightness
         const averageBrightness = (r + g + b) / (3 * 255);
         
-        // 4. YIQ luma (used by some designers)
-        const yiqLuma = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        // Calculate saturation to detect bright colors
+        const max = Math.max(r, g, b) / 255;
+        const min = Math.min(r, g, b) / 255;
+        const saturation = max === 0 ? 0 : (max - min) / max;
         
         // Calculate contrast ratios with black and white text
         const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
         const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
         
-        // Use the combination that provides better contrast
-        // Also use a lower threshold for edge cases
-        const shouldUseBlackText = wcagLuminance > 0.55 && 
-                                   perceivedBrightness > 0.5 && 
-                                   averageBrightness > 0.5 &&
-                                   contrastWithBlack > contrastWithWhite;
+        // Be much more conservative about using black text
+        // For highly saturated colors, require even higher brightness
+        const brightnessThreshold = saturation > 0.4 ? 0.75 : 0.65;
+        
+        const shouldUseBlackText = wcagLuminance > brightnessThreshold && 
+                                   perceivedBrightness > brightnessThreshold && 
+                                   averageBrightness > (brightnessThreshold - 0.05) &&
+                                   contrastWithBlack > contrastWithWhite &&
+                                   saturation < 0.6; // Avoid black text on highly saturated colors
         
         tag.style.color = shouldUseBlackText ? '#000000' : '#ffffff';
         
-        // Add appropriate text shadow
+        // Add appropriate text shadow with better contrast for colorful backgrounds
         tag.style.textShadow = shouldUseBlackText 
-          ? '0 0 1px rgba(255, 255, 255, 0.5)' 
-          : '0 0 1px rgba(0, 0, 0, 0.7)';
+          ? '0 0 1px rgba(255, 255, 255, 0.6)' 
+          : '0 0 1px rgba(0, 0, 0, 0.8)';
       }
     });
   };
