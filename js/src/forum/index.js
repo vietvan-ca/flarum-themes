@@ -342,36 +342,6 @@ app.initializers.add('vietvan-ca-themes', () => {
     // fof-upload-media-toolbar will be at 65 - right after ordered_list
   });
 
-  // Initialize DOM-based hiding
-  const initializeTextEditorHiding = () => {
-    // Initial run
-    setTimeout(hideTextEditorElements, 300);
-    
-    // Run on route changes
-    if (app.history?.initialized) {
-      app.history.initialized.then(() => {
-        app.history.router.on('changed', () => {
-          setTimeout(hideTextEditorElements, 300);
-        });
-      });
-    }
-    
-    // Watch for TextEditor creation
-    const observer = new MutationObserver(() => {
-      setTimeout(hideTextEditorElements, 100);
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-    
-    // Also run periodically
-    setInterval(hideTextEditorElements, 2000);
-  };
-
-  initializeTextEditorHiding();
-
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
     this.injectCustomDrawer();
