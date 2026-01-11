@@ -331,23 +331,6 @@ app.initializers.add('vietvan-ca-themes', () => {
         items.remove(key);
       }
     });
-
-    // Add media upload button to toolbar positioned after numbered list
-    const mediaUploadButton = Button.component({
-      icon: 'fas fa-photo-video',
-      className: 'Button Button--icon Button--link',
-      title: app.translator.trans('fof-upload.forum.buttons.media', {}, 'Media'),
-      onclick: (e) => {
-        e.preventDefault();
-        // Find and trigger the original media upload functionality
-        const originalButton = document.querySelector('.item-fof-upload-media .fof-upload-button');
-        if (originalButton) {
-          originalButton.click();
-        } else {
-          console.warn('Could not find original media upload button');
-        }
-      }
-    });
     
     items.add('fof-upload-media-toolbar', mediaUploadButton, 65); // Position between ordered_list (70) and other items
 
@@ -358,83 +341,6 @@ app.initializers.add('vietvan-ca-themes', () => {
     if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
     // fof-upload-media-toolbar will be at 65 - right after ordered_list
   });
-
-  // Fallback: Use DOM manipulation to hide elements (media button is handled via toolbarItems)
-  const hideTextEditorElements = () => {
-    // Hide the original media upload button container (since we added it to toolbar)
-    const mediaButtonContainer = document.querySelector('.item-fof-upload-media');
-    if (mediaButtonContainer) {
-      mediaButtonContainer.style.display = 'none';
-    }
-    
-    // Hide other upload buttons (but keep media button for moving)
-    const uploadButtons = document.querySelectorAll('.item-fof-upload:not(.item-fof-upload-media)');
-    uploadButtons.forEach(el => el.style.display = 'none');
-
-    // Hide node type dropdown (P/H1-H6)
-    const nodeTypeDropdowns = document.querySelectorAll('.NodeTypeButton, .NodeTypeDropdownMenu');
-    nodeTypeDropdowns.forEach(el => {
-      if (el.closest) {
-        const container = el.closest('.ButtonGroup.Dropdown');
-        if (container) container.style.display = 'none';
-      }
-    });
-    
-    // Hide link dropdown
-    const linkDropdowns = document.querySelectorAll('button[aria-label*="link" i], button[title*="link" i]');
-    linkDropdowns.forEach(el => {
-      if (el.querySelector('.fa-link')) {
-        const container = el.closest('.ButtonGroup.Dropdown');
-        if (container) container.style.display = 'none';
-      }
-    });
-    
-    // Hide image dropdown
-    const imageDropdowns = document.querySelectorAll('button[aria-label*="image" i], button[title*="image" i]');
-    imageDropdowns.forEach(el => {
-      if (el.querySelector('.fa-image')) {
-        const container = el.closest('.ButtonGroup.Dropdown');
-        if (container) container.style.display = 'none';
-      }
-    });
-    
-    // Hide additional controls (more dropdown)
-    const moreDropdowns = document.querySelectorAll('button[aria-label*="Additional Controls" i], button[title*="Additional Controls" i]');
-    moreDropdowns.forEach(el => {
-      if (el.querySelector('.fa-plus')) {
-        const container = el.closest('.ButtonGroup.Dropdown');
-        if (container) container.style.display = 'none';
-      }
-    });
-    
-    // Hide any remaining unwanted items by icon
-    const iconsToHide = [
-      '.fa-file-upload',   // Upload icon
-      '.fa-link',          // Link icon (in dropdowns)
-      '.fa-image',         // Image icon (in dropdowns)
-      '.fa-plus',          // More controls icon (in dropdowns)
-    ];
-    
-    iconsToHide.forEach(iconSelector => {
-      const icons = document.querySelectorAll(iconSelector);
-      icons.forEach(icon => {
-        const button = icon.closest('button');
-        if (button) {
-          const dropdown = button.closest('.ButtonGroup.Dropdown');
-          if (dropdown) {
-            dropdown.style.display = 'none';
-          } else {
-            // Don't hide the media button if it's the one we want to keep
-            const isMediaButton = icon.classList.contains('fa-photo-video') || 
-                                  button.getAttribute('aria-label')?.toLowerCase().includes('media');
-            if (!isMediaButton) {
-              button.style.display = 'none';
-            }
-          }
-        }
-      });
-    });
-  };
 
   // Initialize DOM-based hiding
   const initializeTextEditorHiding = () => {
