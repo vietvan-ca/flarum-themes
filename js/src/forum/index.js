@@ -331,8 +331,6 @@ app.initializers.add('vietvan-ca-themes', () => {
         items.remove(key);
       }
     });
-    
-    items.add('fof-upload-media-toolbar', mediaUploadButton, 65); // Position between ordered_list (70) and other items
 
     // Reorder remaining toolbar items
     if (items.has('bold')) items.setPriority('bold', 100);
