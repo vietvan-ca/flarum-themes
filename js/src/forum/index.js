@@ -308,37 +308,37 @@ app.initializers.add('vietvan-ca-themes', () => {
   });
 
   // Customize ProseMirror toolbar items
-  extend(TextEditor.prototype, 'toolbarItems', function(items) {
-    // Debug: log all available toolbar items
-    console.log('Available toolbarItems:', Array.from(items.toArray().map(item => item.itemName)));
+  // extend(TextEditor.prototype, 'toolbarItems', function(items) {
+  //   // Debug: log all available toolbar items
+  //   console.log('Available toolbarItems:', Array.from(items.toArray().map(item => item.itemName)));
     
-    // Hide specific toolbar items - try multiple possible names
-    const toolbarItemsToHide = [
-      'nodeType',        // P/H1-H6 dropdown
-      'node_type',       // Alternative naming
-      'code',            // Inline code
-      'quote',           // Quote
-      'link',            // Link dropdown
-      'image',           // Image dropdown
-      'more',            // Additional controls dropdown
-      'additional',      // Alternative naming
-      'extra',           // Alternative naming
-    ];
+  //   // Hide specific toolbar items - try multiple possible names
+  //   const toolbarItemsToHide = [
+  //     'nodeType',        // P/H1-H6 dropdown
+  //     'node_type',       // Alternative naming
+  //     'code',            // Inline code
+  //     'quote',           // Quote
+  //     'link',            // Link dropdown
+  //     'image',           // Image dropdown
+  //     'more',            // Additional controls dropdown
+  //     'additional',      // Alternative naming
+  //     'extra',           // Alternative naming
+  //   ];
     
-    toolbarItemsToHide.forEach(key => {
-      if (items.has(key)) {
-        console.log('Removing toolbarItem:', key);
-        items.remove(key);
-      }
-    });
+  //   toolbarItemsToHide.forEach(key => {
+  //     if (items.has(key)) {
+  //       console.log('Removing toolbarItem:', key);
+  //       items.remove(key);
+  //     }
+  //   });
 
-    // Reorder remaining toolbar items
-    if (items.has('bold')) items.setPriority('bold', 100);
-    if (items.has('italic')) items.setPriority('italic', 90);
-    if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
-    if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
-    // fof-upload-media-toolbar will be at 65 - right after ordered_list
-  });
+  //   // Reorder remaining toolbar items
+  //   if (items.has('bold')) items.setPriority('bold', 100);
+  //   if (items.has('italic')) items.setPriority('italic', 90);
+  //   if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
+  //   if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
+  //   // fof-upload-media-toolbar will be at 65 - right after ordered_list
+  // });
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
