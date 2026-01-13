@@ -273,39 +273,39 @@ app.initializers.add('vietvan-ca-themes', () => {
   // TextEditor Toolbar Reordering & Cleanup
   // ==========================================
   // Reorder and hide items in TextEditor controls
-  extend(TextEditor.prototype, 'controlItems', function(items) {
-    // Debug: log all available items
-    console.log('Available controlItems:', Array.from(items.toArray().map(item => item.itemName)));
+  // extend(TextEditor.prototype, 'controlItems', function(items) {
+  //   // Debug: log all available items
+  //   console.log('Available controlItems:', Array.from(items.toArray().map(item => item.itemName)));
     
-    // Remove fof-upload-media from controlItems so we can add it to toolbar instead
-    if (items.has('fof-upload-media')) {
-      console.log('Removing fof-upload-media from controlItems to move to toolbar');
-      items.remove('fof-upload-media');
-    }
+  //   // Remove fof-upload-media from controlItems so we can add it to toolbar instead
+  //   if (items.has('fof-upload-media')) {
+  //     console.log('Removing fof-upload-media from controlItems to move to toolbar');
+  //     items.remove('fof-upload-media');
+  //   }
     
-    // Hide unwanted items - try multiple possible names
-    const itemsToHide = [
-      'fof-upload',      // File upload button
-      'fofUpload',       // Alternative naming
-      'upload',          // Alternative naming
-      'rich-text',       // Toggle Rich Text Mode
-      'richText',        // Alternative naming
-      'emoji',           // Insert emoji
-      'preview',         // Preview button
-    ];
+  //   // Hide unwanted items - try multiple possible names
+  //   const itemsToHide = [
+  //     'fof-upload',      // File upload button
+  //     'fofUpload',       // Alternative naming
+  //     'upload',          // Alternative naming
+  //     'rich-text',       // Toggle Rich Text Mode
+  //     'richText',        // Alternative naming
+  //     'emoji',           // Insert emoji
+  //     'preview',         // Preview button
+  //   ];
     
-    itemsToHide.forEach(key => {
-      if (items.has(key)) {
-        console.log('Removing controlItem:', key);
-        items.remove(key);
-      }
-    });
+  //   itemsToHide.forEach(key => {
+  //     if (items.has(key)) {
+  //       console.log('Removing controlItem:', key);
+  //       items.remove(key);
+  //     }
+  //   });
 
-    // Set priorities (higher = appears first/left)
-    if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
-    if (items.has('mention')) items.setPriority('mention', 80);
-    if (items.has('submit')) items.setPriority('submit', -100);
-  });
+  //   // Set priorities (higher = appears first/left)
+  //   if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
+  //   if (items.has('mention')) items.setPriority('mention', 80);
+  //   if (items.has('submit')) items.setPriority('submit', -100);
+  // });
 
   // Customize ProseMirror toolbar items
   // extend(TextEditor.prototype, 'toolbarItems', function(items) {
