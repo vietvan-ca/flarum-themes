@@ -34,6 +34,17 @@ app.initializers.add('vietvan-ca-themes', () => {
       flarumLoading.style.setProperty('opacity', '0', 'important');
       flarumLoading.remove();
     }
+
+    // Also check for other elements with "Loading" text
+    const allDivs = document.querySelectorAll('div');
+    allDivs.forEach(div => {
+      if (div.textContent && (div.textContent.trim() === 'Loading...' || div.textContent.trim() === 'Loading')) {
+        console.log('VietVan Themes: Hiding div with loading text:', div.textContent);
+        div.style.setProperty('display', 'none', 'important');
+        div.style.setProperty('visibility', 'hidden', 'important');
+        div.style.setProperty('opacity', '0', 'important');
+      }
+    });
   };
   
   // Run immediately

@@ -92,8 +92,7 @@
 
 /* Aggressively hide default Flarum loading screen */
 #flarum-loading,
-div[id*="loading"]:contains("Loading"),
-div:contains("Loading...") {
+div[id*="loading"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
@@ -102,11 +101,6 @@ div:contains("Loading...") {
   position: absolute !important;
   top: -9999px !important;
   left: -9999px !important;
-}
-
-/* Force hide any loading text */
-body > div:contains("Loading") {
-  display: none !important;
 }
 
 /* Ensure hidden elements stay hidden */

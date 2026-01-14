@@ -668,16 +668,22 @@ export default class PageManager {
       this.handleFlarumInitialLoading(flarumLoading);
     } else {
       // Also check for any other default loading elements
-      const allLoadingElements = document.querySelectorAll('div[id*="loading"], div[class*="loading"], div:contains("Loading...")');
-      if (allLoadingElements.length > 0) {
-        console.log('PageManager: Found other loading elements:', allLoadingElements);
-        allLoadingElements.forEach(el => {
-          if (el.textContent && el.textContent.includes('Loading')) {
-            console.log('PageManager: Hiding loading element with text:', el.textContent);
-            this.forceHideLoading(el);
-          }
-        });
-      }
+      const allLoadingElements = document.querySelectorAll('div[id*="loading"], div[class*="loading"]');
+      allLoadingElements.forEach(el => {
+        if (el.textContent && el.textContent.includes('Loading')) {
+          console.log('PageManager: Hiding loading element with text:', el.textContent);
+          this.forceHideLoading(el);
+        }
+      });
+
+      // Check all divs for loading text (manual search)
+      const allDivs = document.querySelectorAll('div');
+      allDivs.forEach(el => {
+        if (el.textContent && (el.textContent.trim() === 'Loading...' || el.textContent.trim() === 'Loading')) {
+          console.log('PageManager: Found loading text in div:', el.textContent);
+          this.forceHideLoading(el);
+        }
+      });
     }
   }
 
