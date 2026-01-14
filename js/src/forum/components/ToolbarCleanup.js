@@ -12,6 +12,8 @@ export default class PageManager {
     this.isLoadingManagementActive = false;
     this.loadingTimeout = null;
     this.pageTransitionStart = null;
+    this.isInitialLoad = true; // Track if this is the first page load
+    this.initialLoadComplete = false;
   }
 
   /**
@@ -92,9 +94,16 @@ export default class PageManager {
   isLoadingStuck(element) {
     if (!element) return false;
     
+    // Never interfere with loading during initial page load
+    if (this.isInitialLoad && !this.initialLoadComplete) {
+      return false;
+    }
+    
     // Don't interfere with loading indicators that are actively animating
     const isAnimating = element.classList.contains('fa-spin') || 
                        element.classList.contains('animate-spin') ||
+                       element.classList.contains('fa-spinner') ||
+                       element.classList.contains('spinner') ||
                        window.getComputedStyle(element).animationName !== 'none';
     
     if (isAnimating) {
@@ -106,7 +115,7 @@ export default class PageManager {
       }
       
       const timeDiff = Date.now() - parseInt(visibleTime);
-      return timeDiff > 15000; // 15 seconds for animating elements
+      return timeDiff > 20000; // 20 seconds for animating elements (increased)
     }
     
     // For non-animating elements, check if they appear broken
@@ -117,7 +126,7 @@ export default class PageManager {
     }
     
     const timeDiff = Date.now() - parseInt(visibleTime);
-    return timeDiff > 8000; // 8 seconds for non-animating elements
+    return timeDiff > 12000; // 12 seconds for non-animating elements (increased)
   }
 
   /**
@@ -418,11 +427,15 @@ export default class PageManager {
                   // Only manage loading for stuck indicators, not active ones
                   if (node.matches?.('.LoadingIndicator, .Loading, .loading') ||
                       node.querySelector?.('.LoadingIndicator, .Loading, .loading')) {
+                    // Don't interfere with initial page load
+                    if (this.isInitialLoad && !this.initialLoadComplete) {
+                      return;
+                    }
                     // Delay to allow normal loading to complete first
                     setTimeout(() => {
                       needsLoadingManagement = true;
                       this.scheduleLoadingManagement();
-                    }, 3000);
+                    }, 5000); // Increased delay for better loading experience
                   }
                 }
               });
@@ -502,22 +515,36 @@ export default class PageManager {
    * Initialize the page management system (updated for better loading handling)
    */
   initialize() {
-    // Initial cleanup only (no loading management on startup)
-    setTimeout(() => {
-      this.cleanup();
-    }, 100);
+    // Don't do any cleanup on initial startup to allow loading to show
+    // Initial cleanup only after page is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          this.cleanup();
+          this.markInitialLoadComplete();
+        }, 1000); // Allow initial loading to show first
+      });
+    } else {
+      setTimeout(() => {
+        this.cleanup();
+        this.markInitialLoadComplete();
+      }, 500);
+    }
     
-    // Start observing for changes
-    this.startObserving();
+    // Start observing for changes (but delay to allow initial loading)
+    setTimeout(() => {
+      this.startObserving();
+    }, 2000);
     
     // Handle route changes (be gentle with loading management)
     if (window.app?.history?.router) {
       window.app.history.router.on('changed', () => {
         this.pageTransitionStart = Date.now();
+        this.isInitialLoad = false; // No longer initial load after first route change
         setTimeout(() => {
           this.cleanup();
           // Only check for stuck loading after route changes, with longer delay
-          setTimeout(() => this.clearOnlyStuckLoading(), 3000);
+          setTimeout(() => this.clearOnlyStuckLoading(), 5000);
         }, 200);
       });
     }
@@ -527,18 +554,26 @@ export default class PageManager {
       if (!document.hidden) {
         setTimeout(() => {
           this.cleanup();
-          // Only check stuck loading when returning to tab
-          setTimeout(() => this.clearOnlyStuckLoading(), 1000);
+          // Only check stuck loading when returning to tab (if not initial load)
+          if (!this.isInitialLoad) {
+            setTimeout(() => this.clearOnlyStuckLoading(), 2000);
+          }
         }, 100);
       }
     });
 
-    // Handle page load completion (only ensure content visibility)
+    // Handle page load completion (mark initial load as complete)
     if (document.readyState === 'complete') {
-      setTimeout(() => this.ensureCompletedContentVisibility(), 500);
+      setTimeout(() => {
+        this.markInitialLoadComplete();
+        this.ensureCompletedContentVisibility();
+      }, 1000);
     } else {
       window.addEventListener('load', () => {
-        setTimeout(() => this.ensureCompletedContentVisibility(), 500);
+        setTimeout(() => {
+          this.markInitialLoadComplete();
+          this.ensureCompletedContentVisibility();
+        }, 1000);
       });
     }
 
@@ -549,9 +584,21 @@ export default class PageManager {
       }
     }, 30000);
 
-    // Only check for stuck loading states every 2 minutes (much less aggressive)
+    // Only check for stuck loading states every 3 minutes (much less aggressive)
     setInterval(() => {
-      this.clearOnlyStuckLoading();
-    }, 120000);
+      if (!this.isInitialLoad) { // Don't interfere with initial load
+        this.clearOnlyStuckLoading();
+      }
+    }, 180000);
+  }
+
+  /**
+   * Mark initial load as complete
+   */
+  markInitialLoadComplete() {
+    this.initialLoadComplete = true;
+    setTimeout(() => {
+      this.isInitialLoad = false;
+    }, 3000); // Give extra time for initial load processes
   }
 }
