@@ -90,6 +90,18 @@
   color: #c22126 !important;
 }
 
+/* Handle default Flarum loading screen */
+#flarum-loading {
+  /* Hide default loading text, but allow custom loading to show */
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  
+  /* If app hasn't loaded yet, show it briefly */
+  &:not([data-vietvan-force-hidden="true"]) {
+    opacity: 1;
+  }
+}
+
 /* Ensure hidden elements stay hidden */
 .vietvan-hidden,
 [data-vietvan-hidden="true"],

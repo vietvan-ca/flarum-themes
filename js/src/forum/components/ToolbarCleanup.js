@@ -72,20 +72,60 @@ export default class PageManager {
       '.LoadingIndicator',
       '.Loading',
       '.loading',
-      '.App-loading'
+      '.App-loading',
+      '#flarum-loading' // Handle default Flarum loading screen
     ];
 
     loadingSelectors.forEach(selector => {
       const elements = document.querySelectorAll(selector);
       elements.forEach(el => {
-        // Only hide if truly stuck (been visible for more than 15 seconds)
-        const isStuck = this.isLoadingStuck(el);
-        if (isStuck) {
-          console.warn('PageManager: Found stuck loading indicator, hiding:', el);
-          this.forceHideLoading(el);
+        // Handle #flarum-loading differently - it should be removed once app loads
+        if (el.id === 'flarum-loading') {
+          this.handleFlarumInitialLoading(el);
+        } else {
+          // Only hide if truly stuck (been visible for more than 15 seconds)
+          const isStuck = this.isLoadingStuck(el);
+          if (isStuck) {
+            console.warn('PageManager: Found stuck loading indicator, hiding:', el);
+            this.forceHideLoading(el);
+          }
         }
       });
     });
+  }
+
+  /**
+   * Handle the default #flarum-loading screen
+   */
+  handleFlarumInitialLoading(element) {
+    if (!element) return;
+    
+    // Check if app is loaded
+    const appLoaded = window.app && window.app.forum && document.querySelector('.App');
+    
+    if (appLoaded) {
+      console.log('PageManager: App loaded, removing default Flarum loading screen');
+      element.style.setProperty('opacity', '0', 'important');
+      element.style.setProperty('transition', 'opacity 0.3s ease-out', 'important');
+      
+      setTimeout(() => {
+        element.style.setProperty('display', 'none', 'important');
+        element.remove();
+      }, 300);
+    } else {
+      // App not loaded yet, check if loading has been visible too long
+      const visibleTime = element.dataset.vietvanVisibleSince;
+      if (!visibleTime) {
+        element.dataset.vietvanVisibleSince = Date.now();
+        return;
+      }
+      
+      const timeDiff = Date.now() - parseInt(visibleTime);
+      if (timeDiff > 10000) { // 10 seconds for initial loading
+        console.warn('PageManager: Initial Flarum loading taking too long, forcing hide');
+        this.forceHideLoading(element);
+      }
+    }
   }
 
   /**
@@ -515,26 +555,31 @@ export default class PageManager {
    * Initialize the page management system (updated for better loading handling)
    */
   initialize() {
+    // Handle initial #flarum-loading immediately
+    this.handleInitialFlarumLoading();
+    
     // Don't do any cleanup on initial startup to allow loading to show
     // Initial cleanup only after page is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
+          this.handleInitialFlarumLoading();
           this.cleanup();
           this.markInitialLoadComplete();
-        }, 1000); // Allow initial loading to show first
+        }, 500); // Reduced delay for better initial experience
       });
     } else {
       setTimeout(() => {
+        this.handleInitialFlarumLoading();
         this.cleanup();
         this.markInitialLoadComplete();
-      }, 500);
+      }, 200); // Reduced delay
     }
     
     // Start observing for changes (but delay to allow initial loading)
     setTimeout(() => {
       this.startObserving();
-    }, 2000);
+    }, 1000); // Reduced delay
     
     // Handle route changes (be gentle with loading management)
     if (window.app?.history?.router) {
@@ -565,15 +610,17 @@ export default class PageManager {
     // Handle page load completion (mark initial load as complete)
     if (document.readyState === 'complete') {
       setTimeout(() => {
+        this.handleInitialFlarumLoading();
         this.markInitialLoadComplete();
         this.ensureCompletedContentVisibility();
-      }, 1000);
+      }, 500);
     } else {
       window.addEventListener('load', () => {
         setTimeout(() => {
+          this.handleInitialFlarumLoading();
           this.markInitialLoadComplete();
           this.ensureCompletedContentVisibility();
-        }, 1000);
+        }, 500);
       });
     }
 
@@ -582,6 +629,8 @@ export default class PageManager {
       if (document.querySelector('.TextEditor-toolbar')) {
         this.cleanup();
       }
+      // Also periodically check for stuck #flarum-loading
+      this.handleInitialFlarumLoading();
     }, 30000);
 
     // Only check for stuck loading states every 3 minutes (much less aggressive)
@@ -590,6 +639,16 @@ export default class PageManager {
         this.clearOnlyStuckLoading();
       }
     }, 180000);
+  }
+
+  /**
+   * Handle initial Flarum loading screen
+   */
+  handleInitialFlarumLoading() {
+    const flarumLoading = document.querySelector('#flarum-loading');
+    if (flarumLoading) {
+      this.handleFlarumInitialLoading(flarumLoading);
+    }
   }
 
   /**
