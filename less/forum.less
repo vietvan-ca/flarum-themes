@@ -90,16 +90,23 @@
   color: #c22126 !important;
 }
 
-/* Handle default Flarum loading screen */
-#flarum-loading {
-  /* Hide default loading text, but allow custom loading to show */
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
-  
-  /* If app hasn't loaded yet, show it briefly */
-  &:not([data-vietvan-force-hidden="true"]) {
-    opacity: 1;
-  }
+/* Aggressively hide default Flarum loading screen */
+#flarum-loading,
+div[id*="loading"]:contains("Loading"),
+div:contains("Loading...") {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -9999 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
+
+/* Force hide any loading text */
+body > div:contains("Loading") {
+  display: none !important;
 }
 
 /* Ensure hidden elements stay hidden */
@@ -116,6 +123,10 @@
   overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
+  z-index: -9999 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
 }
 
 /* Loading state improvements - less aggressive */

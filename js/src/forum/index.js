@@ -21,6 +21,29 @@ import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
+  // Immediately Hide Default Loading
+  // ==========================================
+  
+  // Hide default Flarum loading immediately when this script runs
+  const hideDefaultLoading = () => {
+    const flarumLoading = document.querySelector('#flarum-loading');
+    if (flarumLoading) {
+      console.log('VietVan Themes: Hiding default Flarum loading immediately');
+      flarumLoading.style.setProperty('display', 'none', 'important');
+      flarumLoading.style.setProperty('visibility', 'hidden', 'important');
+      flarumLoading.style.setProperty('opacity', '0', 'important');
+      flarumLoading.remove();
+    }
+  };
+  
+  // Run immediately
+  hideDefaultLoading();
+  
+  // Also run on DOM changes in case it gets added back
+  const observer = new MutationObserver(() => hideDefaultLoading());
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // ==========================================
   // Initialize Page Management System
   // ==========================================
   const pageManager = new PageManager();
