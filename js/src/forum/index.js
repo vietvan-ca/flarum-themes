@@ -17,14 +17,14 @@ import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 import CustomMobileDrawer from './components/CustomMobileDrawer';
-import ToolbarCleanup from './components/ToolbarCleanup';
+import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
-  // Initialize Toolbar Cleanup System
+  // Initialize Page Management System
   // ==========================================
-  const toolbarCleanup = new ToolbarCleanup();
-  toolbarCleanup.initialize();
+  const pageManager = new PageManager();
+  pageManager.initialize();
 
   // ==========================================
   // Change Hide Button Icon to Eye
@@ -282,11 +282,14 @@ app.initializers.add('vietvan-ca-themes', () => {
   
   // Ensure toolbar cleanup runs after TextEditor is created/updated
   extend(TextEditor.prototype, 'oncreate', function() {
-    setTimeout(() => toolbarCleanup.cleanup(), 50);
+    setTimeout(() => {
+      pageManager.cleanup();
+      pageManager.manageLoadingState();
+    }, 50);
   });
 
   extend(TextEditor.prototype, 'onupdate', function() {
-    setTimeout(() => toolbarCleanup.cleanup(), 25);
+    setTimeout(() => pageManager.cleanup(), 25);
   });
 
   // ==========================================
@@ -363,11 +366,41 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
     this.injectCustomDrawer();
+    // Manage loading state on page creation
+    setTimeout(() => pageManager.manageLoadingState(), 100);
   });
 
   extend(IndexPage.prototype, 'onupdate', function() {
     this.injectCustomDrawer();
+    // Quick loading check on page update
+    setTimeout(() => pageManager.manageLoadingState(), 50);
   });
+
+  // Add loading management to other major page components
+  const addLoadingManagementToComponent = (component) => {
+    extend(component.prototype, 'oncreate', function() {
+      setTimeout(() => pageManager.manageLoadingState(), 100);
+    });
+    
+    extend(component.prototype, 'onupdate', function() {
+      setTimeout(() => pageManager.manageLoadingState(), 50);
+    });
+  };
+
+  // Apply loading management to key components (if available)
+  try {
+    const DiscussionPage = require('flarum/forum/components/DiscussionPage').default;
+    addLoadingManagementToComponent(DiscussionPage);
+  } catch (e) {
+    console.log('DiscussionPage not available for loading management');
+  }
+
+  try {
+    const UserPage = require('flarum/forum/components/UserPage').default;
+    addLoadingManagementToComponent(UserPage);
+  } catch (e) {
+    console.log('UserPage not available for loading management');
+  }
 
   // Add method to inject custom drawer
   IndexPage.prototype.injectCustomDrawer = function() {

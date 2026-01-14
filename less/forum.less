@@ -92,7 +92,9 @@
 
 /* Ensure hidden elements stay hidden */
 .vietvan-hidden,
-[data-vietvan-hidden="true"] {
+[data-vietvan-hidden="true"],
+.vietvan-force-hidden,
+[data-vietvan-force-hidden="true"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
@@ -102,6 +104,59 @@
   overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+
+/* Loading state improvements */
+.LoadingIndicator,
+.Loading,
+.loading {
+  transition: opacity 0.3s ease-out;
+  
+  &.vietvan-force-hidden {
+    animation: vietvan-fade-out 0.3s ease-out forwards;
+  }
+}
+
+@keyframes vietvan-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    display: none;
+  }
+}
+
+/* Ensure content visibility after loading */
+.App-content,
+.DiscussionPage-content,
+.IndexPage-content,
+.UserPage-content {
+  min-height: 200px;
+  
+  &:not(.vietvan-force-hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Prevent loading indicators from being too persistent */
+.LoadingIndicator {
+  max-width: 100px;
+  max-height: 100px;
+  
+  /* Auto-hide after 10 seconds as a safety measure */
+  animation: vietvan-auto-hide 10s ease-out forwards;
+}
+
+@keyframes vietvan-auto-hide {
+  0%, 90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
 }
 
 /* Hide rich text toggle button */

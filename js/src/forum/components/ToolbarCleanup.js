@@ -1,13 +1,17 @@
 /**
- * ToolbarCleanup - Handles consistent hiding of unwanted TextEditor toolbar elements
- * Addresses timing issues with CSS !important rules and dynamic JavaScript changes
+ * PageManager - Handles toolbar cleanup and loading state management
+ * Addresses timing issues with CSS rules, dynamic changes, and stuck loading states
  */
 
-export default class ToolbarCleanup {
+export default class PageManager {
   constructor() {
     this.observers = new Map();
     this.cleanupQueue = new Set();
+    this.loadingQueue = new Set();
     this.isProcessing = false;
+    this.isLoadingManagementActive = false;
+    this.loadingTimeout = null;
+    this.pageTransitionStart = null;
   }
 
   /**
@@ -31,10 +35,181 @@ export default class ToolbarCleanup {
       this.hideRichTextToggle();
       
     } catch (error) {
-      console.warn('ToolbarCleanup: Error during cleanup:', error);
+      console.warn('PageManager: Error during cleanup:', error);
     } finally {
       this.isProcessing = false;
     }
+  }
+
+  /**
+   * Manage loading states during page transitions
+   */
+  manageLoadingState() {
+    if (this.isLoadingManagementActive) return;
+    this.isLoadingManagementActive = true;
+
+    try {
+      // Clear any stuck loading indicators
+      this.clearStuckLoading();
+      
+      // Ensure page content is properly displayed
+      this.ensureContentVisibility();
+      
+      // Handle loading timeouts
+      this.handleLoadingTimeout();
+      
+    } catch (error) {
+      console.warn('PageManager: Error during loading management:', error);
+    } finally {
+      this.isLoadingManagementActive = false;
+    }
+  }
+
+  /**
+   * Clear stuck loading indicators
+   */
+  clearStuckLoading() {
+    const loadingSelectors = [
+      '.LoadingIndicator',
+      '.Loading',
+      '.loading',
+      '.spinner',
+      '.App-loading',
+      '.ModalManager .Modal .Loading',
+      '.DiscussionList-loadMore .Button.loading',
+      '[aria-label="Loading"]',
+      '.fa-spinner',
+      '.fa-circle-o-notch'
+    ];
+
+    loadingSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        // Only remove loading indicators that have been visible for too long
+        const isStuck = this.isLoadingStuck(el);
+        if (isStuck) {
+          this.forceHideLoading(el);
+        }
+      });
+    });
+  }
+
+  /**
+   * Check if a loading indicator appears to be stuck
+   */
+  isLoadingStuck(element) {
+    if (!element) return false;
+    
+    // Check if element has been visible for more than 5 seconds
+    const visibleTime = element.dataset.vietvanVisibleSince;
+    if (!visibleTime) {
+      element.dataset.vietvanVisibleSince = Date.now();
+      return false;
+    }
+    
+    const timeDiff = Date.now() - parseInt(visibleTime);
+    return timeDiff > 5000; // 5 seconds threshold
+  }
+
+  /**
+   * Force hide stuck loading indicator
+   */
+  forceHideLoading(element) {
+    if (!element) return;
+    
+    console.warn('PageManager: Force hiding stuck loading element:', element);
+    
+    element.style.setProperty('display', 'none', 'important');
+    element.style.setProperty('visibility', 'hidden', 'important');
+    element.style.setProperty('opacity', '0', 'important');
+    element.classList.add('vietvan-force-hidden');
+    element.setAttribute('aria-hidden', 'true');
+    
+    // Mark as force hidden
+    element.dataset.vietvanForceHidden = 'true';
+  }
+
+  /**
+   * Ensure page content is visible after loading
+   */
+  ensureContentVisibility() {
+    const contentSelectors = [
+      '.App-content',
+      '.DiscussionPage-content',
+      '.IndexPage-content',
+      '.UserPage-content',
+      '.PostsUserPage-content'
+    ];
+
+    contentSelectors.forEach(selector => {
+      const content = document.querySelector(selector);
+      if (content && this.isContentHidden(content)) {
+        this.ensureElementVisible(content);
+      }
+    });
+  }
+
+  /**
+   * Check if content appears to be hidden when it should be visible
+   */
+  isContentHidden(element) {
+    if (!element) return false;
+    
+    const styles = window.getComputedStyle(element);
+    const isHidden = styles.display === 'none' || 
+                    styles.visibility === 'hidden' || 
+                    styles.opacity === '0';
+    
+    // Content should be visible if page has finished loading
+    const pageLoaded = document.readyState === 'complete' && 
+                      !document.querySelector('.App-loading') &&
+                      !document.querySelector('.LoadingIndicator');
+    
+    return isHidden && pageLoaded;
+  }
+
+  /**
+   * Ensure an element is visible
+   */
+  ensureElementVisible(element) {
+    if (!element) return;
+    
+    element.style.removeProperty('display');
+    element.style.removeProperty('visibility');
+    element.style.removeProperty('opacity');
+    element.classList.remove('vietvan-force-hidden');
+    element.removeAttribute('aria-hidden');
+  }
+
+  /**
+   * Handle loading timeout scenarios
+   */
+  handleLoadingTimeout() {
+    // Clear any existing timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
+
+    // Set a maximum loading time
+    this.loadingTimeout = setTimeout(() => {
+      console.warn('PageManager: Loading timeout reached, forcing page display');
+      this.forceCompleteLoading();
+    }, 10000); // 10 second maximum loading time
+  }
+
+  /**
+   * Force complete loading state
+   */
+  forceCompleteLoading() {
+    // Hide all loading indicators
+    const loadingElements = document.querySelectorAll('.LoadingIndicator, .Loading, .loading, .spinner');
+    loadingElements.forEach(el => this.forceHideLoading(el));
+
+    // Show main content
+    this.ensureContentVisibility();
+
+    // Dispatch custom event to signal forced completion
+    window.dispatchEvent(new CustomEvent('vietvan:loading-forced-complete'));
   }
 
   /**
@@ -134,7 +309,7 @@ export default class ToolbarCleanup {
   }
 
   /**
-   * Start observing for toolbar changes
+   * Start observing for toolbar and loading changes
    */
   startObserving() {
     // Observe composer area for toolbar creation/updates
@@ -179,28 +354,68 @@ export default class ToolbarCleanup {
       }
     };
 
-    // Observe body for new composer instances
+    // Observe body for new composer instances and loading states
     const observeBody = () => {
       if (!this.observers.has('body')) {
         const observer = new MutationObserver((mutations) => {
+          let needsCleanup = false;
+          let needsLoadingManagement = false;
+
           mutations.forEach(mutation => {
             if (mutation.type === 'childList') {
               mutation.addedNodes.forEach(node => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
+                  // Check for composer
                   if (node.matches?.('#composer') || 
                       node.querySelector?.('#composer')) {
                     setTimeout(observeComposer, 50);
-                    this.scheduleCleanup();
+                    needsCleanup = true;
+                  }
+                  
+                  // Check for loading indicators
+                  if (node.matches?.('.LoadingIndicator, .Loading, .loading') ||
+                      node.querySelector?.('.LoadingIndicator, .Loading, .loading')) {
+                    needsLoadingManagement = true;
+                  }
+
+                  // Check for page content changes
+                  if (node.matches?.('.App-content, .DiscussionPage, .IndexPage') ||
+                      node.querySelector?.('.App-content, .DiscussionPage, .IndexPage')) {
+                    needsLoadingManagement = true;
                   }
                 }
               });
+
+              // Check for removed loading indicators
+              mutation.removedNodes.forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                  if (node.matches?.('.LoadingIndicator, .Loading, .loading') ||
+                      node.querySelector?.('.LoadingIndicator, .Loading, .loading')) {
+                    needsLoadingManagement = true;
+                  }
+                }
+              });
+            } else if (mutation.type === 'attributes') {
+              // Check for loading-related attribute changes
+              if (mutation.target.matches?.('.LoadingIndicator, .Loading, .loading, .App-content')) {
+                needsLoadingManagement = true;
+              }
             }
           });
+
+          if (needsCleanup) {
+            this.scheduleCleanup();
+          }
+          if (needsLoadingManagement) {
+            this.scheduleLoadingManagement();
+          }
         });
 
         observer.observe(document.body, {
           childList: true,
-          subtree: true
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class', 'aria-hidden']
         });
 
         this.observers.set('body', observer);
@@ -226,6 +441,20 @@ export default class ToolbarCleanup {
   }
 
   /**
+   * Schedule loading management with debouncing
+   */
+  scheduleLoadingManagement() {
+    this.loadingQueue.add(Date.now());
+    
+    setTimeout(() => {
+      if (this.loadingQueue.size > 0) {
+        this.loadingQueue.clear();
+        this.manageLoadingState();
+      }
+    }, 100);
+  }
+
+  /**
    * Stop all observers
    */
   stopObserving() {
@@ -234,19 +463,53 @@ export default class ToolbarCleanup {
   }
 
   /**
-   * Initialize the toolbar cleanup system
+   * Initialize the page management system
    */
   initialize() {
-    // Initial cleanup
-    setTimeout(() => this.cleanup(), 100);
+    // Initial cleanup and loading management
+    setTimeout(() => {
+      this.cleanup();
+      this.manageLoadingState();
+    }, 100);
     
     // Start observing for changes
     this.startObserving();
     
-    // Cleanup on route changes
+    // Handle route changes
     if (window.app?.history?.router) {
       window.app.history.router.on('changed', () => {
-        setTimeout(() => this.cleanup(), 200);
+        this.pageTransitionStart = Date.now();
+        setTimeout(() => {
+          this.cleanup();
+          this.manageLoadingState();
+        }, 200);
+      });
+    }
+
+    // Listen for page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        setTimeout(() => {
+          this.cleanup();
+          this.manageLoadingState();
+        }, 100);
+      }
+    });
+
+    // Listen for window focus events
+    window.addEventListener('focus', () => {
+      setTimeout(() => {
+        this.cleanup();
+        this.manageLoadingState();
+      }, 100);
+    });
+
+    // Handle page load completion
+    if (document.readyState === 'complete') {
+      setTimeout(() => this.manageLoadingState(), 500);
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(() => this.manageLoadingState(), 500);
       });
     }
 
@@ -255,6 +518,18 @@ export default class ToolbarCleanup {
       if (document.querySelector('.TextEditor-toolbar')) {
         this.cleanup();
       }
-    }, 5000);
+      // Check for stuck loading states every 30 seconds
+      this.manageLoadingState();
+    }, 30000);
+
+    // More frequent loading checks in the first few minutes
+    setTimeout(() => {
+      const frequentCheck = setInterval(() => {
+        this.manageLoadingState();
+      }, 5000);
+      
+      // Stop frequent checking after 2 minutes
+      setTimeout(() => clearInterval(frequentCheck), 120000);
+    }, 1000);
   }
 }
