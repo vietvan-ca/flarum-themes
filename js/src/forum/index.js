@@ -21,38 +21,29 @@ import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
-  // Immediately Hide Default Loading
+  // Enhance Default Loading Experience
   // ==========================================
   
-  // Hide default Flarum loading immediately when this script runs
-  const hideDefaultLoading = () => {
+  // Enhance default Flarum loading to be fullscreen and centered
+  const enhanceDefaultLoading = () => {
     const flarumLoading = document.querySelector('#flarum-loading');
     if (flarumLoading) {
-      console.log('VietVan Themes: Hiding default Flarum loading immediately');
-      flarumLoading.style.setProperty('display', 'none', 'important');
-      flarumLoading.style.setProperty('visibility', 'hidden', 'important');
-      flarumLoading.style.setProperty('opacity', '0', 'important');
-      flarumLoading.remove();
-    }
-
-    // Also check for other elements with "Loading" text
-    const allDivs = document.querySelectorAll('div');
-    allDivs.forEach(div => {
-      if (div.textContent && (div.textContent.trim() === 'Loading...' || div.textContent.trim() === 'Loading')) {
-        console.log('VietVan Themes: Hiding div with loading text:', div.textContent);
-        div.style.setProperty('display', 'none', 'important');
-        div.style.setProperty('visibility', 'hidden', 'important');
-        div.style.setProperty('opacity', '0', 'important');
+      console.log('VietVan Themes: Enhancing default Flarum loading display');
+      
+      // Update loading text
+      if (flarumLoading.textContent === 'Loading...') {
+        flarumLoading.textContent = 'Đang tải...';
       }
-    });
+      
+      // Ensure it's visible and properly styled (CSS handles positioning)
+      flarumLoading.style.removeProperty('display');
+      flarumLoading.style.removeProperty('visibility');
+      flarumLoading.style.removeProperty('opacity');
+    }
   };
   
   // Run immediately
-  hideDefaultLoading();
-  
-  // Also run on DOM changes in case it gets added back
-  const observer = new MutationObserver(() => hideDefaultLoading());
-  observer.observe(document.body, { childList: true, subtree: true });
+  enhanceDefaultLoading();
 
   // ==========================================
   // Initialize Page Management System

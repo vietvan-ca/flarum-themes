@@ -104,43 +104,42 @@ export default class PageManager {
     const appLoaded = window.app && window.app.forum && document.querySelector('.App');
     
     if (appLoaded) {
-      console.log('PageManager: App loaded, removing default Flarum loading screen');
+      console.log('PageManager: App loaded, removing fullscreen loading overlay');
       
-      // More aggressive removal
-      element.style.setProperty('display', 'none', 'important');
-      element.style.setProperty('visibility', 'hidden', 'important');
+      // Smooth fade out transition
+      element.style.setProperty('transition', 'opacity 0.5s ease-out', 'important');
       element.style.setProperty('opacity', '0', 'important');
-      element.style.setProperty('pointer-events', 'none', 'important');
-      element.style.setProperty('z-index', '-9999', 'important');
-      element.setAttribute('aria-hidden', 'true');
-      element.setAttribute('hidden', '');
-      element.dataset.vietvanForceHidden = 'true';
-      element.classList.add('vietvan-force-hidden');
       
-      // Try to remove it completely
       setTimeout(() => {
+        element.style.setProperty('display', 'none', 'important');
         try {
           if (element.parentNode) {
             element.parentNode.removeChild(element);
-            console.log('PageManager: Successfully removed #flarum-loading element');
+            console.log('PageManager: Successfully removed fullscreen loading overlay');
           }
         } catch (e) {
-          console.warn('PageManager: Could not remove #flarum-loading:', e);
+          console.warn('PageManager: Could not remove loading overlay:', e);
         }
-      }, 100);
+      }, 500);
       
     } else {
-      // App not loaded yet, check if loading has been visible too long
+      // App not loaded yet, ensure loading is properly displayed
       const visibleTime = element.dataset.vietvanVisibleSince;
       if (!visibleTime) {
         element.dataset.vietvanVisibleSince = Date.now();
+        
+        // Enhance the loading display
+        if (element.textContent === 'Loading...') {
+          element.textContent = 'Đang tải...';
+        }
+        
         return;
       }
       
       const timeDiff = Date.now() - parseInt(visibleTime);
-      if (timeDiff > 8000) { // 8 seconds for initial loading (reduced)
-        console.warn('PageManager: Initial Flarum loading taking too long, forcing hide');
-        this.forceHideLoading(element);
+      if (timeDiff > 15000) { // 15 seconds for initial loading (increased threshold)
+        console.warn('PageManager: Initial loading taking too long, but keeping it visible');
+        // Don't hide it - just log the long loading time
       }
     }
   }
@@ -664,26 +663,8 @@ export default class PageManager {
   handleInitialFlarumLoading() {
     const flarumLoading = document.querySelector('#flarum-loading');
     if (flarumLoading) {
-      console.log('PageManager: Found #flarum-loading element, processing...');
+      console.log('PageManager: Found #flarum-loading element, ensuring proper display...');
       this.handleFlarumInitialLoading(flarumLoading);
-    } else {
-      // Also check for any other default loading elements
-      const allLoadingElements = document.querySelectorAll('div[id*="loading"], div[class*="loading"]');
-      allLoadingElements.forEach(el => {
-        if (el.textContent && el.textContent.includes('Loading')) {
-          console.log('PageManager: Hiding loading element with text:', el.textContent);
-          this.forceHideLoading(el);
-        }
-      });
-
-      // Check all divs for loading text (manual search)
-      const allDivs = document.querySelectorAll('div');
-      allDivs.forEach(el => {
-        if (el.textContent && (el.textContent.trim() === 'Loading...' || el.textContent.trim() === 'Loading')) {
-          console.log('PageManager: Found loading text in div:', el.textContent);
-          this.forceHideLoading(el);
-        }
-      });
     }
   }
 
