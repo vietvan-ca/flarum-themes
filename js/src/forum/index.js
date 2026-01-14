@@ -284,7 +284,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   extend(TextEditor.prototype, 'oncreate', function() {
     setTimeout(() => {
       pageManager.cleanup();
-      pageManager.manageLoadingState();
+      // Removed aggressive loading management here
     }, 50);
   });
 
@@ -366,24 +366,19 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {
     this.injectCustomDrawer();
-    // Manage loading state on page creation
-    setTimeout(() => pageManager.manageLoadingState(), 100);
+    // Removed aggressive loading management
   });
 
   extend(IndexPage.prototype, 'onupdate', function() {
     this.injectCustomDrawer();
-    // Quick loading check on page update
-    setTimeout(() => pageManager.manageLoadingState(), 50);
+    // Removed aggressive loading management
   });
 
-  // Add loading management to other major page components
+  // Add loading management to other major page components (more conservative)
   const addLoadingManagementToComponent = (component) => {
     extend(component.prototype, 'oncreate', function() {
-      setTimeout(() => pageManager.manageLoadingState(), 100);
-    });
-    
-    extend(component.prototype, 'onupdate', function() {
-      setTimeout(() => pageManager.manageLoadingState(), 50);
+      // Only check for stuck loading states, don't interfere with normal loading
+      setTimeout(() => pageManager.clearOnlyStuckLoading(), 5000);
     });
   };
 

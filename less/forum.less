@@ -106,14 +106,14 @@
   padding: 0 !important;
 }
 
-/* Loading state improvements */
+/* Loading state improvements - less aggressive */
 .LoadingIndicator,
 .Loading,
 .loading {
   transition: opacity 0.3s ease-out;
   
   &.vietvan-force-hidden {
-    animation: vietvan-fade-out 0.3s ease-out forwards;
+    animation: vietvan-fade-out 0.5s ease-out forwards;
   }
 }
 
@@ -123,41 +123,40 @@
   }
   to {
     opacity: 0;
-    display: none;
+    visibility: hidden;
   }
 }
 
-/* Ensure content visibility after loading */
+/* Ensure content visibility after loading - but don't force it */
 .App-content,
 .DiscussionPage-content,
 .IndexPage-content,
 .UserPage-content {
   min-height: 200px;
   
-  &:not(.vietvan-force-hidden) {
+  /* Only apply visibility fixes to content that's been specifically processed */
+  &.vietvan-ensure-visible {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
   }
 }
 
-/* Prevent loading indicators from being too persistent */
-.LoadingIndicator {
+/* Remove the aggressive loading timeout animation */
+/* .LoadingIndicator {
   max-width: 100px;
   max-height: 100px;
-  
-  /* Auto-hide after 10 seconds as a safety measure */
   animation: vietvan-auto-hide 10s ease-out forwards;
-}
+} */
 
-@keyframes vietvan-auto-hide {
+/* @keyframes vietvan-auto-hide {
   0%, 90% {
     opacity: 1;
   }
   100% {
     opacity: 0.3;
   }
-}
+} */
 
 /* Hide rich text toggle button */
 .item-rich-text {
