@@ -17,8 +17,15 @@ import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 import CustomMobileDrawer from './components/CustomMobileDrawer';
+import ToolbarCleanup from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
+  // ==========================================
+  // Initialize Toolbar Cleanup System
+  // ==========================================
+  const toolbarCleanup = new ToolbarCleanup();
+  toolbarCleanup.initialize();
+
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
@@ -270,7 +277,20 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeTextColors();
 
   // ==========================================
-  // TextEditor Toolbar Reordering & Cleanup
+  // TextEditor Extensions (Simplified)
+  // ==========================================
+  
+  // Ensure toolbar cleanup runs after TextEditor is created/updated
+  extend(TextEditor.prototype, 'oncreate', function() {
+    setTimeout(() => toolbarCleanup.cleanup(), 50);
+  });
+
+  extend(TextEditor.prototype, 'onupdate', function() {
+    setTimeout(() => toolbarCleanup.cleanup(), 25);
+  });
+
+  // ==========================================
+  // TextEditor Toolbar Reordering & Cleanup (Legacy - Commented Out)
   // ==========================================
   // Reorder and hide items in TextEditor controls
   // extend(TextEditor.prototype, 'controlItems', function(items) {

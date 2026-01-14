@@ -90,35 +90,71 @@
   color: #c22126 !important;
 }
 
+/* Ensure hidden elements stay hidden */
+.vietvan-hidden,
+[data-vietvan-hidden="true"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide rich text toggle button */
 .item-rich-text {
   display: none !important;
 }
 
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > button:nth-child(4) {
-  display: none !important;
+/* Hide specific toolbar buttons using more stable selectors */
+.TextEditor-toolbar {
+  /* Hide specific buttons by data attributes or classes when possible */
+  button[data-hotkey="Ctrl+K"],
+  button[title*="Link"],
+  div[data-tooltip*="Link"] {
+    display: none;
+    visibility: hidden;
+  }
+  
+  /* Hide quote and code buttons */
+  button[data-hotkey="Ctrl+>"],
+  button[title*="Quote"],
+  div[data-tooltip*="Quote"],
+  button[data-hotkey="Ctrl+`"],
+  button[title*="Code"],
+  div[data-tooltip*="Code"] {
+    display: none;
+    visibility: hidden;
+  }
+  
+  /* Fallback: Hide by nth-child but with higher specificity */
+  > div {
+    > button:nth-child(4),
+    > button:nth-child(5) {
+      display: none;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    > div:nth-child(1),
+    > div:nth-child(6),
+    > div:nth-child(7),
+    > div:nth-child(10) {
+      display: none;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }
 
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > button:nth-child(5) {
-  display: none !important;
-}
-
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > div:nth-child(1) {
-  display: none !important;
-}
-
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > div:nth-child(6) {
-  display: none !important;
-}
-
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > div:nth-child(10) {
-  display: none !important;
-}
-
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.TextEditor-toolbar > div > div:nth-child(7) {
-  display: none !important;
-}
-
-#composer > div > div.Composer-content > div > div.ComposerBody-content > div > div > ul > li.item-fof-upload {
+/* Hide upload button */
+#composer .item-fof-upload,
+li.item-fof-upload {
   display: none !important;
 }
 
