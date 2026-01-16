@@ -29,37 +29,6 @@ app.initializers.add('vietvan-ca-themes', () => {
   
   // Use DOM manipulation to change the hide button icon after render
   const changeHideButtonIcons = () => {
-    // Check if user level.id is 1
-    // if (app.session.user && app.session.user.attribute('level') && app.session.user.attribute('level').id == 1) {
-    //   // Change hide button icons in discussion controls
-    //   const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
-    //   hideButtons.forEach(icon => {
-    //     if (icon.classList.contains('fa-trash-alt')) {
-    //       icon.classList.remove('fa-trash-alt');
-    //       icon.classList.add('fa-eye');
-    //     }
-    //   });
-      
-    //   // Change hidden badge icons
-    //   const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
-    //   hiddenBadges.forEach(icon => {
-    //     if (icon.classList.contains('fa-trash')) {
-    //       icon.classList.remove('fa-trash');
-    //       icon.classList.add('fa-eye');
-    //     }
-    //   });
-    // } else {
-    //   // Hide hide buttons and hidden badges for users with level.id != 1 or guests
-    //   const hideButtonItems = document.querySelectorAll('.item-hide');
-    //   hideButtonItems.forEach(item => {
-    //     item.style.display = 'none';
-    //   });
-      
-    //   const hiddenBadgeItems = document.querySelectorAll('.item-hidden');
-    //   hiddenBadgeItems.forEach(item => {
-    //     item.style.display = 'none';
-    //   });
-    // }
     const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
     hideButtons.forEach(icon => {
       if (icon.classList.contains('fa-trash-alt')) {
@@ -288,77 +257,6 @@ app.initializers.add('vietvan-ca-themes', () => {
   extend(TextEditor.prototype, 'onupdate', function() {
     setTimeout(() => pageManager.cleanup(), 25);
   });
-
-  // ==========================================
-  // TextEditor Toolbar Reordering & Cleanup (Legacy - Commented Out)
-  // ==========================================
-  // Reorder and hide items in TextEditor controls
-  // extend(TextEditor.prototype, 'controlItems', function(items) {
-  //   // Debug: log all available items
-  //   console.log('Available controlItems:', Array.from(items.toArray().map(item => item.itemName)));
-    
-  //   // Remove fof-upload-media from controlItems so we can add it to toolbar instead
-  //   if (items.has('fof-upload-media')) {
-  //     console.log('Removing fof-upload-media from controlItems to move to toolbar');
-  //     items.remove('fof-upload-media');
-  //   }
-    
-  //   // Hide unwanted items - try multiple possible names
-  //   const itemsToHide = [
-  //     'fof-upload',      // File upload button
-  //     'fofUpload',       // Alternative naming
-  //     'upload',          // Alternative naming
-  //     'rich-text',       // Toggle Rich Text Mode
-  //     'richText',        // Alternative naming
-  //     'emoji',           // Insert emoji
-  //     'preview',         // Preview button
-  //   ];
-    
-  //   itemsToHide.forEach(key => {
-  //     if (items.has(key)) {
-  //       console.log('Removing controlItem:', key);
-  //       items.remove(key);
-  //     }
-  //   });
-
-  //   // Set priorities (higher = appears first/left)
-  //   if (items.has('TextEditor-toolbar')) items.setPriority('TextEditor-toolbar', 90);
-  //   if (items.has('mention')) items.setPriority('mention', 80);
-  //   if (items.has('submit')) items.setPriority('submit', -100);
-  // });
-
-  // Customize ProseMirror toolbar items
-  // extend(TextEditor.prototype, 'toolbarItems', function(items) {
-  //   // Debug: log all available toolbar items
-  //   console.log('Available toolbarItems:', Array.from(items.toArray().map(item => item.itemName)));
-    
-  //   // Hide specific toolbar items - try multiple possible names
-  //   const toolbarItemsToHide = [
-  //     'nodeType',        // P/H1-H6 dropdown
-  //     'node_type',       // Alternative naming
-  //     'code',            // Inline code
-  //     'quote',           // Quote
-  //     'link',            // Link dropdown
-  //     'image',           // Image dropdown
-  //     'more',            // Additional controls dropdown
-  //     'additional',      // Alternative naming
-  //     'extra',           // Alternative naming
-  //   ];
-    
-  //   toolbarItemsToHide.forEach(key => {
-  //     if (items.has(key)) {
-  //       console.log('Removing toolbarItem:', key);
-  //       items.remove(key);
-  //     }
-  //   });
-
-  //   // Reorder remaining toolbar items
-  //   if (items.has('bold')) items.setPriority('bold', 100);
-  //   if (items.has('italic')) items.setPriority('italic', 90);
-  //   if (items.has('bullet_list')) items.setPriority('bullet_list', 80);
-  //   if (items.has('ordered_list')) items.setPriority('ordered_list', 70);
-  //   // fof-upload-media-toolbar will be at 65 - right after ordered_list
-  // });
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   extend(IndexPage.prototype, 'oncreate', function() {

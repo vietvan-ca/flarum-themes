@@ -6,11 +6,7 @@
 export default class PageManager {
   constructor() {
     this.observers = new Map();
-    this.cleanupQueue = new Set();
     this.isProcessing = false;
-    this.pageTransitionStart = null;
-    this.isInitialLoad = true; // Track if this is the first page load
-    this.initialLoadComplete = false;
   }
 
   /**
@@ -145,6 +141,8 @@ export default class PageManager {
       const composer = document.querySelector('#composer');
       if (composer && !this.observers.has('composer')) {
         const observer = new MutationObserver((mutations) => {
+          let needsCleanup = false;
+          
           mutations.forEach(mutation => {
             if (mutation.type === 'childList') {
               // Check for toolbar-related additions
@@ -163,6 +161,10 @@ export default class PageManager {
               }
             }
           });
+
+          if (needsCleanup) {
+            setTimeout(() => this.cleanup(), 50);
+          }
         });
 
         observer.observe(composer, {
@@ -176,7 +178,7 @@ export default class PageManager {
       }
     };
 
-    // Observe body for new composer instances and loading states
+    // Observe body for new composer instances
     const observeBody = () => {
       if (!this.observers.has('body')) {
         const observer = new MutationObserver((mutations) => {
@@ -196,12 +198,15 @@ export default class PageManager {
               });
             }
           });
+
+          if (needsCleanup) {
+            setTimeout(() => this.cleanup(), 100);
+          }
         });
 
         observer.observe(document.body, {
           childList: true,
-          subtree: true,
-          attributes: false // Reduced monitoring to be less intrusive
+          subtree: true
         });
 
         this.observers.set('body', observer);
@@ -221,10 +226,16 @@ export default class PageManager {
   }
 
   /**
-   * Initialize the page management system (updated for better loading handling)
+   * Initialize the page management system
    */
   initialize() {
-    // Periodic cleanup as fallback (much less frequent loading checks)
+    // Initial cleanup
+    this.cleanup();
+    
+    // Start observing for changes
+    this.startObserving();
+    
+    // Periodic cleanup as fallback
     setInterval(() => {
       if (document.querySelector('.TextEditor-toolbar')) {
         this.cleanup();
