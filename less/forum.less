@@ -90,47 +90,6 @@
   color: #c22126 !important;
 }
 
-/* Make default Flarum loading fullscreen and centered */
-#flarum-loading {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  background-color: #ffffff !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
-  font-size: 18px !important;
-  color: #666 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    background-color: #1a1a1a !important;
-    color: #ccc !important;
-  }
-}
-
-/* Add a loading spinner animation */
-#flarum-loading::before {
-  content: "" !important;
-  display: block !important;
-  width: 40px !important;
-  height: 40px !important;
-  margin-right: 15px !important;
-  border: 3px solid #f3f3f3 !important;
-  border-top: 3px solid #c22126 !important;
-  border-radius: 50% !important;
-  animation: vietvan-loading-spin 1s linear infinite !important;
-}
-
-@keyframes vietvan-loading-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* Hide rich text toggle button */
 .item-rich-text {
   display: none !important;
