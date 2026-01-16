@@ -21,31 +21,6 @@ import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
-  // Enhance Default Loading Experience
-  // ==========================================
-  
-  // Enhance default Flarum loading to be fullscreen and centered
-  const enhanceDefaultLoading = () => {
-    const flarumLoading = document.querySelector('#flarum-loading');
-    if (flarumLoading) {
-      console.log('VietVan Themes: Enhancing default Flarum loading display');
-      
-      // Update loading text
-      if (flarumLoading.textContent === 'Loading...') {
-        flarumLoading.textContent = 'Đang tải...';
-      }
-      
-      // Ensure it's visible and properly styled (CSS handles positioning)
-      flarumLoading.style.removeProperty('display');
-      flarumLoading.style.removeProperty('visibility');
-      flarumLoading.style.removeProperty('opacity');
-    }
-  };
-  
-  // Run immediately
-  enhanceDefaultLoading();
-
-  // ==========================================
   // Initialize Page Management System
   // ==========================================
   const pageManager = new PageManager();
