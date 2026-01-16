@@ -6,13 +6,10 @@ import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 import TextEditor from 'flarum/common/components/TextEditor';
-import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
-import Button from 'flarum/common/components/Button';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
 import HeroSection from './components/HeroSection';
-import BackButton from './components/BackButton';
 import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
@@ -373,29 +370,6 @@ app.initializers.add('vietvan-ca-themes', () => {
     this.injectCustomDrawer();
     // Removed aggressive loading management
   });
-
-  // Add loading management to other major page components (more conservative)
-  const addLoadingManagementToComponent = (component) => {
-    extend(component.prototype, 'oncreate', function() {
-      // Only check for stuck loading states, don't interfere with normal loading
-      setTimeout(() => pageManager.clearOnlyStuckLoading(), 5000);
-    });
-  };
-
-  // Apply loading management to key components (if available)
-  try {
-    const DiscussionPage = require('flarum/forum/components/DiscussionPage').default;
-    addLoadingManagementToComponent(DiscussionPage);
-  } catch (e) {
-    console.log('DiscussionPage not available for loading management');
-  }
-
-  try {
-    const UserPage = require('flarum/forum/components/UserPage').default;
-    addLoadingManagementToComponent(UserPage);
-  } catch (e) {
-    console.log('UserPage not available for loading management');
-  }
 
   // Add method to inject custom drawer
   IndexPage.prototype.injectCustomDrawer = function() {
