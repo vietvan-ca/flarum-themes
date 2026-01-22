@@ -1,9 +1,11 @@
 .item-logo {
   padding-left: 14px;
   padding-right: 14px;
+  margin: 10px;
 
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .item-logo .CustomHeaderLogo {
@@ -30,5 +32,30 @@
 .Header-controls .item-link1 {
   @media (max-width: 768px) {
     margin-top: 25px;
+  }
+}
+
+// Mobile header styling
+@media (max-width: 768px) {
+  .Header-controls {
+    gap: 1.5rem;
+    
+    li {
+      font-size: 19px;
+      line-height: 28px;
+    }
+    
+    .Button-label {
+      font-size: 19px;
+      line-height: 28px;
+    }
+  }
+  
+  .Header-primary .Header-controls {
+    gap: 1.5rem;
+  }
+  
+  .Header-secondary .Header-controls {
+    gap: 1.5rem;
   }
 }
