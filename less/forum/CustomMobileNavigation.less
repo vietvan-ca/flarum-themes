@@ -282,11 +282,22 @@
     }
   }
 
-  // User Section (Logged In)
+  // User Section (Logged In) - Enhanced Identity Display
   &-user {
     display: flex;
     flex-direction: column;
     gap: 20px;
+  }
+
+  &-userIdentity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 0 16px 20px;
+    border: 1px solid #e9ecef;
   }
 
   &-userInfo {
@@ -299,16 +310,31 @@
   }
 
   &-avatar {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
+    background: #007bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    // Default avatar icon when no image
+    &--default {
+      background: #007bff;
+      color: white;
+      font-size: 24px;
+      
+      .fas.fa-user {
+        font-size: 28px;
+      }
     }
   }
 
@@ -318,13 +344,34 @@
   }
 
   &-displayName {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     color: #333;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 8px;
+  }
+
+  &-accountSettingsBtn {
+    background: #fff !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 25px !important;
+    padding: 8px 20px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    &:hover {
+      border-color: var(--primary-color, #C22126) !important;
+      color: var(--primary-color, #C22126) !important;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
   }
 
   &-userMenu {

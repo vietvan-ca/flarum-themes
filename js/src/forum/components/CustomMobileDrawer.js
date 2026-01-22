@@ -303,20 +303,27 @@ export default class CustomMobileDrawer extends Component {
   }
 
   /**
-   * Logged in user section
+   * Logged in user section with enhanced identity display
    */
   loggedInSection() {
     const user = app.session.user;
 
     return (
       <div className="CustomMobileDrawer-user">
-        {/* User Info */}
-        <div className="CustomMobileDrawer-userInfo">
-          <div className="CustomMobileDrawer-avatar">
-            <img src={user.avatarUrl()} alt={user.displayName()} />
+        {/* Enhanced User Identity Section */}
+        <div className="CustomMobileDrawer-userIdentity">
+          <div className="CustomMobileDrawer-avatar CustomMobileDrawer-avatar--default">
+            {user.avatarUrl() ? (
+              <img src={user.avatarUrl()} alt={user.displayName()} />
+            ) : (
+              <i className="fas fa-user"></i>
+            )}
           </div>
           <div className="CustomMobileDrawer-userName">
             <span className="CustomMobileDrawer-displayName">{user.displayName()}</span>
+            <a href={app.route('settings')} className="CustomMobileDrawer-accountSettingsBtn">
+              {trans('account_settings', 'Cài đặt tài khoản')}
+            </a>
           </div>
         </div>
 
@@ -331,7 +338,7 @@ export default class CustomMobileDrawer extends Component {
           <li>
             <a href={app.route('settings')} className="CustomMobileDrawer-link">
               <i className="fas fa-cog CustomMobileDrawer-icon--left"></i>
-              {trans('settings', 'Cài đặt tài khoản')}
+              {trans('settings', 'Cài đặt')}
             </a>
           </li>
           <li>
