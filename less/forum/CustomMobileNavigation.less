@@ -413,57 +413,53 @@
   }
 }
 
-// Hide default drawer content when custom drawer is active (MOBILE ONLY)
-@media (max-width: 768px) {
-  .App-drawer .App-nav {
+// Separate Mobile Drawer (doesn't interfere with desktop)
+.vietvan-mobile-drawer {
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: block !important;
+  }
+  
+  @media (min-width: 769px) {
     display: none !important;
-  }
-
-  .App-drawer .CustomMobileDrawer,
-  .CustomMobileDrawer-wrapper .CustomMobileDrawer {
-    display: flex !important;
-  }
-
-  // Make drawer full height
-  #drawer.App-drawer,
-  .App-drawer {
-    top: 0;
-    padding-top: env(safe-area-inset-top);
-  }
-
-  // Ensure custom drawer wrapper takes full space
-  .CustomMobileDrawer-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  // Force show custom drawer
-  .CustomMobileDrawer {
-    display: flex !important;
-    width: 100% !important;
-    height: 100% !important;
   }
 }
 
-// Desktop: completely hide custom mobile drawer and preserve default navigation
-@media (min-width: 769px) {
-  .CustomMobileDrawer,
-  .CustomMobileDrawer-wrapper {
-    display: none !important;
-    visibility: hidden !important;
+// Body class when mobile drawer is open
+.vietvan-drawer-open {
+  @media (max-width: 768px) {
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
   }
+}
 
-  // Ensure default Flarum navigation is visible on desktop
-  .App-drawer .App-nav {
+// Hide original drawer on mobile when using custom drawer
+@media (max-width: 768px) {
+  .vietvan-drawer-open #drawer,
+  .vietvan-drawer-open .App-drawer {
+    display: none !important;
+  }
+}
+
+// Ensure desktop drawer is always visible
+@media (min-width: 769px) {
+  #drawer,
+  .App-drawer {
     display: block !important;
   }
-
-  // Reset any mobile-specific drawer modifications
-  #drawer.App-drawer,
-  .App-drawer {
-    top: auto;
-    padding-top: 0;
+  
+  .App-drawer .App-nav {
+    display: block !important;
   }
 }

@@ -25,8 +25,78 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
-  // Mobile-Only Custom Drawer Implementation
+  // Alternative Approach: Separate Mobile Drawer
   // ==========================================
+  
+  const createMobileDrawer = () => {
+    // Only create on mobile
+    if (window.innerWidth > 768) return;
+    
+    // Check if mobile drawer already exists
+    if (document.querySelector('.vietvan-mobile-drawer')) return;
+    
+    console.log('Creating separate mobile drawer');
+    
+    // Create a completely separate mobile drawer
+    const mobileDrawer = document.createElement('div');
+    mobileDrawer.className = 'vietvan-mobile-drawer';
+    mobileDrawer.id = 'vietvan-mobile-drawer';
+    
+    // Style it to overlay the original drawer on mobile
+    mobileDrawer.style.cssText = `
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: white;
+      z-index: 1050;
+      transition: right 0.3s ease;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    `;
+    
+    // Mount our custom component
+    m.mount(mobileDrawer, CustomMobileDrawer);
+    
+    // Add to body
+    document.body.appendChild(mobileDrawer);
+    
+    // Override the drawer toggle functionality on mobile
+    const originalDrawerToggle = document.querySelector('.App-drawerToggle, [data-drawer-toggle]');
+    if (originalDrawerToggle) {
+      originalDrawerToggle.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Toggle our custom drawer
+          const isOpen = mobileDrawer.style.right === '0px';
+          mobileDrawer.style.right = isOpen ? '-100%' : '0px';
+          document.body.classList.toggle('vietvan-drawer-open', !isOpen);
+        }
+      });
+    }
+    
+    console.log('Separate mobile drawer created');
+  };
+  
+  const removeMobileDrawer = () => {
+    const mobileDrawer = document.querySelector('.vietvan-mobile-drawer');
+    if (mobileDrawer) {
+      console.log('Removing separate mobile drawer');
+      m.mount(mobileDrawer, null);
+      mobileDrawer.remove();
+      document.body.classList.remove('vietvan-drawer-open');
+    }
+  };
+  
+  const handleResponsiveDrawer = () => {
+    if (window.innerWidth <= 768) {
+      createMobileDrawer();
+    } else {
+      removeMobileDrawer();
+    }
+  };
   
   // Global flag to track if we should use custom drawer
   let useCustomDrawer = false;
@@ -39,8 +109,10 @@ app.initializers.add('vietvan-ca-themes', () => {
   };
 
   const injectCustomDrawer = () => {
-    if (!checkMobileState()) {
-      // On desktop, remove any custom drawer elements
+    const isMobile = checkMobileState();
+    
+    if (!isMobile) {
+      // On desktop, only remove custom elements if they exist, don't touch original content
       const customElements = document.querySelectorAll('.CustomMobileDrawer, .CustomMobileDrawer-wrapper');
       if (customElements.length > 0) {
         console.log('Removing custom drawer elements from desktop');
@@ -53,6 +125,17 @@ app.initializers.add('vietvan-ca-themes', () => {
             el.remove();
           }
         });
+        
+        // Restore original content if drawer was cleared
+        const drawer = document.querySelector('#drawer, .App-drawer, [id*="drawer"]');
+        if (drawer) {
+          const originalContent = drawer.getAttribute('data-original-content');
+          if (originalContent && drawer.innerHTML.trim() === '') {
+            console.log('Restoring original drawer content on desktop');
+            drawer.innerHTML = originalContent;
+            drawer.removeAttribute('data-original-content');
+          }
+        }
       }
       return; // Exit early on desktop
     }
@@ -64,11 +147,14 @@ app.initializers.add('vietvan-ca-themes', () => {
     if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
       console.log('Injecting CustomMobileDrawer into mobile view:', drawer);
       
-      // Store original content before clearing
+      // Only store and clear content on mobile
       const originalContent = drawer.innerHTML;
-      drawer.setAttribute('data-original-content', originalContent);
+      if (originalContent.trim() !== '') {
+        drawer.setAttribute('data-original-content', originalContent);
+        console.log('Stored original content:', originalContent.substring(0, 100) + '...');
+      }
       
-      // Clear existing content
+      // Clear existing content only on mobile
       drawer.innerHTML = '';
       
       // Create wrapper
@@ -111,35 +197,29 @@ app.initializers.add('vietvan-ca-themes', () => {
     return observer;
   };
 
-  // Start observing
-  const drawerObserver = observeDrawer();
+  // Initialize responsive drawer
+  document.addEventListener('DOMContentLoaded', handleResponsiveDrawer);
+  setTimeout(handleResponsiveDrawer, 500);
+  setTimeout(handleResponsiveDrawer, 1000);
 
-  // Run injection with delays (but check mobile state each time)
-  const runMobileCheck = () => {
-    setTimeout(injectCustomDrawer, 100);
-  };
-
-  document.addEventListener('DOMContentLoaded', runMobileCheck);
-  setTimeout(runMobileCheck, 500);
-  setTimeout(runMobileCheck, 1000);
-  setTimeout(runMobileCheck, 2000);
-
-  // Run on route changes (check mobile state)
-  if (app.history) {
-    app.history.initialized?.then(() => {
-      app.history.router.on('changed', runMobileCheck);
-    });
-  }
-
-  // Handle window resize - this is crucial for responsive behavior
+  // Handle window resize
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      console.log('Window resized, checking drawer state');
-      injectCustomDrawer();
+      console.log('Window resized, handling responsive drawer');
+      handleResponsiveDrawer();
     }, 250);
   });
+
+  // Run on route changes
+  if (app.history) {
+    app.history.initialized?.then(() => {
+      app.history.router.on('changed', () => {
+        setTimeout(handleResponsiveDrawer, 100);
+      });
+    });
+  }
 
   // ==========================================
   // Change Hide Button Icon to Eye
