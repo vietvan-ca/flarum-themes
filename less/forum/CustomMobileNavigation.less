@@ -44,7 +44,7 @@
 
 // Custom Mobile Drawer Styles (VietVan style)
 .CustomMobileDrawer {
-  display: flex;
+  display: none; // Hidden by default
   flex-direction: column;
   height: 100%;
   padding: 20px 0;
@@ -52,11 +52,19 @@
   position: relative;
   z-index: 1000;
 
-  // Force visibility on mobile
+  // Only show on mobile
   @media (max-width: 768px) {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  // Completely hide on desktop
+  @media (min-width: 769px) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   // Logo Section

@@ -25,67 +25,69 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
-  // Override Navigation Drawer Content (Mobile Only)
+  // Mobile-Only Custom Drawer Implementation
   // ==========================================
-  extend(Navigation.prototype, 'view', function(vnode) {
-    // Only replace drawer content on mobile devices
-    if (window.innerWidth <= 768) {
-      setTimeout(() => {
-        const drawer = document.querySelector('#drawer, .App-drawer');
-        if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-          // Clear existing content only on mobile
-          drawer.innerHTML = '';
-          
-          // Create and mount our custom drawer
-          const customDrawerContainer = document.createElement('div');
-          customDrawerContainer.className = 'CustomMobileDrawer-wrapper';
-          
-          m.mount(customDrawerContainer, CustomMobileDrawer);
-          drawer.appendChild(customDrawerContainer);
-        }
-      }, 100);
-    }
-  });
+  
+  // Global flag to track if we should use custom drawer
+  let useCustomDrawer = false;
+  
+  const checkMobileState = () => {
+    const isMobile = window.innerWidth <= 768;
+    useCustomDrawer = isMobile;
+    console.log('Mobile state check:', { width: window.innerWidth, isMobile, useCustomDrawer });
+    return isMobile;
+  };
 
-  // ==========================================
-  // Mobile-Only DOM manipulation approach
-  // ==========================================
   const injectCustomDrawer = () => {
-    // ONLY inject on mobile devices
-    if (window.innerWidth <= 768) {
-      const drawer = document.querySelector('#drawer, .App-drawer, [id*="drawer"]');
+    if (!checkMobileState()) {
+      // On desktop, remove any custom drawer elements
+      const customElements = document.querySelectorAll('.CustomMobileDrawer, .CustomMobileDrawer-wrapper');
+      if (customElements.length > 0) {
+        console.log('Removing custom drawer elements from desktop');
+        customElements.forEach(el => {
+          const wrapper = el.closest('.CustomMobileDrawer-wrapper');
+          if (wrapper) {
+            m.mount(wrapper, null);
+            wrapper.remove();
+          } else {
+            el.remove();
+          }
+        });
+      }
+      return; // Exit early on desktop
+    }
+    
+    console.log('Checking drawer injection for mobile, window width:', window.innerWidth);
+    
+    const drawer = document.querySelector('#drawer, .App-drawer, [id*="drawer"]');
+    
+    if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
+      console.log('Injecting CustomMobileDrawer into mobile view:', drawer);
       
-      if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-        console.log('Injecting CustomMobileDrawer into mobile view:', drawer);
-        
-        // Clear existing content
-        drawer.innerHTML = '';
-        
-        // Create wrapper
-        const wrapper = document.createElement('div');
-        wrapper.className = 'CustomMobileDrawer-wrapper';
-        
-        // Mount component
-        m.mount(wrapper, CustomMobileDrawer);
-        drawer.appendChild(wrapper);
-        
-        console.log('CustomMobileDrawer injected successfully on mobile');
-      }
-    } else {
-      // On desktop, ensure custom drawer is removed if it exists
-      const customDrawer = document.querySelector('.CustomMobileDrawer, .CustomMobileDrawer-wrapper');
-      if (customDrawer) {
-        console.log('Removing CustomMobileDrawer from desktop view');
-        customDrawer.remove();
-      }
+      // Store original content before clearing
+      const originalContent = drawer.innerHTML;
+      drawer.setAttribute('data-original-content', originalContent);
+      
+      // Clear existing content
+      drawer.innerHTML = '';
+      
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'CustomMobileDrawer-wrapper';
+      
+      // Mount component
+      m.mount(wrapper, CustomMobileDrawer);
+      drawer.appendChild(wrapper);
+      
+      console.log('CustomMobileDrawer injected successfully on mobile');
     }
   };
 
   // Watch for drawer element creation (mobile only)
   const observeDrawer = () => {
     const observer = new MutationObserver((mutations) => {
-      // Only observe on mobile
-      if (window.innerWidth <= 768) {
+      // Only observe when custom drawer should be active
+      if (useCustomDrawer) {
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === 1) { // Element node
@@ -112,24 +114,31 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Start observing
   const drawerObserver = observeDrawer();
 
-  // Run injection on various events (mobile only)
-  document.addEventListener('DOMContentLoaded', injectCustomDrawer);
-  setTimeout(injectCustomDrawer, 500);
-  setTimeout(injectCustomDrawer, 1000);
-  setTimeout(injectCustomDrawer, 2000);
+  // Run injection with delays (but check mobile state each time)
+  const runMobileCheck = () => {
+    setTimeout(injectCustomDrawer, 100);
+  };
+
+  document.addEventListener('DOMContentLoaded', runMobileCheck);
+  setTimeout(runMobileCheck, 500);
+  setTimeout(runMobileCheck, 1000);
+  setTimeout(runMobileCheck, 2000);
 
   // Run on route changes (check mobile state)
   if (app.history) {
     app.history.initialized?.then(() => {
-      app.history.router.on('changed', () => {
-        setTimeout(injectCustomDrawer, 200);
-      });
+      app.history.router.on('changed', runMobileCheck);
     });
   }
 
-  // Handle window resize - inject on mobile, remove on desktop
+  // Handle window resize - this is crucial for responsive behavior
+  let resizeTimeout;
   window.addEventListener('resize', () => {
-    setTimeout(injectCustomDrawer, 100);
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      console.log('Window resized, checking drawer state');
+      injectCustomDrawer();
+    }, 250);
   });
 
   // ==========================================
