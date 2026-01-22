@@ -405,7 +405,7 @@
   }
 }
 
-// Hide default drawer content when custom drawer is active
+// Hide default drawer content when custom drawer is active (MOBILE ONLY)
 @media (max-width: 768px) {
   .App-drawer .App-nav {
     display: none !important;
@@ -439,9 +439,23 @@
   }
 }
 
-// Desktop: hide custom mobile drawer
+// Desktop: completely hide custom mobile drawer and preserve default navigation
 @media (min-width: 769px) {
-  .CustomMobileDrawer {
-    display: none;
+  .CustomMobileDrawer,
+  .CustomMobileDrawer-wrapper {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  // Ensure default Flarum navigation is visible on desktop
+  .App-drawer .App-nav {
+    display: block !important;
+  }
+
+  // Reset any mobile-specific drawer modifications
+  #drawer.App-drawer,
+  .App-drawer {
+    top: auto;
+    padding-top: 0;
   }
 }

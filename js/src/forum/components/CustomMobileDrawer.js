@@ -6,6 +6,7 @@ import Separator from 'flarum/common/components/Separator';
 import SelectDropdown from 'flarum/common/components/SelectDropdown';
 import ItemList from 'flarum/common/utils/ItemList';
 import listItems from 'flarum/common/helpers/listItems';
+import LogInModal from 'flarum/forum/components/LogInModal';
 import Logo from './Logo';
 
 /**
@@ -247,8 +248,7 @@ export default class CustomMobileDrawer extends Component {
     const mainSiteUrl = app.forum.attribute('vietvan_ca_back_button_custom_url') || '';
     const baseMainUrl = mainSiteUrl ? mainSiteUrl.replace('/forum', '').replace(/\/$/, '') : '';
     
-    // Get JWT SSO URLs if available
-    const loginUrl = app.forum.attribute('jwt-sso.login_url') || `${baseMainUrl}/auth/login`;
+    // Use default Flarum login modal instead of external SSO
     const registerUrl = `${baseMainUrl}/auth/register`;
 
     return (
@@ -258,10 +258,13 @@ export default class CustomMobileDrawer extends Component {
           {trans('register', 'Đăng ký')}
         </a>
 
-        {/* Login Button */}
-        <a href={loginUrl} className="Button Button--secondary CustomMobileDrawer-loginBtn">
+        {/* Login Button - Use Flarum's default login modal */}
+        <button 
+          className="Button Button--secondary CustomMobileDrawer-loginBtn"
+          onclick={() => this.showLoginModal()}
+        >
           {trans('login', 'Đăng nhập')}
-        </a>
+        </button>
 
         {/* Social Login Separator */}
         <div className="CustomMobileDrawer-socialSeparator">
@@ -353,6 +356,21 @@ export default class CustomMobileDrawer extends Component {
         </ul>
       </div>
     );
+  }
+
+  /**
+   * Show Flarum's default login modal
+   */
+  showLoginModal() {
+    // Close the mobile drawer first
+    const drawer = document.querySelector('#drawer, .App-drawer');
+    if (drawer) {
+      drawer.classList.remove('in');
+      document.body.classList.remove('drawerOpen');
+    }
+
+    // Show Flarum's login modal
+    app.modal.show(LogInModal);
   }
 
   /**

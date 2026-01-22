@@ -25,16 +25,15 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
-  // Override Navigation Drawer Content
+  // Override Navigation Drawer Content (Mobile Only)
   // ==========================================
   extend(Navigation.prototype, 'view', function(vnode) {
-    // Replace the drawer content with our custom drawer on mobile
+    // Only replace drawer content on mobile devices
     if (window.innerWidth <= 768) {
-      // Find the drawer content and replace it
       setTimeout(() => {
         const drawer = document.querySelector('#drawer, .App-drawer');
         if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-          // Clear existing content
+          // Clear existing content only on mobile
           drawer.innerHTML = '';
           
           // Create and mount our custom drawer
@@ -49,14 +48,15 @@ app.initializers.add('vietvan-ca-themes', () => {
   });
 
   // ==========================================
-  // Alternative: Direct DOM manipulation approach
+  // Mobile-Only DOM manipulation approach
   // ==========================================
   const injectCustomDrawer = () => {
+    // ONLY inject on mobile devices
     if (window.innerWidth <= 768) {
       const drawer = document.querySelector('#drawer, .App-drawer, [id*="drawer"]');
       
       if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-        console.log('Injecting CustomMobileDrawer into:', drawer);
+        console.log('Injecting CustomMobileDrawer into mobile view:', drawer);
         
         // Clear existing content
         drawer.innerHTML = '';
@@ -69,26 +69,36 @@ app.initializers.add('vietvan-ca-themes', () => {
         m.mount(wrapper, CustomMobileDrawer);
         drawer.appendChild(wrapper);
         
-        console.log('CustomMobileDrawer injected successfully');
+        console.log('CustomMobileDrawer injected successfully on mobile');
+      }
+    } else {
+      // On desktop, ensure custom drawer is removed if it exists
+      const customDrawer = document.querySelector('.CustomMobileDrawer, .CustomMobileDrawer-wrapper');
+      if (customDrawer) {
+        console.log('Removing CustomMobileDrawer from desktop view');
+        customDrawer.remove();
       }
     }
   };
 
-  // Watch for drawer element creation
+  // Watch for drawer element creation (mobile only)
   const observeDrawer = () => {
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) { // Element node
-            // Check if the added node is a drawer or contains a drawer
-            if (node.id === 'drawer' || 
-                node.classList?.contains('App-drawer') ||
-                node.querySelector?.('#drawer, .App-drawer')) {
-              setTimeout(injectCustomDrawer, 100);
+      // Only observe on mobile
+      if (window.innerWidth <= 768) {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) { // Element node
+              // Check if the added node is a drawer or contains a drawer
+              if (node.id === 'drawer' || 
+                  node.classList?.contains('App-drawer') ||
+                  node.querySelector?.('#drawer, .App-drawer')) {
+                setTimeout(injectCustomDrawer, 100);
+              }
             }
-          }
+          });
         });
-      });
+      }
     });
 
     observer.observe(document.body, {
@@ -102,13 +112,13 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Start observing
   const drawerObserver = observeDrawer();
 
-  // Run injection on various events
+  // Run injection on various events (mobile only)
   document.addEventListener('DOMContentLoaded', injectCustomDrawer);
   setTimeout(injectCustomDrawer, 500);
   setTimeout(injectCustomDrawer, 1000);
   setTimeout(injectCustomDrawer, 2000);
 
-  // Run on route changes
+  // Run on route changes (check mobile state)
   if (app.history) {
     app.history.initialized?.then(() => {
       app.history.router.on('changed', () => {
@@ -117,11 +127,9 @@ app.initializers.add('vietvan-ca-themes', () => {
     });
   }
 
-  // Also try to inject when window is resized to mobile
+  // Handle window resize - inject on mobile, remove on desktop
   window.addEventListener('resize', () => {
-    if (window.innerWidth <= 768) {
-      setTimeout(injectCustomDrawer, 100);
-    }
+    setTimeout(injectCustomDrawer, 100);
   });
 
   // ==========================================
