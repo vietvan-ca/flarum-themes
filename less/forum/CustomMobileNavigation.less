@@ -49,6 +49,15 @@
   height: 100%;
   padding: 20px 0;
   background: #fff;
+  position: relative;
+  z-index: 1000;
+
+  // Force visibility on mobile
+  @media (max-width: 768px) {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 
   // Logo Section
   &-logo {
@@ -402,14 +411,31 @@
     display: none !important;
   }
 
-  .App-drawer .CustomMobileDrawer {
-    display: flex;
+  .App-drawer .CustomMobileDrawer,
+  .CustomMobileDrawer-wrapper .CustomMobileDrawer {
+    display: flex !important;
   }
 
   // Make drawer full height
-  #drawer.App-drawer {
+  #drawer.App-drawer,
+  .App-drawer {
     top: 0;
     padding-top: env(safe-area-inset-top);
+  }
+
+  // Ensure custom drawer wrapper takes full space
+  .CustomMobileDrawer-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Force show custom drawer
+  .CustomMobileDrawer {
+    display: flex !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 

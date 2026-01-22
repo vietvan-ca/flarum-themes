@@ -6,6 +6,7 @@ import DiscussionList from 'flarum/forum/components/DiscussionList';
 import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 import TextEditor from 'flarum/common/components/TextEditor';
+import Navigation from 'flarum/forum/components/Navigation';
 
 import CustomDiscussionRow from './components/CustomDiscussionRow';
 import DiscussionListHeader from './components/DiscussionListHeader';
@@ -22,6 +23,106 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   const pageManager = new PageManager();
   pageManager.initialize();
+
+  // ==========================================
+  // Override Navigation Drawer Content
+  // ==========================================
+  extend(Navigation.prototype, 'view', function(vnode) {
+    // Replace the drawer content with our custom drawer on mobile
+    if (window.innerWidth <= 768) {
+      // Find the drawer content and replace it
+      setTimeout(() => {
+        const drawer = document.querySelector('#drawer, .App-drawer');
+        if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
+          // Clear existing content
+          drawer.innerHTML = '';
+          
+          // Create and mount our custom drawer
+          const customDrawerContainer = document.createElement('div');
+          customDrawerContainer.className = 'CustomMobileDrawer-wrapper';
+          
+          m.mount(customDrawerContainer, CustomMobileDrawer);
+          drawer.appendChild(customDrawerContainer);
+        }
+      }, 100);
+    }
+  });
+
+  // ==========================================
+  // Alternative: Direct DOM manipulation approach
+  // ==========================================
+  const injectCustomDrawer = () => {
+    if (window.innerWidth <= 768) {
+      const drawer = document.querySelector('#drawer, .App-drawer, [id*="drawer"]');
+      
+      if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
+        console.log('Injecting CustomMobileDrawer into:', drawer);
+        
+        // Clear existing content
+        drawer.innerHTML = '';
+        
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'CustomMobileDrawer-wrapper';
+        
+        // Mount component
+        m.mount(wrapper, CustomMobileDrawer);
+        drawer.appendChild(wrapper);
+        
+        console.log('CustomMobileDrawer injected successfully');
+      }
+    }
+  };
+
+  // Watch for drawer element creation
+  const observeDrawer = () => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check if the added node is a drawer or contains a drawer
+            if (node.id === 'drawer' || 
+                node.classList?.contains('App-drawer') ||
+                node.querySelector?.('#drawer, .App-drawer')) {
+              setTimeout(injectCustomDrawer, 100);
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return observer;
+  };
+
+  // Start observing
+  const drawerObserver = observeDrawer();
+
+  // Run injection on various events
+  document.addEventListener('DOMContentLoaded', injectCustomDrawer);
+  setTimeout(injectCustomDrawer, 500);
+  setTimeout(injectCustomDrawer, 1000);
+  setTimeout(injectCustomDrawer, 2000);
+
+  // Run on route changes
+  if (app.history) {
+    app.history.initialized?.then(() => {
+      app.history.router.on('changed', () => {
+        setTimeout(injectCustomDrawer, 200);
+      });
+    });
+  }
+
+  // Also try to inject when window is resized to mobile
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+      setTimeout(injectCustomDrawer, 100);
+    }
+  });
 
   // ==========================================
   // Change Hide Button Icon to Eye
@@ -271,23 +372,47 @@ app.initializers.add('vietvan-ca-themes', () => {
 
   // Add method to inject custom drawer
   IndexPage.prototype.injectCustomDrawer = function() {
-    const drawer = document.getElementById('drawer');
+    // Try multiple possible drawer selectors
+    const drawer = document.getElementById('drawer') || 
+                   document.querySelector('.App-drawer') || 
+                   document.querySelector('#app-navigation .Drawer');
+    
     if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-      const drawerContent = drawer.querySelector('.Drawer-content, .App-drawer');
+      console.log('Found drawer element:', drawer);
+      
+      // Try multiple possible content selectors
+      let drawerContent = drawer.querySelector('.Drawer-content') || 
+                         drawer.querySelector('.App-drawer') || 
+                         drawer.querySelector('.Drawer') ||
+                         drawer;
+      
       if (drawerContent) {
+        console.log('Found drawer content:', drawerContent);
+        
         // Create container if it doesn't exist
         let customDrawerContainer = drawerContent.querySelector('.CustomMobileDrawer-container');
         if (!customDrawerContainer) {
           customDrawerContainer = document.createElement('div');
           customDrawerContainer.className = 'CustomMobileDrawer-container';
           
-          // Mount the custom drawer component
-          m.mount(customDrawerContainer, CustomMobileDrawer);
-          
-          // Prepend to drawer content
-          drawerContent.insertBefore(customDrawerContainer, drawerContent.firstChild);
+          try {
+            // Mount the custom drawer component
+            m.mount(customDrawerContainer, CustomMobileDrawer);
+            console.log('CustomMobileDrawer mounted successfully');
+            
+            // Clear existing content and add our custom drawer
+            drawerContent.innerHTML = '';
+            drawerContent.appendChild(customDrawerContainer);
+            
+          } catch (error) {
+            console.error('Error mounting CustomMobileDrawer:', error);
+          }
         }
+      } else {
+        console.log('Drawer content not found');
       }
+    } else if (!drawer) {
+      console.log('Drawer element not found');
     }
   };
 
