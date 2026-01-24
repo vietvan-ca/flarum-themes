@@ -37,11 +37,11 @@ export default class CustomMobileDrawer extends Component {
           onclick={() => this.toggleDrawer()}
           style={{
             position: 'fixed',
-            top: '15px',
-            right: '15px',
+            top: '10px',
+            right: '10px',
             zIndex: 1060,
             background: '#ffffff',
-            color: 'white',
+            color: '#111',
             border: 'none',
             padding: '10px 12px',
             borderRadius: '5px',
