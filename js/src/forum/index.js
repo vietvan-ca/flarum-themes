@@ -279,6 +279,11 @@ app.initializers.add('vietvan-ca-themes', () => {
       overflow-y: auto;
     `;
     
+    // Add attributes to prevent focus-trap issues
+    mobileDrawer.setAttribute('tabindex', '-1');
+    mobileDrawer.setAttribute('role', 'dialog');
+    mobileDrawer.setAttribute('aria-modal', 'false'); // Not a modal, just a drawer
+    
     // Mount our custom component
     console.log('Attempting to mount CustomMobileDrawer component...');
     try {
@@ -338,6 +343,12 @@ app.initializers.add('vietvan-ca-themes', () => {
             
             console.log('Mobile click detected, preventing default and toggling custom drawer');
             
+            // Prevent Flarum's focus-trap from activating
+            const focusTrapElements = document.querySelectorAll('[data-focus-trap], .focus-trap');
+            focusTrapElements.forEach(el => {
+              el.style.display = 'none';
+            });
+            
             // Toggle our custom drawer
             const currentRight = mobileDrawer.style.right;
             const isOpen = currentRight === '0px';
@@ -350,13 +361,16 @@ app.initializers.add('vietvan-ca-themes', () => {
             
             // Hide default drawer if it's showing
             const defaultDrawer = document.querySelector('#drawer, .App-drawer');
-            if (defaultDrawer && !isOpen) {
-              defaultDrawer.style.display = 'none';
-              setTimeout(() => {
-                if (defaultDrawer.style.display === 'none') {
-                  defaultDrawer.style.display = '';
-                }
-              }, 300);
+            if (defaultDrawer) {
+              if (!isOpen) {
+                defaultDrawer.style.display = 'none';
+                defaultDrawer.style.visibility = 'hidden';
+                defaultDrawer.style.opacity = '0';
+                defaultDrawer.style.transform = 'translateX(-100%)';
+                // Remove any focus-trap attributes
+                defaultDrawer.removeAttribute('data-focus-trap');
+                defaultDrawer.classList.remove('focus-trap');
+              }
             }
             
             console.log('Mobile drawer toggled:', !isOpen);
@@ -411,13 +425,37 @@ app.initializers.add('vietvan-ca-themes', () => {
         defaultDrawer.style.visibility = 'hidden';
         defaultDrawer.style.opacity = '0';
         defaultDrawer.style.pointerEvents = 'none';
-        console.log('Hidden default drawer:', defaultDrawer);
+        defaultDrawer.style.transform = 'translateX(-100%)';
+        
+        // Remove focus-trap attributes that cause errors
+        defaultDrawer.removeAttribute('data-focus-trap');
+        defaultDrawer.classList.remove('focus-trap');
+        
+        // Disable any focus-trap instances
+        if (window.focusTrap && typeof window.focusTrap.deactivate === 'function') {
+          try {
+            window.focusTrap.deactivate();
+          } catch (e) {
+            console.log('Focus trap deactivation handled');
+          }
+        }
+        
+        console.log('Hidden default drawer and disabled focus trap:', defaultDrawer);
       }
+      
+      // Also hide any focus-trap overlays
+      const focusTraps = document.querySelectorAll('[data-focus-trap], .focus-trap');
+      focusTraps.forEach(trap => {
+        if (trap !== mobileDrawer) {
+          trap.style.display = 'none';
+        }
+      });
     };
     
     hideDefaultDrawer();
     setTimeout(hideDefaultDrawer, 100);
     setTimeout(hideDefaultDrawer, 500);
+    setTimeout(hideDefaultDrawer, 1000);
   };
   
   const removeMobileDrawer = () => {
@@ -472,35 +510,16 @@ app.initializers.add('vietvan-ca-themes', () => {
     handleResponsiveDrawer();
   }, 2000);
 
-  // Manual test trigger (for debugging)
+  // Manual test trigger (for debugging) - REMOVED TEST BUTTON
   setTimeout(() => {
-    console.log('Manual test: forcing mobile drawer creation...');
+    console.log('Manual test: checking mobile drawer status...');
     if (window.innerWidth <= 768) {
       const testDrawer = document.querySelector('.vietvan-mobile-drawer');
       if (!testDrawer) {
         console.log('No mobile drawer found, forcing creation...');
         createMobileDrawer();
       } else {
-        console.log('Mobile drawer exists:', testDrawer);
-        console.log('Testing drawer visibility...');
-        
-        // Force show the drawer for testing
-        testDrawer.style.right = '0px';
-        document.body.classList.add('vietvan-drawer-open');
-        console.log('Forced drawer to show');
-        
-        // Add a test button to toggle
-        const testButton = document.createElement('button');
-        testButton.textContent = 'Toggle Mobile Drawer (TEST)';
-        testButton.style.cssText = 'position: fixed; top: 10px; left: 10px; z-index: 9999; background: red; color: white; padding: 10px;';
-        testButton.onclick = () => {
-          const isOpen = testDrawer.style.right === '0px';
-          testDrawer.style.right = isOpen ? '-100%' : '0px';
-          document.body.classList.toggle('vietvan-drawer-open', !isOpen);
-          console.log('Test button toggled drawer:', !isOpen);
-        };
-        document.body.appendChild(testButton);
-        console.log('Added test button');
+        console.log('Mobile drawer exists and ready');
       }
     }
   }, 3000);
