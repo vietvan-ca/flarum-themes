@@ -43,9 +43,9 @@ export default class CustomMobileDrawer extends Component {
             background: '#ffffff',
             color: '#111',
             border: 'none',
-            padding: '10px 12px',
+            padding: '5px',
             borderRadius: '5px',
-            fontSize: '16px',
+            fontSize: '24px',
             cursor: 'pointer',
             display: window.innerWidth <= 768 ? 'block' : 'none'
           }}
