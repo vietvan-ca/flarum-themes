@@ -228,6 +228,141 @@ app.initializers.add('vietvan-ca-themes', () => {
   */
 
   // ==========================================
+  // Mobile-Only Custom Drawer Implementation (NEW)
+  // ==========================================
+  
+  const createMobileDrawer = () => {
+    // Only create on mobile devices
+    if (window.innerWidth > 768) return;
+    
+    // Check if mobile drawer already exists
+    if (document.querySelector('.vietvan-mobile-drawer')) return;
+    
+    console.log('Creating mobile-only custom drawer');
+    
+    // Create a completely separate mobile drawer
+    const mobileDrawer = document.createElement('div');
+    mobileDrawer.className = 'vietvan-mobile-drawer';
+    mobileDrawer.id = 'vietvan-mobile-drawer';
+    
+    // Style it to overlay on mobile
+    mobileDrawer.style.cssText = `
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: white;
+      z-index: 1050;
+      transition: right 0.3s ease;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    `;
+    
+    // Mount our custom component
+    m.mount(mobileDrawer, CustomMobileDrawer);
+    
+    // Add to body
+    document.body.appendChild(mobileDrawer);
+    
+    // Override drawer toggle functionality on mobile only
+    const setupMobileToggle = () => {
+      const drawerToggle = document.querySelector('.App-drawerToggle, [data-drawer-toggle], .Button--icon[title*="menu"], .Button--icon[aria-label*="menu"]');
+      
+      if (drawerToggle && !drawerToggle.hasAttribute('data-vietvan-mobile-handler')) {
+        drawerToggle.setAttribute('data-vietvan-mobile-handler', 'true');
+        
+        drawerToggle.addEventListener('click', (e) => {
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle our custom drawer
+            const isOpen = mobileDrawer.style.right === '0px';
+            mobileDrawer.style.right = isOpen ? '-100%' : '0px';
+            document.body.classList.toggle('vietvan-drawer-open', !isOpen);
+            
+            console.log('Mobile drawer toggled:', !isOpen);
+          }
+        }, true); // Use capture phase
+      }
+    };
+    
+    // Setup toggle immediately and with delay
+    setupMobileToggle();
+    setTimeout(setupMobileToggle, 500);
+    setTimeout(setupMobileToggle, 1000);
+    
+    // Add click outside to close
+    const handleOutsideClick = (e) => {
+      if (window.innerWidth <= 768 && 
+          mobileDrawer.style.right === '0px' && 
+          !mobileDrawer.contains(e.target) && 
+          !e.target.closest('.App-drawerToggle')) {
+        mobileDrawer.style.right = '-100%';
+        document.body.classList.remove('vietvan-drawer-open');
+      }
+    };
+    
+    document.addEventListener('click', handleOutsideClick);
+    mobileDrawer.setAttribute('data-outside-handler', 'true');
+    
+    console.log('Mobile drawer created successfully');
+  };
+  
+  const removeMobileDrawer = () => {
+    const mobileDrawer = document.querySelector('.vietvan-mobile-drawer');
+    if (mobileDrawer) {
+      console.log('Removing mobile drawer for desktop');
+      
+      // Unmount component and remove element
+      m.mount(mobileDrawer, null);
+      mobileDrawer.remove();
+      document.body.classList.remove('vietvan-drawer-open');
+      
+      // Remove mobile handlers from toggle buttons
+      document.querySelectorAll('[data-vietvan-mobile-handler]').forEach(btn => {
+        btn.removeAttribute('data-vietvan-mobile-handler');
+      });
+    }
+  };
+  
+  const handleResponsiveDrawer = () => {
+    if (window.innerWidth <= 768) {
+      createMobileDrawer();
+    } else {
+      removeMobileDrawer();
+    }
+  };
+
+  // Initialize mobile drawer
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(handleResponsiveDrawer, 200);
+  });
+  
+  setTimeout(handleResponsiveDrawer, 500);
+  setTimeout(handleResponsiveDrawer, 1000);
+
+  // Handle window resize
+  let mobileResizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(mobileResizeTimeout);
+    mobileResizeTimeout = setTimeout(() => {
+      console.log('Window resized, handling mobile drawer');
+      handleResponsiveDrawer();
+    }, 250);
+  });
+
+  // Handle route changes
+  if (app.history) {
+    app.history.initialized?.then(() => {
+      app.history.router.on('changed', () => {
+        setTimeout(handleResponsiveDrawer, 200);
+      });
+    });
+  }
+
+  // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
   
