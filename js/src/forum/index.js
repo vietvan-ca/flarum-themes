@@ -28,6 +28,9 @@ app.initializers.add('vietvan-ca-themes', () => {
   // Alternative Approach: Separate Mobile Drawer
   // ==========================================
   
+  /*
+  // TEMPORARILY DISABLED FOR DESKTOP TESTING
+  
   const createMobileDrawer = () => {
     // Only create on mobile
     if (window.innerWidth > 768) return;
@@ -220,6 +223,9 @@ app.initializers.add('vietvan-ca-themes', () => {
       });
     });
   }
+
+  // END OF TEMPORARILY DISABLED MOBILE DRAWER CODE
+  */
 
   // ==========================================
   // Change Hide Button Icon to Eye
