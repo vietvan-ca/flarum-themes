@@ -31,6 +31,28 @@ export default class CustomMobileDrawer extends Component {
   view() {
     return (
       <div className="CustomMobileDrawer">
+        {/* Toggle Button - Fixed position to open drawer */}
+        <button 
+          className="CustomMobileDrawer-toggleBtn"
+          onclick={() => this.toggleDrawer()}
+          style={{
+            position: 'fixed',
+            top: '15px',
+            right: '15px',
+            zIndex: 1060,
+            background: '#007bff',
+            color: 'white',
+            border: 'none',
+            padding: '10px 12px',
+            borderRadius: '5px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            display: window.innerWidth <= 768 ? 'block' : 'none'
+          }}
+        >
+          ☰
+        </button>
+
         {/* Logo Section */}
         <div className="CustomMobileDrawer-logo">
           <Logo imageStyle={{ height: '40px' }} />
@@ -356,6 +378,19 @@ export default class CustomMobileDrawer extends Component {
         </ul>
       </div>
     );
+  }
+
+  /**
+   * Toggle the mobile drawer visibility
+   */
+  toggleDrawer() {
+    const drawer = document.querySelector('.vietvan-mobile-drawer');
+    if (drawer) {
+      const isOpen = drawer.style.right === '0px';
+      drawer.style.right = isOpen ? '-100%' : '0px';
+      document.body.classList.toggle('vietvan-drawer-open', !isOpen);
+      console.log('Drawer toggled:', !isOpen);
+    }
   }
 
   /**

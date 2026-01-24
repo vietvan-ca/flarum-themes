@@ -278,6 +278,38 @@ app.initializers.add('vietvan-ca-themes', () => {
     document.body.appendChild(mobileDrawer);
     console.log('Mobile drawer added to body');
     
+    // Add simple hamburger menu integration (non-interfering)
+    const setupHamburgerIntegration = () => {
+      const hamburger = document.querySelector('.App-drawerToggle, .Button--icon[aria-label*="menu"], .Header-controls .Button--icon');
+      if (hamburger && window.innerWidth <= 768) {
+        console.log('Found hamburger button, adding mobile integration');
+        
+        // Add a simple click listener that doesn't interfere with default behavior
+        hamburger.addEventListener('click', (e) => {
+          if (window.innerWidth <= 768) {
+            // Small delay to let default drawer start opening, then show ours instead
+            setTimeout(() => {
+              const defaultDrawer = document.querySelector('#drawer, .App-drawer');
+              if (defaultDrawer && defaultDrawer.classList.contains('in')) {
+                // Default drawer is opening, hide it and show ours
+                defaultDrawer.classList.remove('in');
+                defaultDrawer.style.transform = 'translateX(-100%)';
+                
+                // Show our custom drawer
+                mobileDrawer.style.right = '0px';
+                document.body.classList.add('vietvan-drawer-open');
+                console.log('Switched from default to custom drawer');
+              }
+            }, 50);
+          }
+        });
+      }
+    };
+    
+    // Setup hamburger integration with delays
+    setTimeout(setupHamburgerIntegration, 500);
+    setTimeout(setupHamburgerIntegration, 1000);
+    
     console.log('Simple mobile drawer created successfully');
   };
   

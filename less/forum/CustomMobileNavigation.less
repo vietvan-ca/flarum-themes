@@ -426,6 +426,21 @@
   }
 }
 
+// Toggle button styling
+.CustomMobileDrawer-toggleBtn {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #0056b3 !important;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
 // Body class when mobile drawer is open
 .vietvan-drawer-open {
   @media (max-width: 768px) {
@@ -441,5 +456,20 @@
       background: rgba(0, 0, 0, 0.5);
       z-index: 1040;
     }
+    
+    // Hide default drawer when custom is open
+    #drawer,
+    .App-drawer {
+      transform: translateX(-100%) !important;
+      opacity: 0 !important;
+    }
+  }
+}
+
+// Smooth transitions for drawer switching
+@media (max-width: 768px) {
+  #drawer,
+  .App-drawer {
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
 }
