@@ -463,6 +463,8 @@ app.initializers.add('vietvan-ca-themes', () => {
   });
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
+  /*
+  // TEMPORARILY DISABLED - CAUSING DESKTOP HEADER ISSUES
   extend(IndexPage.prototype, 'oncreate', function() {
     this.injectCustomDrawer();
     // Removed aggressive loading management
@@ -474,50 +476,51 @@ app.initializers.add('vietvan-ca-themes', () => {
   });
 
   // Add method to inject custom drawer
-  // IndexPage.prototype.injectCustomDrawer = function() {
-  //   // Try multiple possible drawer selectors
-  //   const drawer = document.getElementById('drawer') || 
-  //                  document.querySelector('.App-drawer') || 
-  //                  document.querySelector('#app-navigation .Drawer');
+  IndexPage.prototype.injectCustomDrawer = function() {
+    // Try multiple possible drawer selectors
+    const drawer = document.getElementById('drawer') || 
+                   document.querySelector('.App-drawer') || 
+                   document.querySelector('#app-navigation .Drawer');
     
-  //   if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
-  //     console.log('Found drawer element:', drawer);
+    if (drawer && !drawer.querySelector('.CustomMobileDrawer')) {
+      console.log('Found drawer element:', drawer);
       
-  //     // Try multiple possible content selectors
-  //     let drawerContent = drawer.querySelector('.Drawer-content') || 
-  //                        drawer.querySelector('.App-drawer') || 
-  //                        drawer.querySelector('.Drawer') ||
-  //                        drawer;
+      // Try multiple possible content selectors
+      let drawerContent = drawer.querySelector('.Drawer-content') || 
+                         drawer.querySelector('.App-drawer') || 
+                         drawer.querySelector('.Drawer') ||
+                         drawer;
       
-  //     if (drawerContent) {
-  //       console.log('Found drawer content:', drawerContent);
+      if (drawerContent) {
+        console.log('Found drawer content:', drawerContent);
         
-  //       // Create container if it doesn't exist
-  //       let customDrawerContainer = drawerContent.querySelector('.CustomMobileDrawer-container');
-  //       if (!customDrawerContainer) {
-  //         customDrawerContainer = document.createElement('div');
-  //         customDrawerContainer.className = 'CustomMobileDrawer-container';
+        // Create container if it doesn't exist
+        let customDrawerContainer = drawerContent.querySelector('.CustomMobileDrawer-container');
+        if (!customDrawerContainer) {
+          customDrawerContainer = document.createElement('div');
+          customDrawerContainer.className = 'CustomMobileDrawer-container';
           
-  //         try {
-  //           // Mount the custom drawer component
-  //           m.mount(customDrawerContainer, CustomMobileDrawer);
-  //           console.log('CustomMobileDrawer mounted successfully');
+          try {
+            // Mount the custom drawer component
+            m.mount(customDrawerContainer, CustomMobileDrawer);
+            console.log('CustomMobileDrawer mounted successfully');
             
-  //           // Clear existing content and add our custom drawer
-  //           drawerContent.innerHTML = '';
-  //           drawerContent.appendChild(customDrawerContainer);
+            // Clear existing content and add our custom drawer
+            drawerContent.innerHTML = '';
+            drawerContent.appendChild(customDrawerContainer);
             
-  //         } catch (error) {
-  //           console.error('Error mounting CustomMobileDrawer:', error);
-  //         }
-  //       }
-  //     } else {
-  //       console.log('Drawer content not found');
-  //     }
-  //   } else if (!drawer) {
-  //     console.log('Drawer element not found');
-  //   }
-  // };
+          } catch (error) {
+            console.error('Error mounting CustomMobileDrawer:', error);
+          }
+        }
+      } else {
+        console.log('Drawer content not found');
+      }
+    } else if (!drawer) {
+      console.log('Drawer element not found');
+    }
+  };
+  */
 
   // Utility function to find element by class path
   const findElementByPath = (vnode, path) => {
