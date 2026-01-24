@@ -234,38 +234,24 @@ app.initializers.add('vietvan-ca-themes', () => {
   */
 
   // ==========================================
-  // Mobile-Only Custom Drawer Implementation (NEW)
+  // Simple Mobile-Only Custom Drawer (Non-Interfering)
   // ==========================================
   
   const createMobileDrawer = () => {
-    console.log('createMobileDrawer called - window width:', window.innerWidth);
-    
     // Only create on mobile devices
-    if (window.innerWidth > 768) {
-      console.log('Not mobile, exiting createMobileDrawer');
-      return;
-    }
+    if (window.innerWidth > 768) return;
     
     // Check if mobile drawer already exists
-    const existingDrawer = document.querySelector('.vietvan-mobile-drawer');
-    if (existingDrawer) {
-      console.log('Mobile drawer already exists, skipping creation');
-      console.log('Existing drawer element:', existingDrawer);
-      console.log('Existing drawer styles:', existingDrawer.style.cssText);
-      console.log('Existing drawer position:', existingDrawer.getBoundingClientRect());
-      return;
-    }
+    if (document.querySelector('.vietvan-mobile-drawer')) return;
     
-    console.log('Creating mobile-only custom drawer');
+    console.log('Creating simple mobile drawer');
     
     // Create a completely separate mobile drawer
     const mobileDrawer = document.createElement('div');
     mobileDrawer.className = 'vietvan-mobile-drawer';
     mobileDrawer.id = 'vietvan-mobile-drawer';
     
-    console.log('Mobile drawer element created:', mobileDrawer);
-    
-    // Style it to overlay on mobile
+    // Style it to overlay on mobile (hidden by default)
     mobileDrawer.style.cssText = `
       position: fixed;
       top: 0;
@@ -279,13 +265,7 @@ app.initializers.add('vietvan-ca-themes', () => {
       overflow-y: auto;
     `;
     
-    // Add attributes to prevent focus-trap issues
-    mobileDrawer.setAttribute('tabindex', '-1');
-    mobileDrawer.setAttribute('role', 'dialog');
-    mobileDrawer.setAttribute('aria-modal', 'false'); // Not a modal, just a drawer
-    
     // Mount our custom component
-    console.log('Attempting to mount CustomMobileDrawer component...');
     try {
       m.mount(mobileDrawer, CustomMobileDrawer);
       console.log('CustomMobileDrawer mounted successfully');
@@ -298,250 +278,40 @@ app.initializers.add('vietvan-ca-themes', () => {
     document.body.appendChild(mobileDrawer);
     console.log('Mobile drawer added to body');
     
-    // Override drawer toggle functionality on mobile only
-    const setupMobileToggle = () => {
-      // Try multiple selectors to find the hamburger menu
-      const selectors = [
-        '.App-drawerToggle',
-        '[data-drawer-toggle]',
-        '.Button--icon[title*="menu"]',
-        '.Button--icon[aria-label*="menu"]',
-        '.Header-controls .Button--icon',
-        '.App-primaryControl .Button--icon',
-        '.Button.Button--icon.Button--link'
-      ];
-      
-      let drawerToggle = null;
-      for (const selector of selectors) {
-        drawerToggle = document.querySelector(selector);
-        if (drawerToggle) {
-          console.log('Found drawer toggle with selector:', selector, drawerToggle);
-          break;
-        }
-      }
-      
-      // Also try to find all possible toggle buttons
-      const allToggleButtons = document.querySelectorAll('.Button--icon, [class*="toggle"], [class*="drawer"]');
-      console.log('All potential toggle buttons:', allToggleButtons);
-      
-      if (drawerToggle && !drawerToggle.hasAttribute('data-vietvan-mobile-handler')) {
-        drawerToggle.setAttribute('data-vietvan-mobile-handler', 'true');
-        console.log('Added mobile handler to drawer toggle');
-        
-        // Remove existing event listeners by cloning the element
-        const newToggle = drawerToggle.cloneNode(true);
-        drawerToggle.parentNode.replaceChild(newToggle, drawerToggle);
-        drawerToggle = newToggle;
-        
-        // Add our custom event listener
-        drawerToggle.addEventListener('click', (e) => {
-          console.log('Drawer toggle clicked, window width:', window.innerWidth);
-          if (window.innerWidth <= 768) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            
-            console.log('Mobile click detected, preventing default and toggling custom drawer');
-            
-            // Prevent Flarum's focus-trap from activating
-            const focusTrapElements = document.querySelectorAll('[data-focus-trap], .focus-trap');
-            focusTrapElements.forEach(el => {
-              el.style.display = 'none';
-            });
-            
-            // Toggle our custom drawer
-            const currentRight = mobileDrawer.style.right;
-            const isOpen = currentRight === '0px';
-            const newRight = isOpen ? '-100%' : '0px';
-            
-            console.log('Current right:', currentRight, 'Is open:', isOpen, 'New right:', newRight);
-            
-            mobileDrawer.style.right = newRight;
-            document.body.classList.toggle('vietvan-drawer-open', !isOpen);
-            
-            // Hide default drawer if it's showing
-            const defaultDrawer = document.querySelector('#drawer, .App-drawer');
-            if (defaultDrawer) {
-              if (!isOpen) {
-                defaultDrawer.style.display = 'none';
-                defaultDrawer.style.visibility = 'hidden';
-                defaultDrawer.style.opacity = '0';
-                defaultDrawer.style.transform = 'translateX(-100%)';
-                // Remove any focus-trap attributes
-                defaultDrawer.removeAttribute('data-focus-trap');
-                defaultDrawer.classList.remove('focus-trap');
-              }
-            }
-            
-            console.log('Mobile drawer toggled:', !isOpen);
-            console.log('Drawer element after toggle:', mobileDrawer);
-            
-            return false;
-          }
-        }, true); // Use capture phase to intercept before other handlers
-        
-        // Also add event listeners for other event types
-        ['touchstart', 'mousedown'].forEach(eventType => {
-          drawerToggle.addEventListener(eventType, (e) => {
-            if (window.innerWidth <= 768) {
-              console.log(`${eventType} event intercepted on mobile`);
-            }
-          }, true);
-        });
-        
-      } else if (!drawerToggle) {
-        console.log('No drawer toggle button found with any selector');
-      } else {
-        console.log('Drawer toggle already has handler');
-      }
-    };
-    
-    // Setup toggle immediately and with delay
-    setupMobileToggle();
-    setTimeout(setupMobileToggle, 500);
-    setTimeout(setupMobileToggle, 1000);
-    
-    // Add click outside to close
-    const handleOutsideClick = (e) => {
-      if (window.innerWidth <= 768 && 
-          mobileDrawer.style.right === '0px' && 
-          !mobileDrawer.contains(e.target) && 
-          !e.target.closest('.App-drawerToggle')) {
-        mobileDrawer.style.right = '-100%';
-        document.body.classList.remove('vietvan-drawer-open');
-      }
-    };
-    
-    document.addEventListener('click', handleOutsideClick);
-    mobileDrawer.setAttribute('data-outside-handler', 'true');
-    
-    console.log('Mobile drawer created successfully');
-    
-    // Aggressively hide default drawer on mobile
-    const hideDefaultDrawer = () => {
-      const defaultDrawer = document.querySelector('#drawer, .App-drawer');
-      if (defaultDrawer) {
-        defaultDrawer.style.display = 'none';
-        defaultDrawer.style.visibility = 'hidden';
-        defaultDrawer.style.opacity = '0';
-        defaultDrawer.style.pointerEvents = 'none';
-        defaultDrawer.style.transform = 'translateX(-100%)';
-        
-        // Remove focus-trap attributes that cause errors
-        defaultDrawer.removeAttribute('data-focus-trap');
-        defaultDrawer.classList.remove('focus-trap');
-        
-        // Disable any focus-trap instances
-        if (window.focusTrap && typeof window.focusTrap.deactivate === 'function') {
-          try {
-            window.focusTrap.deactivate();
-          } catch (e) {
-            console.log('Focus trap deactivation handled');
-          }
-        }
-        
-        console.log('Hidden default drawer and disabled focus trap:', defaultDrawer);
-      }
-      
-      // Also hide any focus-trap overlays
-      const focusTraps = document.querySelectorAll('[data-focus-trap], .focus-trap');
-      focusTraps.forEach(trap => {
-        if (trap !== mobileDrawer) {
-          trap.style.display = 'none';
-        }
-      });
-    };
-    
-    hideDefaultDrawer();
-    setTimeout(hideDefaultDrawer, 100);
-    setTimeout(hideDefaultDrawer, 500);
-    setTimeout(hideDefaultDrawer, 1000);
+    console.log('Simple mobile drawer created successfully');
   };
   
   const removeMobileDrawer = () => {
     const mobileDrawer = document.querySelector('.vietvan-mobile-drawer');
     if (mobileDrawer) {
       console.log('Removing mobile drawer for desktop');
-      
-      // Unmount component and remove element
       m.mount(mobileDrawer, null);
       mobileDrawer.remove();
       document.body.classList.remove('vietvan-drawer-open');
-      
-      // Remove mobile handlers from toggle buttons
-      document.querySelectorAll('[data-vietvan-mobile-handler]').forEach(btn => {
-        btn.removeAttribute('data-vietvan-mobile-handler');
-      });
     }
   };
   
   const handleResponsiveDrawer = () => {
-    console.log('handleResponsiveDrawer called - window width:', window.innerWidth);
-    
     if (window.innerWidth <= 768) {
-      console.log('Mobile detected, creating drawer...');
       createMobileDrawer();
     } else {
-      console.log('Desktop detected, removing drawer...');
       removeMobileDrawer();
     }
   };
 
-  // Initialize mobile drawer
-  console.log('Initializing mobile drawer system...');
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, checking mobile drawer...');
-    setTimeout(handleResponsiveDrawer, 200);
-  });
-  
+  // Initialize mobile drawer (simple approach)
   setTimeout(() => {
-    console.log('500ms timeout - checking mobile drawer...');
-    handleResponsiveDrawer();
-  }, 500);
-  
-  setTimeout(() => {
-    console.log('1000ms timeout - checking mobile drawer...');
-    handleResponsiveDrawer();
-  }, 1000);
-
-  setTimeout(() => {
-    console.log('2000ms timeout - checking mobile drawer...');
-    handleResponsiveDrawer();
-  }, 2000);
-
-  // Manual test trigger (for debugging) - REMOVED TEST BUTTON
-  setTimeout(() => {
-    console.log('Manual test: checking mobile drawer status...');
     if (window.innerWidth <= 768) {
-      const testDrawer = document.querySelector('.vietvan-mobile-drawer');
-      if (!testDrawer) {
-        console.log('No mobile drawer found, forcing creation...');
-        createMobileDrawer();
-      } else {
-        console.log('Mobile drawer exists and ready');
-      }
+      createMobileDrawer();
     }
-  }, 3000);
+  }, 1000);
 
   // Handle window resize
   let mobileResizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(mobileResizeTimeout);
-    mobileResizeTimeout = setTimeout(() => {
-      console.log('Window resized, handling mobile drawer');
-      handleResponsiveDrawer();
-    }, 250);
+    mobileResizeTimeout = setTimeout(handleResponsiveDrawer, 250);
   });
-
-  // Handle route changes
-  if (app.history) {
-    app.history.initialized?.then(() => {
-      app.history.router.on('changed', () => {
-        setTimeout(handleResponsiveDrawer, 200);
-      });
-    });
-  }
 
   // ==========================================
   // Change Hide Button Icon to Eye
