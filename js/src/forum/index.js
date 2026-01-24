@@ -295,22 +295,48 @@ app.initializers.add('vietvan-ca-themes', () => {
     
     // Override drawer toggle functionality on mobile only
     const setupMobileToggle = () => {
-      const drawerToggle = document.querySelector('.App-drawerToggle, [data-drawer-toggle], .Button--icon[title*="menu"], .Button--icon[aria-label*="menu"]');
+      // Try multiple selectors to find the hamburger menu
+      const selectors = [
+        '.App-drawerToggle',
+        '[data-drawer-toggle]',
+        '.Button--icon[title*="menu"]',
+        '.Button--icon[aria-label*="menu"]',
+        '.Header-controls .Button--icon',
+        '.App-primaryControl .Button--icon',
+        '.Button.Button--icon.Button--link'
+      ];
       
-      console.log('Looking for drawer toggle button...');
-      console.log('Found drawer toggle:', drawerToggle);
+      let drawerToggle = null;
+      for (const selector of selectors) {
+        drawerToggle = document.querySelector(selector);
+        if (drawerToggle) {
+          console.log('Found drawer toggle with selector:', selector, drawerToggle);
+          break;
+        }
+      }
+      
+      // Also try to find all possible toggle buttons
+      const allToggleButtons = document.querySelectorAll('.Button--icon, [class*="toggle"], [class*="drawer"]');
+      console.log('All potential toggle buttons:', allToggleButtons);
       
       if (drawerToggle && !drawerToggle.hasAttribute('data-vietvan-mobile-handler')) {
         drawerToggle.setAttribute('data-vietvan-mobile-handler', 'true');
         console.log('Added mobile handler to drawer toggle');
         
+        // Remove existing event listeners by cloning the element
+        const newToggle = drawerToggle.cloneNode(true);
+        drawerToggle.parentNode.replaceChild(newToggle, drawerToggle);
+        drawerToggle = newToggle;
+        
+        // Add our custom event listener
         drawerToggle.addEventListener('click', (e) => {
           console.log('Drawer toggle clicked, window width:', window.innerWidth);
           if (window.innerWidth <= 768) {
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
             
-            console.log('Mobile click detected, toggling drawer');
+            console.log('Mobile click detected, preventing default and toggling custom drawer');
             
             // Toggle our custom drawer
             const currentRight = mobileDrawer.style.right;
@@ -322,13 +348,35 @@ app.initializers.add('vietvan-ca-themes', () => {
             mobileDrawer.style.right = newRight;
             document.body.classList.toggle('vietvan-drawer-open', !isOpen);
             
+            // Hide default drawer if it's showing
+            const defaultDrawer = document.querySelector('#drawer, .App-drawer');
+            if (defaultDrawer && !isOpen) {
+              defaultDrawer.style.display = 'none';
+              setTimeout(() => {
+                if (defaultDrawer.style.display === 'none') {
+                  defaultDrawer.style.display = '';
+                }
+              }, 300);
+            }
+            
             console.log('Mobile drawer toggled:', !isOpen);
             console.log('Drawer element after toggle:', mobileDrawer);
-            console.log('Drawer styles after toggle:', mobileDrawer.style.cssText);
+            
+            return false;
           }
-        }, true); // Use capture phase
+        }, true); // Use capture phase to intercept before other handlers
+        
+        // Also add event listeners for other event types
+        ['touchstart', 'mousedown'].forEach(eventType => {
+          drawerToggle.addEventListener(eventType, (e) => {
+            if (window.innerWidth <= 768) {
+              console.log(`${eventType} event intercepted on mobile`);
+            }
+          }, true);
+        });
+        
       } else if (!drawerToggle) {
-        console.log('No drawer toggle button found');
+        console.log('No drawer toggle button found with any selector');
       } else {
         console.log('Drawer toggle already has handler');
       }
@@ -354,6 +402,22 @@ app.initializers.add('vietvan-ca-themes', () => {
     mobileDrawer.setAttribute('data-outside-handler', 'true');
     
     console.log('Mobile drawer created successfully');
+    
+    // Aggressively hide default drawer on mobile
+    const hideDefaultDrawer = () => {
+      const defaultDrawer = document.querySelector('#drawer, .App-drawer');
+      if (defaultDrawer) {
+        defaultDrawer.style.display = 'none';
+        defaultDrawer.style.visibility = 'hidden';
+        defaultDrawer.style.opacity = '0';
+        defaultDrawer.style.pointerEvents = 'none';
+        console.log('Hidden default drawer:', defaultDrawer);
+      }
+    };
+    
+    hideDefaultDrawer();
+    setTimeout(hideDefaultDrawer, 100);
+    setTimeout(hideDefaultDrawer, 500);
   };
   
   const removeMobileDrawer = () => {

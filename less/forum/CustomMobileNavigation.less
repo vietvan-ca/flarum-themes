@@ -441,6 +441,15 @@
       background: rgba(0, 0, 0, 0.5);
       z-index: 1040;
     }
+    
+    // Hide default Flarum drawer when custom drawer is open
+    #drawer,
+    .App-drawer {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      transform: translateX(-100%) !important;
+    }
   }
 }
 
@@ -448,6 +457,12 @@
 @media (max-width: 768px) {
   .vietvan-drawer-open #drawer,
   .vietvan-drawer-open .App-drawer {
+    display: none !important;
+  }
+  
+  // Also hide when custom drawer exists (even if not open)
+  body:has(.vietvan-mobile-drawer) #drawer,
+  body:has(.vietvan-mobile-drawer) .App-drawer {
     display: none !important;
   }
 }
