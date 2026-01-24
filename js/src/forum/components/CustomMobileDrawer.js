@@ -40,7 +40,7 @@ export default class CustomMobileDrawer extends Component {
             top: '15px',
             right: '15px',
             zIndex: 1060,
-            background: '#007bff',
+            background: '#ffffff',
             color: 'white',
             border: 'none',
             padding: '10px 12px',
