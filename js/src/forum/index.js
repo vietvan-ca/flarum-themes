@@ -247,8 +247,12 @@ app.initializers.add('vietvan-ca-themes', () => {
     }
     
     // Check if mobile drawer already exists
-    if (document.querySelector('.vietvan-mobile-drawer')) {
+    const existingDrawer = document.querySelector('.vietvan-mobile-drawer');
+    if (existingDrawer) {
       console.log('Mobile drawer already exists, skipping creation');
+      console.log('Existing drawer element:', existingDrawer);
+      console.log('Existing drawer styles:', existingDrawer.style.cssText);
+      console.log('Existing drawer position:', existingDrawer.getBoundingClientRect());
       return;
     }
     
@@ -293,22 +297,40 @@ app.initializers.add('vietvan-ca-themes', () => {
     const setupMobileToggle = () => {
       const drawerToggle = document.querySelector('.App-drawerToggle, [data-drawer-toggle], .Button--icon[title*="menu"], .Button--icon[aria-label*="menu"]');
       
+      console.log('Looking for drawer toggle button...');
+      console.log('Found drawer toggle:', drawerToggle);
+      
       if (drawerToggle && !drawerToggle.hasAttribute('data-vietvan-mobile-handler')) {
         drawerToggle.setAttribute('data-vietvan-mobile-handler', 'true');
+        console.log('Added mobile handler to drawer toggle');
         
         drawerToggle.addEventListener('click', (e) => {
+          console.log('Drawer toggle clicked, window width:', window.innerWidth);
           if (window.innerWidth <= 768) {
             e.preventDefault();
             e.stopPropagation();
             
+            console.log('Mobile click detected, toggling drawer');
+            
             // Toggle our custom drawer
-            const isOpen = mobileDrawer.style.right === '0px';
-            mobileDrawer.style.right = isOpen ? '-100%' : '0px';
+            const currentRight = mobileDrawer.style.right;
+            const isOpen = currentRight === '0px';
+            const newRight = isOpen ? '-100%' : '0px';
+            
+            console.log('Current right:', currentRight, 'Is open:', isOpen, 'New right:', newRight);
+            
+            mobileDrawer.style.right = newRight;
             document.body.classList.toggle('vietvan-drawer-open', !isOpen);
             
             console.log('Mobile drawer toggled:', !isOpen);
+            console.log('Drawer element after toggle:', mobileDrawer);
+            console.log('Drawer styles after toggle:', mobileDrawer.style.cssText);
           }
         }, true); // Use capture phase
+      } else if (!drawerToggle) {
+        console.log('No drawer toggle button found');
+      } else {
+        console.log('Drawer toggle already has handler');
       }
     };
     
@@ -396,6 +418,25 @@ app.initializers.add('vietvan-ca-themes', () => {
         createMobileDrawer();
       } else {
         console.log('Mobile drawer exists:', testDrawer);
+        console.log('Testing drawer visibility...');
+        
+        // Force show the drawer for testing
+        testDrawer.style.right = '0px';
+        document.body.classList.add('vietvan-drawer-open');
+        console.log('Forced drawer to show');
+        
+        // Add a test button to toggle
+        const testButton = document.createElement('button');
+        testButton.textContent = 'Toggle Mobile Drawer (TEST)';
+        testButton.style.cssText = 'position: fixed; top: 10px; left: 10px; z-index: 9999; background: red; color: white; padding: 10px;';
+        testButton.onclick = () => {
+          const isOpen = testDrawer.style.right === '0px';
+          testDrawer.style.right = isOpen ? '-100%' : '0px';
+          document.body.classList.toggle('vietvan-drawer-open', !isOpen);
+          console.log('Test button toggled drawer:', !isOpen);
+        };
+        document.body.appendChild(testButton);
+        console.log('Added test button');
       }
     }
   }, 3000);
