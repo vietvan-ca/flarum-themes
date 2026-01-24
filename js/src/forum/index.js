@@ -25,6 +25,12 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
+  // Debug: Test CustomMobileDrawer import
+  // ==========================================
+  console.log('CustomMobileDrawer component:', CustomMobileDrawer);
+  console.log('Mithril m function:', m);
+
+  // ==========================================
   // Alternative Approach: Separate Mobile Drawer
   // ==========================================
   
@@ -232,11 +238,19 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   
   const createMobileDrawer = () => {
+    console.log('createMobileDrawer called - window width:', window.innerWidth);
+    
     // Only create on mobile devices
-    if (window.innerWidth > 768) return;
+    if (window.innerWidth > 768) {
+      console.log('Not mobile, exiting createMobileDrawer');
+      return;
+    }
     
     // Check if mobile drawer already exists
-    if (document.querySelector('.vietvan-mobile-drawer')) return;
+    if (document.querySelector('.vietvan-mobile-drawer')) {
+      console.log('Mobile drawer already exists, skipping creation');
+      return;
+    }
     
     console.log('Creating mobile-only custom drawer');
     
@@ -244,6 +258,8 @@ app.initializers.add('vietvan-ca-themes', () => {
     const mobileDrawer = document.createElement('div');
     mobileDrawer.className = 'vietvan-mobile-drawer';
     mobileDrawer.id = 'vietvan-mobile-drawer';
+    
+    console.log('Mobile drawer element created:', mobileDrawer);
     
     // Style it to overlay on mobile
     mobileDrawer.style.cssText = `
@@ -260,10 +276,18 @@ app.initializers.add('vietvan-ca-themes', () => {
     `;
     
     // Mount our custom component
-    m.mount(mobileDrawer, CustomMobileDrawer);
+    console.log('Attempting to mount CustomMobileDrawer component...');
+    try {
+      m.mount(mobileDrawer, CustomMobileDrawer);
+      console.log('CustomMobileDrawer mounted successfully');
+    } catch (error) {
+      console.error('Error mounting CustomMobileDrawer:', error);
+      return;
+    }
     
     // Add to body
     document.body.appendChild(mobileDrawer);
+    console.log('Mobile drawer added to body');
     
     // Override drawer toggle functionality on mobile only
     const setupMobileToggle = () => {
@@ -328,20 +352,53 @@ app.initializers.add('vietvan-ca-themes', () => {
   };
   
   const handleResponsiveDrawer = () => {
+    console.log('handleResponsiveDrawer called - window width:', window.innerWidth);
+    
     if (window.innerWidth <= 768) {
+      console.log('Mobile detected, creating drawer...');
       createMobileDrawer();
     } else {
+      console.log('Desktop detected, removing drawer...');
       removeMobileDrawer();
     }
   };
 
   // Initialize mobile drawer
+  console.log('Initializing mobile drawer system...');
+  
   document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, checking mobile drawer...');
     setTimeout(handleResponsiveDrawer, 200);
   });
   
-  setTimeout(handleResponsiveDrawer, 500);
-  setTimeout(handleResponsiveDrawer, 1000);
+  setTimeout(() => {
+    console.log('500ms timeout - checking mobile drawer...');
+    handleResponsiveDrawer();
+  }, 500);
+  
+  setTimeout(() => {
+    console.log('1000ms timeout - checking mobile drawer...');
+    handleResponsiveDrawer();
+  }, 1000);
+
+  setTimeout(() => {
+    console.log('2000ms timeout - checking mobile drawer...');
+    handleResponsiveDrawer();
+  }, 2000);
+
+  // Manual test trigger (for debugging)
+  setTimeout(() => {
+    console.log('Manual test: forcing mobile drawer creation...');
+    if (window.innerWidth <= 768) {
+      const testDrawer = document.querySelector('.vietvan-mobile-drawer');
+      if (!testDrawer) {
+        console.log('No mobile drawer found, forcing creation...');
+        createMobileDrawer();
+      } else {
+        console.log('Mobile drawer exists:', testDrawer);
+      }
+    }
+  }, 3000);
 
   // Handle window resize
   let mobileResizeTimeout;
