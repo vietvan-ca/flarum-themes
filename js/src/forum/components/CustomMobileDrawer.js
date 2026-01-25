@@ -270,7 +270,7 @@ export default class CustomMobileDrawer extends Component {
     const mainSiteUrl = app.forum.attribute('vietvan_ca_back_button_custom_url') || '';
     const baseMainUrl = mainSiteUrl ? mainSiteUrl.replace('/forum', '').replace(/\/$/, '') : '';
     
-    // Use default Flarum login modal instead of external SSO
+    // Use external register URL but Flarum login for SSO
     const registerUrl = `${baseMainUrl}/auth/register`;
 
     return (
@@ -280,7 +280,7 @@ export default class CustomMobileDrawer extends Component {
           {trans('register', 'Đăng ký')}
         </a>
 
-        {/* Login Button - Use Flarum's default login modal */}
+        {/* Login Button - Use Flarum's default login (SSO compatible) */}
         <button 
           className="Button Button--secondary CustomMobileDrawer-loginBtn"
           onclick={() => this.showLoginModal()}
@@ -394,18 +394,27 @@ export default class CustomMobileDrawer extends Component {
   }
 
   /**
-   * Show Flarum's default login modal
+   * Show Flarum's default login (SSO compatible)
    */
   showLoginModal() {
     // Close the mobile drawer first
-    const drawer = document.querySelector('#drawer, .App-drawer');
+    const drawer = document.querySelector('.vietvan-mobile-drawer');
     if (drawer) {
-      drawer.classList.remove('in');
-      document.body.classList.remove('drawerOpen');
+      drawer.style.right = '-100%';
+      document.body.classList.remove('vietvan-drawer-open');
     }
 
-    // Show Flarum's login modal
-    app.modal.show(LogInModal);
+    // Find and click the default Flarum login button to trigger SSO
+    const defaultLoginButton = document.querySelector('.Header-controls .item-logIn button, .HeaderSecondary .item-logIn button, .item-logIn .Button');
+    
+    if (defaultLoginButton) {
+      console.log('Triggering default Flarum login (SSO compatible)');
+      defaultLoginButton.click();
+    } else {
+      // Fallback: Show Flarum's login modal if no SSO button found
+      console.log('No SSO button found, showing login modal');
+      app.modal.show(LogInModal);
+    }
   }
 
   /**
