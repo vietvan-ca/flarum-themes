@@ -297,7 +297,7 @@ export default class CustomMobileDrawer extends Component {
         <div className="CustomMobileDrawer-socialButtons">
           <button 
             className="Button CustomMobileDrawer-socialBtn CustomMobileDrawer-socialBtn--facebook"
-            onclick={() => this.socialLogin('facebook')}
+            onclick={() => this.showLoginModal()}
           >
             <i className="fab fa-facebook CustomMobileDrawer-socialIcon"></i>
             {trans('login_facebook', 'Đăng nhập bằng Facebook')}
@@ -305,7 +305,7 @@ export default class CustomMobileDrawer extends Component {
 
           <button 
             className="Button CustomMobileDrawer-socialBtn CustomMobileDrawer-socialBtn--google"
-            onclick={() => this.socialLogin('google')}
+            onclick={() => this.showLoginModal()}
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="CustomMobileDrawer-socialIcon CustomMobileDrawer-socialIcon--img" />
             {trans('login_google', 'Đăng nhập bằng Google')}
