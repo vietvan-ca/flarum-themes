@@ -1,9 +1,5 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
-import Button from 'flarum/common/components/Button';
-import LinkButton from 'flarum/common/components/LinkButton';
-import Separator from 'flarum/common/components/Separator';
-import SelectDropdown from 'flarum/common/components/SelectDropdown';
 import ItemList from 'flarum/common/utils/ItemList';
 import listItems from 'flarum/common/helpers/listItems';
 import LogInModal from 'flarum/forum/components/LogInModal';
@@ -220,9 +216,6 @@ export default class CustomMobileDrawer extends Component {
    * Theme toggle button
    */
   themeToggle() {
-    // Check if night mode extension is available
-    const nightMode = app.forum.attribute('darkMode') || localStorage.getItem('fofNightMode');
-    
     return (
       <button 
         className="CustomMobileDrawer-link"
@@ -297,7 +290,7 @@ export default class CustomMobileDrawer extends Component {
         <div className="CustomMobileDrawer-socialButtons">
           <button 
             className="Button CustomMobileDrawer-socialBtn CustomMobileDrawer-socialBtn--facebook"
-            onclick={() => this.showLoginModal()}
+            onclick={() => this.socialLogin('facebook')}
           >
             <i className="fab fa-facebook CustomMobileDrawer-socialIcon"></i>
             {trans('login_facebook', 'Đăng nhập bằng Facebook')}
@@ -305,7 +298,7 @@ export default class CustomMobileDrawer extends Component {
 
           <button 
             className="Button CustomMobileDrawer-socialBtn CustomMobileDrawer-socialBtn--google"
-            onclick={() => this.showLoginModal()}
+            onclick={() => this.socialLogin('google')}
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="CustomMobileDrawer-socialIcon CustomMobileDrawer-socialIcon--img" />
             {trans('login_google', 'Đăng nhập bằng Google')}
@@ -332,6 +325,8 @@ export default class CustomMobileDrawer extends Component {
    */
   loggedInSection() {
     const user = app.session.user;
+    const mainSiteUrl = app.forum.attribute('vietvan_ca_back_button_custom_url') || '';
+    const baseMainUrl = mainSiteUrl ? mainSiteUrl.replace('/forum', '').replace(/\/$/, '') : '';
 
     return (
       <div className="CustomMobileDrawer-user">
@@ -352,18 +347,24 @@ export default class CustomMobileDrawer extends Component {
           </div>
         </div>
 
-        {/* User Menu */}
+        {/* User Menu - Updated with requested items */}
         <ul className="CustomMobileDrawer-userMenu">
           <li>
-            <a href={app.route.user(user)} className="CustomMobileDrawer-link">
-              <i className="fas fa-user CustomMobileDrawer-icon--left"></i>
-              {trans('profile', 'Trang cá nhân')}
+            <a href={`${baseMainUrl}/manage-listings/posts/create`} className="CustomMobileDrawer-link">
+              <i className="fas fa-edit CustomMobileDrawer-icon--left"></i>
+              {trans('create_post', 'Đăng tin')}
             </a>
           </li>
           <li>
-            <a href={app.route('settings')} className="CustomMobileDrawer-link">
-              <i className="fas fa-cog CustomMobileDrawer-icon--left"></i>
-              {trans('settings', 'Cài đặt')}
+            <a href={`${baseMainUrl}/manage-listings`} className="CustomMobileDrawer-link">
+              <i className="fas fa-list-alt CustomMobileDrawer-icon--left"></i>
+              {trans('manage_posts', 'Quản lý tin đăng')}
+            </a>
+          </li>
+          <li>
+            <a href={`${baseMainUrl}/contact`} className="CustomMobileDrawer-link">
+              <i className="fas fa-envelope CustomMobileDrawer-icon--left"></i>
+              {trans('contact', 'Liên Hệ')}
             </a>
           </li>
           <li>
