@@ -67,6 +67,63 @@
     pointer-events: none !important;
   }
 
+  // Toggle Button - Safari compatible
+  &-toggleBtn {
+    position: fixed !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 1060 !important;
+    background: #ffffff !important;
+    color: #111 !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    border-radius: 5px !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.2s ease !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-appearance: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    
+    // Hide on desktop
+    @media (min-width: 769px) {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    
+    // Show only on mobile
+    @media (max-width: 768px) {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    &:hover {
+      background: #f5f5f5 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    &:active {
+      transform: scale(0.95) !important;
+    }
+
+    i {
+      font-size: 18px !important;
+      color: #111 !important;
+      line-height: 1 !important;
+    }
+  }
+
   // Logo Section
   &-logo {
     display: flex;

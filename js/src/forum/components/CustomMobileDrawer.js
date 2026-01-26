@@ -31,20 +31,6 @@ export default class CustomMobileDrawer extends Component {
         <button 
           className="CustomMobileDrawer-toggleBtn"
           onclick={() => this.toggleDrawer()}
-          style={{
-            position: 'fixed',
-            top: '10px',
-            right: '10px',
-            zIndex: 1060,
-            background: '#ffffff',
-            color: '#111',
-            border: 'none',
-            padding: '8px',
-            borderRadius: '5px',
-            fontSize: '18px',
-            cursor: 'pointer',
-            display: window.innerWidth <= 768 ? 'block' : 'none'
-          }}
         >
           <i className="fas fa-bars"></i>
         </button>
