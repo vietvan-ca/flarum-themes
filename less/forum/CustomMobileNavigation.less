@@ -67,60 +67,65 @@
     pointer-events: none !important;
   }
 
-  // Toggle Button - Safari compatible
+  // Toggle Button - Safari compatible (outside drawer container)
   &-toggleBtn {
     position: fixed !important;
-    top: 10px !important;
-    right: 10px !important;
-    z-index: 1060 !important;
+    top: 15px !important;
+    right: 15px !important;
+    z-index: 9999 !important;
     background: #ffffff !important;
-    color: #111 !important;
-    border: none !important;
-    padding: 8px 12px !important;
-    border-radius: 5px !important;
-    font-size: 18px !important;
+    color: #333333 !important;
+    border: 2px solid #e0e0e0 !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
     cursor: pointer !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-    transition: all 0.2s ease !important;
-    width: auto !important;
-    height: auto !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    display: flex !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: none !important;
     align-items: center !important;
     justify-content: center !important;
     -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
     -webkit-tap-highlight-color: transparent !important;
-    
-    // Hide on desktop
-    @media (min-width: 769px) {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    outline: none !important;
     
     // Show only on mobile
     @media (max-width: 768px) {
       display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
+    }
+    
+    // Completely hide on desktop
+    @media (min-width: 769px) {
+      display: none !important;
     }
 
     &:hover {
-      background: #f5f5f5 !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+      background: #f8f9fa !important;
+      border-color: #007bff !important;
+      color: #007bff !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
     }
 
     &:active {
-      transform: scale(0.95) !important;
+      transform: translateY(0) scale(0.98) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     }
 
     i {
-      font-size: 18px !important;
-      color: #111 !important;
+      font-size: 16px !important;
+      color: inherit !important;
       line-height: 1 !important;
+      display: block !important;
     }
   }
 
@@ -514,5 +519,33 @@
   #drawer,
   .App-drawer {
     transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+}
+
+// Safari-specific fixes for toggle button
+@supports (-webkit-appearance: none) {
+  .CustomMobileDrawer-toggleBtn {
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    will-change: transform !important;
+    
+    @media (max-width: 768px) {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+}
+
+// Additional Safari mobile fixes
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 1) {
+  .CustomMobileDrawer-toggleBtn {
+    display: flex !important;
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+    z-index: 9999 !important;
   }
 }

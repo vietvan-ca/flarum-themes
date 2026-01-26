@@ -26,8 +26,8 @@ export default class CustomMobileDrawer extends Component {
 
   view() {
     return (
-      <div className="CustomMobileDrawer">
-        {/* Toggle Button - Fixed position to open drawer */}
+      <div>
+        {/* Toggle Button - Always visible, positioned outside drawer */}
         <button 
           className="CustomMobileDrawer-toggleBtn"
           onclick={() => this.toggleDrawer()}
@@ -35,24 +35,26 @@ export default class CustomMobileDrawer extends Component {
           <i className="fas fa-bars"></i>
         </button>
 
-        {/* Logo Section */}
-        <div className="CustomMobileDrawer-logo">
-          <Logo imageStyle={{ height: '40px' }} />
-        </div>
+        <div className="CustomMobileDrawer">
+          {/* Logo Section */}
+          <div className="CustomMobileDrawer-logo">
+            <Logo imageStyle={{ height: '40px' }} />
+          </div>
 
-        {/* Navigation Menu */}
-        <nav className="CustomMobileDrawer-nav">
-          <ul className="CustomMobileDrawer-menu">
-            {listItems(this.menuItems().toArray())}
-          </ul>
-        </nav>
+          {/* Navigation Menu */}
+          <nav className="CustomMobileDrawer-nav">
+            <ul className="CustomMobileDrawer-menu">
+              {listItems(this.menuItems().toArray())}
+            </ul>
+          </nav>
 
-        {/* Separator */}
-        <div className="CustomMobileDrawer-separator"></div>
+          {/* Separator */}
+          <div className="CustomMobileDrawer-separator"></div>
 
-        {/* Auth Section */}
-        <div className="CustomMobileDrawer-auth">
-          {app.session.user ? this.loggedInSection() : this.guestSection()}
+          {/* Auth Section */}
+          <div className="CustomMobileDrawer-auth">
+            {app.session.user ? this.loggedInSection() : this.guestSection()}
+          </div>
         </div>
       </div>
     );
