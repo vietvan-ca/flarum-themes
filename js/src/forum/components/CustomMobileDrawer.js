@@ -298,7 +298,7 @@ export default class CustomMobileDrawer extends Component {
 
   /**
    * Handle social login with dual-platform authentication
-   * Uses the existing public dashboard OAuth flow with Flarum-specific state
+   * Uses popup window for OAuth flow
    */
   socialLogin(provider) {
     // Get backend API URL from Flarum settings or use default
@@ -319,7 +319,6 @@ export default class CustomMobileDrawer extends Component {
 
     // Generate state parameter for security
     const state = this.generateRandomString(32);
-    sessionStorage.setItem('oauth_state', state);
 
     // Build the OAuth URL - backend will handle the redirect to Google
     const returnUrl = encodeURIComponent(`${window.location.origin}/auth/sso/callback`);
@@ -327,8 +326,20 @@ export default class CustomMobileDrawer extends Component {
     
     console.log('Starting dual-platform OAuth flow:', oauthUrl);
     
-    // Redirect the entire page (not popup) since we're using the existing OAuth flow
-    window.location.href = oauthUrl;
+    // Open popup window for OAuth
+    const popup = window.open(
+      oauthUrl,
+      `${provider}_login`,
+      'width=500,height=600,scrollbars=yes,resizable=yes,left=' + (screen.width / 2 - 250) + ',top=' + (screen.height / 2 - 300)
+    );
+
+    if (!popup) {
+      alert('Popup bị chặn. Vui lòng cho phép popup và thử lại.');
+      return;
+    }
+
+    // Focus the popup
+    popup.focus();
   }
 
   /**
