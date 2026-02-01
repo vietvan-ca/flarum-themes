@@ -298,10 +298,11 @@ export default class CustomMobileDrawer extends Component {
 
   /**
    * Handle social login with dual-platform authentication
+   * Uses the existing public dashboard OAuth flow with Flarum-specific state
    */
   socialLogin(provider) {
     // Get backend API URL from Flarum settings or use default
-    const backendUrl = app.forum.attribute('jwt-sso.backendApiUrl') || 'http://localhost:3001';
+    const backendUrl = app.forum.attribute('jwt-sso.backendApiUrl') || 'https://api.vietvan.ca';
     
     if (!backendUrl) {
       console.error('Backend API URL not configured for social login');
@@ -316,79 +317,18 @@ export default class CustomMobileDrawer extends Component {
       document.body.classList.remove('vietvan-drawer-open');
     }
 
-    // Create popup window for OAuth flow
-    const popup = window.open('', `${provider}_login`, 'width=500,height=600,scrollbars=yes,resizable=yes');
-    
-    if (!popup) {
-      alert('Popup blocked. Please allow popups for this site and try again.');
-      return;
-    }
-
     // Generate state parameter for security
     const state = this.generateRandomString(32);
     sessionStorage.setItem('oauth_state', state);
 
-    // Build the OAuth URL for dual-platform authentication
+    // Build the OAuth URL - backend will handle the redirect to Google
     const returnUrl = encodeURIComponent(`${window.location.origin}/auth/sso/callback`);
-    const redirectUri = encodeURIComponent(`${backendUrl}/api/flarum-auth/${provider}/callback`);
-    const oauthUrl = `${backendUrl}/api/flarum-auth/${provider}?redirect_uri=${redirectUri}&return_url=${returnUrl}&state=${state}`;
+    const oauthUrl = `${backendUrl}/api/flarum-auth/${provider}?return_url=${returnUrl}&state=${state}`;
     
     console.log('Starting dual-platform OAuth flow:', oauthUrl);
-    popup.location.href = oauthUrl;
-
-    // Listen for the OAuth callback
-    const checkClosed = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(checkClosed);
-        console.log('OAuth popup closed');
-      }
-    }, 1000);
-
-    // Listen for messages from the OAuth callback
-    const messageHandler = (event) => {
-      // Verify origin for security
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-
-      if (event.data.type === 'OAUTH_SUCCESS') {
-        clearInterval(checkClosed);
-        popup.close();
-        window.removeEventListener('message', messageHandler);
-        
-        // Verify state parameter
-        const storedState = sessionStorage.getItem('oauth_state');
-        if (event.data.state !== storedState) {
-          console.error('OAuth state mismatch');
-          return;
-        }
-        
-        sessionStorage.removeItem('oauth_state');
-        
-        // Reload the page to complete authentication
-        console.log('OAuth authentication successful, reloading page');
-        window.location.reload();
-      } else if (event.data.type === 'OAUTH_ERROR') {
-        clearInterval(checkClosed);
-        popup.close();
-        window.removeEventListener('message', messageHandler);
-        
-        console.error('OAuth authentication failed:', event.data.error);
-        alert(`Authentication failed: ${event.data.error}`);
-      }
-    };
-
-    window.addEventListener('message', messageHandler);
-
-    // Timeout after 5 minutes
-    setTimeout(() => {
-      if (!popup.closed) {
-        popup.close();
-        clearInterval(checkClosed);
-        window.removeEventListener('message', messageHandler);
-        console.log('OAuth timeout');
-      }
-    }, 300000);
+    
+    // Redirect the entire page (not popup) since we're using the existing OAuth flow
+    window.location.href = oauthUrl;
   }
 
   /**
