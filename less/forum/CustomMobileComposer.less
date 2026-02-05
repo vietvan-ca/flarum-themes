@@ -1,0 +1,66 @@
+// Mobile Composer Layout Customizations
+@media (max-width: 768px) {
+  // Composer container
+  #composer {
+    .Composer-header {
+      position: relative;
+      
+      // Move close/minimize button to the right
+      .item-minimize.App-backControl {
+        position: absolute !important;
+        right: 15px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        left: auto !important;
+        margin-left: 0 !important;
+        order: 999 !important;
+        
+        button {
+          background: transparent !important;
+          border: none !important;
+          color: var(--muted-more-color, #666) !important;
+          font-size: 18px !important;
+          padding: 8px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          min-width: auto !important;
+          
+          &:hover {
+            background: rgba(0, 0, 0, 0.1) !important;
+            border-radius: 50% !important;
+          }
+          
+          .Button-icon {
+            font-size: 18px !important;
+            margin: 0 !important;
+          }
+          
+          .Button-label {
+            display: none !important; // Hide text, only show icon
+          }
+        }
+      }
+      
+      // Style the title area to make room for close button
+      .App-titleControl,
+      h3,
+      .ComposerBody-header > li:first-child {
+        margin-right: 60px !important;
+      }
+    }
+  }
+  
+  // Handle dark mode
+  body.dark {
+    #composer {
+      .item-minimize.App-backControl button {
+        color: var(--muted-more-color, #ccc) !important;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+        }
+      }
+    }
+  }
+}

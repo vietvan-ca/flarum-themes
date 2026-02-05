@@ -15,6 +15,7 @@ import Logo from './components/Logo';
 import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavigation';
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 import CustomMobileDrawer from './components/CustomMobileDrawer';
+import CustomMobileComposer from './components/CustomMobileComposer';
 import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
@@ -25,6 +26,11 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
+  // Initialize Custom Mobile Composer
+  // ==========================================
+  CustomMobileComposer.init();
+
+  // ==========================================
   // Debug: Test CustomMobileDrawer import
   // ==========================================
   console.log('CustomMobileDrawer component:', CustomMobileDrawer);
@@ -33,7 +39,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Alternative Approach: Separate Mobile Drawer
   // ==========================================
-  
+
   /*
   // TEMPORARILY DISABLED FOR DESKTOP TESTING
   
@@ -236,21 +242,21 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Simple Mobile-Only Custom Drawer (Non-Interfering)
   // ==========================================
-  
+
   const createMobileDrawer = () => {
     // Only create on mobile devices
     if (window.innerWidth > 768) return;
-    
+
     // Check if mobile drawer already exists
     if (document.querySelector('.vietvan-mobile-drawer')) return;
-    
+
     console.log('Creating simple mobile drawer');
-    
+
     // Create a completely separate mobile drawer
     const mobileDrawer = document.createElement('div');
     mobileDrawer.className = 'vietvan-mobile-drawer';
     mobileDrawer.id = 'vietvan-mobile-drawer';
-    
+
     // Style it to overlay on mobile (hidden by default)
     mobileDrawer.style.cssText = `
       position: fixed;
@@ -264,7 +270,7 @@ app.initializers.add('vietvan-ca-themes', () => {
       box-shadow: -2px 0 10px rgba(0,0,0,0.1);
       overflow-y: auto;
     `;
-    
+
     // Mount our custom component
     try {
       m.mount(mobileDrawer, CustomMobileDrawer);
@@ -273,17 +279,17 @@ app.initializers.add('vietvan-ca-themes', () => {
       console.error('Error mounting CustomMobileDrawer:', error);
       return;
     }
-    
+
     // Add to body
     document.body.appendChild(mobileDrawer);
     console.log('Mobile drawer added to body');
-    
+
     // Add simple hamburger menu integration (non-interfering)
     const setupHamburgerIntegration = () => {
       const hamburger = document.querySelector('.App-drawerToggle, .Button--icon[aria-label*="menu"], .Header-controls .Button--icon');
       if (hamburger && window.innerWidth <= 768) {
         console.log('Found hamburger button, adding mobile integration');
-        
+
         // Add a simple click listener that doesn't interfere with default behavior
         hamburger.addEventListener('click', (e) => {
           if (window.innerWidth <= 768) {
@@ -294,7 +300,7 @@ app.initializers.add('vietvan-ca-themes', () => {
                 // Default drawer is opening, hide it and show ours
                 defaultDrawer.classList.remove('in');
                 defaultDrawer.style.transform = 'translateX(-100%)';
-                
+
                 // Show our custom drawer
                 mobileDrawer.style.right = '0px';
                 document.body.classList.add('vietvan-drawer-open');
@@ -305,14 +311,14 @@ app.initializers.add('vietvan-ca-themes', () => {
         });
       }
     };
-    
+
     // Setup hamburger integration with delays
     setTimeout(setupHamburgerIntegration, 500);
     setTimeout(setupHamburgerIntegration, 1000);
-    
+
     console.log('Simple mobile drawer created successfully');
   };
-  
+
   const removeMobileDrawer = () => {
     const mobileDrawer = document.querySelector('.vietvan-mobile-drawer');
     if (mobileDrawer) {
@@ -322,7 +328,7 @@ app.initializers.add('vietvan-ca-themes', () => {
       document.body.classList.remove('vietvan-drawer-open');
     }
   };
-  
+
   const handleResponsiveDrawer = () => {
     if (window.innerWidth <= 768) {
       createMobileDrawer();
@@ -348,7 +354,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // Change Hide Button Icon to Eye
   // ==========================================
-  
+
   // Use DOM manipulation to change the hide button icon after render
   const changeHideButtonIcons = () => {
     const hideButtons = document.querySelectorAll('.item-hide button .fa-trash-alt');
@@ -358,7 +364,7 @@ app.initializers.add('vietvan-ca-themes', () => {
         icon.classList.add('fa-eye');
       }
     });
-    
+
     // Change hidden badge icons
     const hiddenBadges = document.querySelectorAll('.item-hidden .fas.fa-trash, .Badge--hidden .fas.fa-trash');
     hiddenBadges.forEach(icon => {
@@ -373,7 +379,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   const initializeHideButtonChanges = () => {
     // Initial run
     setTimeout(changeHideButtonIcons, 500);
-    
+
     // Run on route changes
     if (app.history?.initialized) {
       app.history.initialized.then(() => {
@@ -382,7 +388,7 @@ app.initializers.add('vietvan-ca-themes', () => {
         });
       });
     }
-    
+
     // Also run periodically to catch dynamically loaded content
     setInterval(changeHideButtonIcons, 2000);
   };
@@ -396,7 +402,7 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Only set default if user hasn't explicitly chosen a theme preference
     if (app.session.user) {
       const nightModePreference = app.session.user.preferences().fofNightMode;
-      
+
       // If night mode preference is null/undefined, set default to light
       if (nightModePreference === null || nightModePreference === undefined) {
         app.session.user.savePreferences({
@@ -406,15 +412,15 @@ app.initializers.add('vietvan-ca-themes', () => {
         });
       }
     }
-    
+
     // For guests, remove any dark theme classes that might be applied by system preferences
     const body = document.body;
     const html = document.documentElement;
-    
+
     // Check if no explicit theme choice has been made
-    const hasExplicitDarkTheme = localStorage.getItem('fof-nightmode') === 'true' || 
-                                 localStorage.getItem('darkMode') === 'true';
-    
+    const hasExplicitDarkTheme = localStorage.getItem('fof-nightmode') === 'true' ||
+      localStorage.getItem('darkMode') === 'true';
+
     if (!hasExplicitDarkTheme) {
       // Remove potential system-applied dark classes
       [body, html].forEach(element => {
@@ -443,7 +449,7 @@ app.initializers.add('vietvan-ca-themes', () => {
     // Handle discussion tags
     const coloredTags = document.querySelectorAll('.discussion-tag.colored');
     coloredTags.forEach(tag => adjustElementTextColor(tag, 'backgroundColor'));
-    
+
     // Handle colored buttons (like create discussion button)
     const coloredButtons = document.querySelectorAll('.Button--tagColored, .Button--primary[style*="--color"]');
     coloredButtons.forEach(button => {
@@ -457,16 +463,16 @@ app.initializers.add('vietvan-ca-themes', () => {
 
   const adjustElementTextColor = (element, colorSource, customColor = null) => {
     let backgroundColor;
-    
+
     if (colorSource === 'customColor' && customColor) {
       backgroundColor = customColor;
     } else {
       backgroundColor = window.getComputedStyle(element).backgroundColor;
     }
-    
+
     // Parse color values - handle both rgb() and hex formats
     let r, g, b;
-    
+
     if (backgroundColor.startsWith('#')) {
       // Handle hex colors - fix the parsing
       const hex = backgroundColor.replace('#', '');
@@ -492,40 +498,40 @@ app.initializers.add('vietvan-ca-themes', () => {
         return; // Skip if can't parse color
       }
     }
-    
+
     // Calculate different brightness metrics
     const wcagLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     const perceivedBrightness = Math.sqrt(0.241 * r * r + 0.691 * g * g + 0.068 * b * b) / 255;
     const averageBrightness = (r + g + b) / (3 * 255);
-    
+
     // Calculate saturation to detect bright colors
     const max = Math.max(r, g, b) / 255;
     const min = Math.min(r, g, b) / 255;
     const saturation = max === 0 ? 0 : (max - min) / max;
-    
+
     // Calculate contrast ratios with black and white text
     const contrastWithBlack = (Math.max(wcagLuminance, 0.05) + 0.05) / (0.05 + 0.05);
     const contrastWithWhite = (1.05) / (Math.max(wcagLuminance, 0.05) + 0.05);
-    
+
     // For very bright colors like yellow (#FFF300), use lower threshold
     // Yellow and bright colors should use black text
-    const brightnessThreshold = saturation > 0.8 && wcagLuminance > 0.7 ? 0.6 : 
-                               saturation > 0.4 ? 0.75 : 0.65;
-    
-    const shouldUseBlackText = wcagLuminance > brightnessThreshold && 
-                               perceivedBrightness > (brightnessThreshold - 0.1) && 
-                               averageBrightness > (brightnessThreshold - 0.15) &&
-                               contrastWithBlack > contrastWithWhite;
-    
+    const brightnessThreshold = saturation > 0.8 && wcagLuminance > 0.7 ? 0.6 :
+      saturation > 0.4 ? 0.75 : 0.65;
+
+    const shouldUseBlackText = wcagLuminance > brightnessThreshold &&
+      perceivedBrightness > (brightnessThreshold - 0.1) &&
+      averageBrightness > (brightnessThreshold - 0.15) &&
+      contrastWithBlack > contrastWithWhite;
+
     // Apply styles with !important for stronger override
     element.style.setProperty('color', shouldUseBlackText ? '#000000' : '#ffffff', 'important');
-    
+
     // Add appropriate text shadow with better contrast for colorful backgrounds
-    const textShadow = shouldUseBlackText 
-      ? '0 0 1px rgba(255, 255, 255, 0.6)' 
+    const textShadow = shouldUseBlackText
+      ? '0 0 1px rgba(255, 255, 255, 0.6)'
       : '0 0 1px rgba(0, 0, 0, 0.8)';
     element.style.setProperty('text-shadow', textShadow, 'important');
-    
+
     // For buttons, also ensure the background color is applied correctly
     if (colorSource === 'customColor' && customColor) {
       element.style.setProperty('background-color', customColor, 'important');
@@ -538,7 +544,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   const initializeTextColors = () => {
     // Initial run
     setTimeout(adjustTextColors, 200);
-    
+
     // Run on route changes
     if (app.history?.initialized) {
       app.history.initialized.then(() => {
@@ -547,15 +553,15 @@ app.initializers.add('vietvan-ca-themes', () => {
         });
       });
     }
-    
+
     // Run periodically to catch dynamically loaded content
     setInterval(adjustTextColors, 3000);
-    
+
     // Watch for DOM changes (new discussions loaded)
     const observer = new MutationObserver(() => {
       setTimeout(adjustTextColors, 100);
     });
-    
+
     observer.observe(document.body, {
       childList: true,
       subtree: true
@@ -567,16 +573,16 @@ app.initializers.add('vietvan-ca-themes', () => {
   // ==========================================
   // TextEditor Extensions (Simplified)
   // ==========================================
-  
+
   // Ensure toolbar cleanup runs after TextEditor is created/updated
-  extend(TextEditor.prototype, 'oncreate', function() {
+  extend(TextEditor.prototype, 'oncreate', function () {
     setTimeout(() => {
       pageManager.cleanup();
       // Removed aggressive loading management here
     }, 50);
   });
 
-  extend(TextEditor.prototype, 'onupdate', function() {
+  extend(TextEditor.prototype, 'onupdate', function () {
     setTimeout(() => pageManager.cleanup(), 25);
   });
 
@@ -820,7 +826,7 @@ app.initializers.add('vietvan-ca-themes', () => {
   extend(IndexPage.prototype, 'onremove', function () {
     const navElement = document.getElementById('app-navigation');
     const logoElement = navElement?.querySelector('.Navigation-logo');
-    
+
     if (logoElement) {
       m.mount(logoElement, null); // Unmount the component
       logoElement.remove();
