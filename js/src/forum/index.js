@@ -16,6 +16,7 @@ import CustomDiscussionTabNavigation from './components/CustomDiscussionTabNavig
 import CustomMobileDiscussionToolbar from './components/CustomMobileDiscussionToolbar';
 import CustomMobileDrawer from './components/CustomMobileDrawer';
 import CustomMobileComposer from './components/CustomMobileComposer';
+import CustomMobileCreateModal from './components/CustomMobileCreateModal';
 import PageManager from './components/ToolbarCleanup';
 
 app.initializers.add('vietvan-ca-themes', () => {
