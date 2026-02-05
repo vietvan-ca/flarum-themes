@@ -26,9 +26,15 @@ app.initializers.add('vietvan-ca-themes', () => {
   pageManager.initialize();
 
   // ==========================================
-  // Initialize Custom Mobile Composer
+  // Initialize Custom Mobile Composer (with delay)
   // ==========================================
-  CustomMobileComposer.init();
+  setTimeout(() => {
+    try {
+      CustomMobileComposer.init();
+    } catch (error) {
+      console.error('CustomMobileComposer initialization error:', error);
+    }
+  }, 1000);
 
   // ==========================================
   // Debug: Test CustomMobileDrawer import

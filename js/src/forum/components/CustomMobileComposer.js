@@ -1,4 +1,5 @@
 import app from 'flarum/forum/app';
+import { extend } from 'flarum/common/extend';
 
 /**
  * Custom Mobile Composer Controller
@@ -6,14 +7,8 @@ import app from 'flarum/forum/app';
  */
 export default class CustomMobileComposer {
   static init() {
-    // Initialize when composer is shown
-    app.composer.on('show', () => {
-      if (window.innerWidth <= 768) {
-        setTimeout(() => {
-          this.setupMobileLayout();
-        }, 100);
-      }
-    });
+    // Use MutationObserver to detect composer changes
+    this.observeComposer();
 
     // Handle window resize
     window.addEventListener('resize', () => {
@@ -26,12 +21,42 @@ export default class CustomMobileComposer {
       }
     });
 
-    // Initialize immediately if composer is already shown
-    setTimeout(() => {
-      if (window.innerWidth <= 768 && document.querySelector('#composer')) {
+    // Check periodically for composer
+    this.checkComposerInterval = setInterval(() => {
+      if (window.innerWidth <= 768 && document.querySelector('#composer') && !document.querySelector('.CustomMobileComposer-submitBtn')) {
         this.setupMobileLayout();
       }
-    }, 500);
+    }, 1000);
+  }
+
+  static observeComposer() {
+    // Watch for composer being added/removed from DOM
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.id === 'composer' || node.querySelector('#composer')) {
+              if (window.innerWidth <= 768) {
+                setTimeout(() => this.setupMobileLayout(), 200);
+              }
+            }
+          }
+        });
+
+        mutation.removedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.id === 'composer' || node.querySelector('#composer')) {
+              this.removeMobileLayout();
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   }
 
   static setupMobileLayout() {
@@ -168,5 +193,16 @@ export default class CustomMobileComposer {
     }
 
     console.log('Mobile composer layout removed');
+  }
+
+  static cleanup() {
+    // Clean up interval
+    if (this.checkComposerInterval) {
+      clearInterval(this.checkComposerInterval);
+      this.checkComposerInterval = null;
+    }
+    
+    // Remove mobile layout
+    this.removeMobileLayout();
   }
 }
