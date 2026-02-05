@@ -1,6 +1,6 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
-import DiscussionComposer from 'flarum/forum/components/DiscussionComposer';
+import LogInModal from 'flarum/forum/components/LogInModal';
 import ItemList from 'flarum/common/utils/ItemList';
 
 /**
@@ -38,7 +38,7 @@ export default class CustomMobileCreateModal extends Component {
         <div className="CustomMobileCreateModal-content">
           {/* Tags Selection */}
           <div className="form-group">
-            <label>Chọn chủ đề:</label>
+            <label>Chọn chủ đề (tùy chọn):</label>
             <select 
               value={this.selectedTag}
               onchange={(e) => { this.selectedTag = e.target.value; }}
@@ -95,7 +95,10 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   canSubmit() {
-    return this.title.trim() && this.content.trim() && this.selectedTag;
+    return this.title.trim() && 
+           this.content.trim() && 
+           app.session.user && 
+           app.forum.attribute('canStartDiscussion');
   }
 
   isVisible() {
@@ -104,6 +107,19 @@ export default class CustomMobileCreateModal extends Component {
 
   show() {
     if (window.innerWidth <= 768) {
+      // Check if user can start discussions
+      if (!app.session.user) {
+        app.modal.show(LogInModal);
+        return;
+      }
+      
+      if (!app.forum.attribute('canStartDiscussion')) {
+        if (app.alerts) {
+          app.alerts.show({ type: 'error' }, 'Bạn không có quyền tạo chủ đề mới');
+        }
+        return;
+      }
+      
       document.body.classList.add('mobile-create-modal-open');
       
       // Hide any existing Flarum composer
@@ -131,31 +147,49 @@ export default class CustomMobileCreateModal extends Component {
     this.isSubmitting = true;
     m.redraw();
 
-    // Create discussion using Flarum API store
-    const data = {
-      title: this.title,
-      content: this.content
+    // Use Flarum's request system to submit data
+    const requestData = {
+      data: {
+        type: 'discussions',
+        attributes: {
+          title: this.title,
+          content: this.content
+        }
+      }
     };
 
-    // Add tags if selected
+    // Add tags relationship if selected
     if (this.selectedTag) {
-      data.relationships = {
+      requestData.data.relationships = {
         tags: {
           data: [{ type: 'tags', id: this.selectedTag }]
         }
       };
     }
 
-    app.store.createRecord('discussions', data).save().then((discussion) => {
-      // Success - navigate to the new discussion
-      app.history.pushState(null, app.translator.trans('core.forum.discussion.title'), app.route.discussion(discussion));
+    app.request({
+      method: 'POST',
+      url: app.forum.attribute('apiUrl') + '/discussions',
+      body: requestData
+    }).then((response) => {
+      // Success - navigate to the new discussion  
+      const discussion = app.store.pushPayload(response);
       window.location.href = app.route.discussion(discussion);
       this.hide();
     }).catch((error) => {
       // Error handling
       console.error('Failed to create discussion:', error);
+      
+      // Show error message
+      let errorMessage = 'Có lỗi xảy ra khi đăng bài';
+      if (error && error.errors && error.errors.length > 0) {
+        errorMessage = error.errors[0].detail || errorMessage;
+      }
+      
       if (app.alerts) {
-        app.alerts.show({ type: 'error' }, app.translator.trans('core.forum.composer.submit_error_message') || 'Có lỗi xảy ra khi đăng bài');
+        app.alerts.show({ type: 'error' }, errorMessage);
+      } else {
+        alert(errorMessage);
       }
     }).finally(() => {
       this.isSubmitting = false;
