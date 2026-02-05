@@ -297,15 +297,49 @@ export default class CustomMobileDrawer extends Component {
   }
 
   /**
-   * Handle social login
+   * Handle social login with dual-platform authentication
+   * Uses popup window for OAuth flow
    */
   socialLogin(provider) {
-    const mainSiteUrl = app.forum.attribute('vietvan_ca_back_button_custom_url') || '';
-    const baseMainUrl = mainSiteUrl ? mainSiteUrl.replace('/forum', '').replace(/\/$/, '') : '';
+    // Get backend API URL from Flarum settings or use default
+    const backendUrl = app.forum.attribute('jwt-sso.backendApiUrl') || 'https://api.vietvan.ca';
     
-    // Redirect to main site's OAuth endpoint
-    const currentUrl = encodeURIComponent(window.location.href);
-    window.location.href = `${baseMainUrl}/auth/${provider}?redirect=${currentUrl}`;
+    if (!backendUrl) {
+      console.error('Backend API URL not configured for social login');
+      alert('Social login is not properly configured. Please contact the administrator.');
+      return;
+    }
+
+    // Close the mobile drawer first
+    const drawer = document.querySelector('.vietvan-mobile-drawer');
+    if (drawer) {
+      drawer.style.right = '-100%';
+      document.body.classList.remove('vietvan-drawer-open');
+    }
+
+    // Generate state parameter for security
+    const state = this.generateRandomString(32);
+
+    // Build the OAuth URL - backend will handle the redirect to Google
+    const returnUrl = encodeURIComponent(`${window.location.origin}/auth/sso/callback`);
+    const oauthUrl = `${backendUrl}/api/flarum-auth/${provider}?return_url=${returnUrl}&state=${state}`;
+    
+    console.log('Starting dual-platform OAuth flow:', oauthUrl);
+    
+    // Open popup window for OAuth
+    const popup = window.open(
+      oauthUrl,
+      `${provider}_login`,
+      'width=500,height=600,scrollbars=yes,resizable=yes,left=' + (screen.width / 2 - 250) + ',top=' + (screen.height / 2 - 300)
+    );
+
+    if (!popup) {
+      alert('Popup bị chặn. Vui lòng cho phép popup và thử lại.');
+      return;
+    }
+
+    // Focus the popup
+    popup.focus();
   }
 
   /**
@@ -414,5 +448,17 @@ export default class CustomMobileDrawer extends Component {
     if (confirm(confirmMessage)) {
       app.session.logout();
     }
+  }
+
+  /**
+   * Generate a random string for OAuth state parameter
+   */
+  generateRandomString(length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 }
