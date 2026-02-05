@@ -67,20 +67,62 @@ export default class CustomMobileComposer {
     const composer = document.querySelector('#composer');
     if (!composer) return;
 
+    console.log('Setting up mobile layout for composer');
+
     // Remove any existing custom elements
     this.removeMobileLayout();
 
-    // Find the original submit button (fa-paper-plane)
-    const originalSubmitBtn = composer.querySelector('.item-submit button, .App-primaryControl button');
-    if (!originalSubmitBtn) return;
+    // Find the original submit button with multiple selectors
+    let originalSubmitBtn = composer.querySelector('.item-submit button') || 
+                           composer.querySelector('.App-primaryControl button') ||
+                           composer.querySelector('button[type="submit"]') ||
+                           composer.querySelector('.Button--primary');
+
+    console.log('Found submit button:', originalSubmitBtn);
+    
+    if (!originalSubmitBtn) {
+      console.log('No submit button found, retrying...');
+      return;
+    }
 
     // Mark as mobile customized to avoid multiple setups
-    if (originalSubmitBtn.classList.contains('mobile-customized')) return;
+    if (originalSubmitBtn.classList.contains('mobile-customized')) {
+      console.log('Button already customized');
+      return;
+    }
     originalSubmitBtn.classList.add('mobile-customized');
+
+    // Move the entire submit button container and mark it as well
+    const submitContainer = originalSubmitBtn.closest('.item-submit') || 
+                           originalSubmitBtn.closest('.App-primaryControl') ||
+                           originalSubmitBtn.parentElement;
+    
+    console.log('Submit container:', submitContainer);
+    
+    if (submitContainer) {
+      submitContainer.classList.add('mobile-customized');
+      submitContainer.style.cssText = `
+        position: fixed !important;
+        bottom: 0px !important;
+        left: 0px !important;
+        right: 0px !important;
+        z-index: 1051 !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+      `;
+      console.log('Applied container styles');
+    }
 
     // Replace the button text and icon
     const buttonLabel = originalSubmitBtn.querySelector('.Button-label');
     const buttonIcon = originalSubmitBtn.querySelector('.Button-icon');
+    
+    console.log('Button label:', buttonLabel);
+    console.log('Button icon:', buttonIcon);
     
     // Store original content for restoration
     if (!originalSubmitBtn.dataset.originalLabel && buttonLabel) {
@@ -93,18 +135,21 @@ export default class CustomMobileComposer {
     // Update button content
     if (buttonLabel) {
       buttonLabel.textContent = 'Đăng';
+      console.log('Updated button text to: Đăng');
     }
     if (buttonIcon) {
       buttonIcon.style.display = 'none'; // Hide the paper-plane icon
+      console.log('Hidden button icon');
     }
 
-    // Apply mobile styling to the existing button
-    originalSubmitBtn.style.cssText = `
+    // Apply mobile styling to the existing button - use important to override
+    const buttonStyles = `
       position: fixed !important;
       bottom: 10px !important;
       left: 15px !important;
       right: 15px !important;
-      background: var(--primary-color, #C22126) !important;
+      width: calc(100% - 30px) !important;
+      background: #C22126 !important;
       color: white !important;
       border: none !important;
       border-radius: 8px !important;
@@ -118,26 +163,24 @@ export default class CustomMobileComposer {
       transition: all 0.2s ease !important;
       line-height: 1.2 !important;
       display: block !important;
-      width: calc(100% - 30px) !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      max-height: none !important;
       -webkit-appearance: none !important;
       -moz-appearance: none !important;
       appearance: none !important;
       -webkit-tap-highlight-color: transparent !important;
       touch-action: manipulation !important;
     `;
+    
+    originalSubmitBtn.style.cssText = buttonStyles;
+    console.log('Applied button styles');
 
-    // Hide the original submit button container but keep button visible
-    const submitContainer = originalSubmitBtn.closest('.item-submit, .App-primaryControl');
-    if (submitContainer) {
-      submitContainer.style.position = 'fixed';
-      submitContainer.style.bottom = '0';
-      submitContainer.style.left = '0';
-      submitContainer.style.right = '0';
-      submitContainer.style.zIndex = '1051';
-      submitContainer.style.background = 'transparent';
-      submitContainer.style.padding = '0';
-      submitContainer.style.margin = '0';
-    }
+    // Also try to override with attribute
+    originalSubmitBtn.setAttribute('style', buttonStyles);
 
     // Create bottom spacing element
     if (!document.querySelector('.CustomMobileComposer-spacer')) {
@@ -150,7 +193,7 @@ export default class CustomMobileComposer {
         right: 0 !important;
         height: 70px !important;
         background: #fff !important;
-        border-top: 1px solid var(--control-bg, #e8e8e8) !important;
+        border-top: 1px solid #e8e8e8 !important;
         z-index: 1050 !important;
         pointer-events: none !important;
       `;
@@ -162,12 +205,15 @@ export default class CustomMobileComposer {
       }
 
       document.body.appendChild(bottomSpacer);
+      console.log('Added bottom spacer');
     }
 
     // Add padding to composer content to avoid overlap
-    const composerContent = composer.querySelector('.ComposerBody-content, .Composer-content');
+    const composerContent = composer.querySelector('.ComposerBody-content') || 
+                           composer.querySelector('.Composer-content');
     if (composerContent) {
       composerContent.style.paddingBottom = '80px';
+      console.log('Added content padding');
     }
 
     console.log('Mobile composer layout setup complete - button replaced');
@@ -211,6 +257,7 @@ export default class CustomMobileComposer {
       if (submitContainer) {
         // Reset container styling
         submitContainer.style.cssText = '';
+        submitContainer.classList.remove('mobile-customized');
       }
 
       // Remove custom padding
