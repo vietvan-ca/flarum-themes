@@ -61,9 +61,9 @@ export default class CustomMobileCreateModal extends Component {
 
           {/* Content Textarea */}
           <div className="form-group">
-            <label>Nội dung:</label>
+            <label>Nội dung (tùy chọn):</label>
             <textarea 
-              placeholder="Viết nội dung bài viết..."
+              placeholder="Viết nội dung bài viết (không bắt buộc)..."
               value={this.content}
               oninput={(e) => { this.content = e.target.value; }}
             ></textarea>
@@ -96,7 +96,6 @@ export default class CustomMobileCreateModal extends Component {
 
   canSubmit() {
     return this.title.trim() && 
-           this.content.trim() && 
            app.session.user && 
            app.forum.attribute('canStartDiscussion');
   }
@@ -153,7 +152,7 @@ export default class CustomMobileCreateModal extends Component {
         type: 'discussions',
         attributes: {
           title: this.title,
-          content: this.content
+          content: this.content.trim() || ' ' // Ensure there's at least a space if content is empty
         }
       }
     };
