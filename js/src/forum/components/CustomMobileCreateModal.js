@@ -105,6 +105,13 @@ export default class CustomMobileCreateModal extends Component {
   show() {
     if (window.innerWidth <= 768) {
       document.body.classList.add('mobile-create-modal-open');
+      
+      // Hide any existing Flarum composer
+      const composer = document.querySelector('#composer');
+      if (composer) {
+        composer.style.display = 'none';
+      }
+      
       m.redraw();
     }
   }
@@ -114,6 +121,7 @@ export default class CustomMobileCreateModal extends Component {
     this.title = '';
     this.content = '';
     this.selectedTag = '';
+    this.isSubmitting = false;
     m.redraw();
   }
 
@@ -156,20 +164,27 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   static show() {
+    // Only on mobile
+    if (window.innerWidth > 768) return;
+    
+    // Hide any existing Flarum composer immediately 
+    const composer = document.querySelector('#composer');
+    if (composer) {
+      composer.style.display = 'none';
+    }
+
     // Mount the component if not already mounted
-    if (!document.querySelector('.CustomMobileCreateModal')) {
-      const container = document.createElement('div');
+    let container = document.querySelector('#mobile-create-modal-container');
+    if (!container) {
+      container = document.createElement('div');
       container.id = 'mobile-create-modal-container';
       document.body.appendChild(container);
       m.mount(container, CustomMobileCreateModal);
     }
 
     // Show the modal
-    const instance = document.querySelector('.CustomMobileCreateModal');
-    if (instance) {
-      document.body.classList.add('mobile-create-modal-open');
-      m.redraw();
-    }
+    document.body.classList.add('mobile-create-modal-open');
+    m.redraw();
   }
 
   static hide() {

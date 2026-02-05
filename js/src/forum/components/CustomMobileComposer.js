@@ -22,30 +22,72 @@ export default class CustomMobileComposer {
       // Only on mobile
       if (window.innerWidth > 768) return;
 
-      // Check if clicked element or parent is a create topic button
-      const button = e.target.closest('.CustomMobileDiscussionToolbar-button') ||
-                     e.target.closest('.item-newDiscussion') ||
-                     e.target.closest('[aria-label*="Start"]') ||
-                     e.target.closest('[title*="discussion"]');
+      // More aggressive button detection
+      const target = e.target.closest('button, a, .Button');
       
-      // Also check for buttons that contain text about starting discussion
-      const buttonText = e.target.textContent || '';
-      const isCreateButton = buttonText.includes('Start') || 
-                             buttonText.includes('discussion') ||
-                             buttonText.includes('Tạo') ||
-                             buttonText.includes('Viết');
+      if (!target) return;
+
+      // Check various ways to identify create topic buttons
+      const buttonSelectors = [
+        '.CustomMobileDiscussionToolbar-button',
+        '.item-newDiscussion',
+        '.IndexPage-newDiscussion', 
+        '.Button--primary[aria-label*="Start"]',
+        '[title*="discussion"]',
+        '[data-original-title*="discussion"]'
+      ];
+
+      const isCreateButton = buttonSelectors.some(selector => target.matches(selector)) ||
+                             target.querySelector('.fa-edit, .fa-plus, .fa-pen') ||
+                             target.textContent.includes('Start') ||
+                             target.textContent.includes('discussion') ||
+                             target.textContent.includes('Tạo') ||
+                             target.textContent.includes('Viết') ||
+                             target.getAttribute('aria-label')?.includes('Start') ||
+                             target.getAttribute('aria-label')?.includes('discussion');
       
-      if (button || isCreateButton) {
+      if (isCreateButton) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        // Also prevent default composer from opening
+        setTimeout(() => {
+          const composer = document.querySelector('#composer');
+          if (composer) {
+            composer.remove();
+          }
+        }, 50);
         
         console.log('Intercepted create topic click on mobile');
         CustomMobileCreateModal.show();
         return false;
       }
+    }, true); // Use capture phase for earlier interception
+
+    // Also hide any composer that appears on mobile
+    const observer = new MutationObserver((mutations) => {
+      if (window.innerWidth <= 768) {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              if (node.id === 'composer' || node.querySelector('#composer')) {
+                console.log('Hiding default composer on mobile');
+                const composer = node.id === 'composer' ? node : node.querySelector('#composer');
+                composer.style.display = 'none';
+              }
+            }
+          });
+        });
+      }
     });
 
-    console.log('Create topic button interception initialized');
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    console.log('Create topic button interception initialized with aggressive blocking');
   }
 
   static mountModal() {
