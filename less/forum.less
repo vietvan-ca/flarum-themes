@@ -153,6 +153,28 @@ li.item-fof-upload {
   display: none !important;
 }
 
+/* Hide gallery buttons - keep only direct upload */
+.TextEditor-toolbar {
+  .Button--icon[title*="Gallery"],
+  .Button--icon[data-tooltip*="Gallery"], 
+  .Button--icon[aria-label*="Gallery"],
+  .Button--icon[title*="Media Gallery"],
+  .fof-upload-gallery,
+  button[class*="gallery"],
+  .Button[data-tooltip*="Choose from gallery"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  // Ensure direct upload buttons are visible
+  .Button--icon[title*="Upload"]:not([title*="Gallery"]),
+  .Button--icon[data-tooltip*="Upload"]:not([data-tooltip*="Gallery"]),
+  .fof-upload-button:not(.fof-upload-gallery) {
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+}
+
 #modal>div.ModalManager.modal>div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in>div>div.Modal-body>div {
   margin-top: 10px;
 }
