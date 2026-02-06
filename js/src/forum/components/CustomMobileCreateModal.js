@@ -13,7 +13,6 @@ export default class CustomMobileCreateModal extends Component {
     super.oninit(vnode);
     
     this.title = '';
-    this.editorRef = null;
     this._content = '';
     this.selectedTag = '';
     this.isSubmitting = false;
@@ -70,18 +69,8 @@ export default class CustomMobileCreateModal extends Component {
                 placeholder="Viết nội dung bài viết (không bắt buộc)..."
                 value={this.getContent()}
                 oninput={(value) => this.setContent(value)}
-                oncreate={(vnode) => { 
-                  this.editorRef = vnode; 
-                  // Use multiple timeouts to ensure proper initialization
-                  setTimeout(() => {
-                    this.configureDirectUpload();
-                  }, 200);
-                  setTimeout(() => {
-                    this.configureDirectUpload();
-                  }, 500);
-                }}
                 onupdate={() => {
-                  setTimeout(() => this.configureDirectUpload(), 100);
+                  setTimeout(() => this.configureDirectUpload(), 150);
                 }}
               />
             </div>
@@ -113,21 +102,13 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   getContent() {
-    // Try to get content from the TextEditor component if available
-    if (this.editorRef && this.editorRef.state && this.editorRef.state.value !== undefined) {
-      return this.editorRef.state.value;
-    }
-    // Fallback to stored content
+    // Use stored content value
     return this._content || '';
   }
 
   setContent(value) {
     // Store the content value
     this._content = value;
-    // Try to update the editor if available
-    if (this.editorRef && this.editorRef.state) {
-      this.editorRef.state.value = value;
-    }
   }
 
   configureDirectUpload() {
@@ -312,7 +293,6 @@ export default class CustomMobileCreateModal extends Component {
     this.setContent('');
     this.selectedTag = '';
     this.isSubmitting = false;
-    this.editorRef = null;
     m.redraw();
   }
 
