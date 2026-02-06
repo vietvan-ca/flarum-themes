@@ -8,6 +8,7 @@
 @import "forum/Logo.less";
 @import "forum/CustomDiscussionTabNavigation.less";
 @import "forum/CustomMobileDiscussionToolbar.less";
+@import "forum/CustomMobileComposer.less";
 @import "forum/CustomSearch.less";
 @import "forum/CustomButton.less";
 @import "forum/CustomMobileNavigation.less";
@@ -28,25 +29,25 @@
   display: none;
 }
 
-.SelectTagList > li.child .SelectTagListItem-name,
+.SelectTagList>li.child .SelectTagListItem-name,
 .SelectTagListItem-name {
   width: auto;
 }
 
-.SelectTagList > li.child .SelectTagListItem-name,
+.SelectTagList>li.child .SelectTagListItem-name,
 .SelectTagListItem-name {
   width: unset;
 }
 
-#modal > div.ModalManager.modal > div.Modal.modal-dialog.fade.TagSelectionModal.TagDiscussionModal.in > div > form > div.Modal-footer > ul > li > span.SelectTagListItem-name {
+#modal>div.ModalManager.modal>div.Modal.modal-dialog.fade.TagSelectionModal.TagDiscussionModal.in>div>form>div.Modal-footer>ul>li>span.SelectTagListItem-name {
   color: #000;
-  
-  & when (@config-dark-mode = true) {
+
+  & when (@config-dark-mode =true) {
     color: #fff;
   }
 }
 
-.Button--primary .Button-icon{
+.Button--primary .Button-icon {
   display: inline-block;
 }
 
@@ -63,30 +64,36 @@
 }
 
 @media (min-width: 768px) {
-    .sideNav .Dropdown--select .Dropdown-menu>li.active>a {
-      background: none;
-      color: var(--sidenav-color-active, var(--primary-color));
-      font-weight: 900;
-    }
+  .sideNav .Dropdown--select .Dropdown-menu>li.active>a {
+    background: none;
+    color: var(--sidenav-color-active, var(--primary-color));
+    font-weight: 900;
+  }
 }
 
-.Dropdown-menu>li>a, .Dropdown-menu>li>button, .Dropdown-menu>li>span {
+.Dropdown-menu>li>a,
+.Dropdown-menu>li>button,
+.Dropdown-menu>li>span {
   font-size: 17px !important;
 }
 
 @media (max-width: 767.98px) {
-  .App-primaryControl>.Button--icon, .App-titleControl>.Button--icon, .App-backControl>.Button--icon {
+
+  .App-primaryControl>.Button--icon,
+  .App-titleControl>.Button--icon,
+  .App-backControl>.Button--icon {
     width: auto;
     padding: 8px !important;
     margin-right: 5px !important;
   }
 
-  .App-primaryControl>.Button .Button-icon, .App-backControl>.Button .Button-icon {
+  .App-primaryControl>.Button .Button-icon,
+  .App-backControl>.Button .Button-icon {
     font-size: 30px;
   }
 }
 
-.all-discussion-select{
+.all-discussion-select {
   color: #c22126 !important;
 }
 
@@ -97,6 +104,7 @@
 
 /* Hide specific toolbar buttons using more stable selectors */
 .TextEditor-toolbar {
+
   /* Hide specific buttons by data attributes or classes when possible */
   button[data-hotkey="Ctrl+K"],
   button[title*="Link"],
@@ -104,7 +112,7 @@
     display: none;
     visibility: hidden;
   }
-  
+
   /* Hide quote and code buttons */
   button[data-hotkey="Ctrl+>"],
   button[title*="Quote"],
@@ -115,21 +123,22 @@
     display: none;
     visibility: hidden;
   }
-  
+
   /* Fallback: Hide by nth-child but with higher specificity */
-  > div {
-    > button:nth-child(4),
-    > button:nth-child(5) {
+  >div {
+
+    >button:nth-child(4),
+    >button:nth-child(5) {
       display: none;
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
     }
-    
-    > div:nth-child(1),
-    > div:nth-child(6),
-    > div:nth-child(7),
-    > div:nth-child(10) {
+
+    >div:nth-child(1),
+    >div:nth-child(6),
+    >div:nth-child(7),
+    >div:nth-child(10) {
       display: none;
       visibility: hidden;
       opacity: 0;
@@ -138,17 +147,85 @@
   }
 }
 
-/* Hide upload button */
-#composer .item-fof-upload,
-li.item-fof-upload {
+/* Enhanced TextEditor with direct upload styling */
+#composer .item-fof-upload:not(.direct-upload),
+li.item-fof-upload:not(.direct-upload) {
   display: none !important;
 }
 
-#modal > div.ModalManager.modal > div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in > div > div.Modal-body > div {
+/* Hide gallery buttons - keep only direct upload */
+.TextEditor-toolbar {
+  .Button--icon[title*="Gallery"],
+  .Button--icon[data-tooltip*="Gallery"], 
+  .Button--icon[aria-label*="Gallery"],
+  .Button--icon[title*="Media Gallery"],
+  .fof-upload-gallery,
+  button[class*="gallery"],
+  .Button[data-tooltip*="Choose from gallery"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Ensure direct upload buttons are visible and enhanced */
+  .Button--icon[title*="Upload"]:not([title*="Gallery"]),
+  .Button--icon[data-tooltip*="Upload"]:not([data-tooltip*="Gallery"]),
+  .fof-upload-button:not(.fof-upload-gallery),
+  .Button--direct-upload {
+    display: inline-block !important;
+    visibility: visible !important;
+    
+    &.Button--direct-upload {
+      background: #c22126 !important;
+      color: white !important;
+      border: 1px solid #c22126 !important;
+      border-radius: 4px;
+      padding: 6px 12px;
+      margin-right: 4px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: darken(#c22126, 10%) !important;
+        border-color: darken(#c22126, 10%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(194, 33, 38, 0.3);
+      }
+      
+      .icon {
+        margin-right: 4px;
+      }
+      
+      /* Style file input for direct upload */
+      input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+/* Dark theme support for direct upload */
+.dark .TextEditor-toolbar {
+  .Button--direct-upload {
+    background: #c22126 !important;
+    color: white !important;
+    border-color: #c22126 !important;
+    
+    &:hover {
+      background: darken(#c22126, 15%) !important;
+      border-color: darken(#c22126, 15%) !important;
+    }
+  }
+}
+
+#modal>div.ModalManager.modal>div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in>div>div.Modal-body>div {
   margin-top: 10px;
 }
 
-#modal > div.ModalManager.modal > div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in > div > div.Modal-header > div > button {
+#modal>div.ModalManager.modal>div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in>div>div.Modal-header>div>button {
   background: var(--button-bg);
 }
-
