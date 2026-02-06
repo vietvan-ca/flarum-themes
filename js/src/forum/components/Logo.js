@@ -4,7 +4,8 @@ import Component from 'flarum/common/Component';
 export default class Logo extends Component {
   oninit(vnode) {
     super.oninit(vnode);
-    this.mode = app.session.user?.preferences().fofNightMode === 2 ? 'dark' : 'light';
+    // Safely check user preferences with optional chaining on both user and preferences method
+    this.mode = app.session.user?.preferences?.().fofNightMode === 2 ? 'dark' : 'light';
     
     if (flarum.extensions['fof-nightmode']) {
       this.setupNightModeListener();

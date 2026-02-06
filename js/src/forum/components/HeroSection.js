@@ -73,7 +73,8 @@ export default class HeroSection extends Component {
 
     if (user) {
       // Logged in: use user preference from FoF Night Mode
-      const pref = user.preferences().fofNightMode;
+      // Safely access preferences with optional chaining
+      const pref = user.preferences?.().fofNightMode;
       // FoF Night Mode stores as integers: 0 = auto, 1 = light, 2 = dark
       if (pref === 2 || pref === '2') return 'dark';
       if (pref === 1 || pref === '1') return 'light';
