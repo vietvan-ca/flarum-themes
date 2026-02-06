@@ -578,19 +578,23 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeTextColors();
 
   // ==========================================
-  // TextEditor Extensions (Simplified)
+  // TextEditor Extensions (Enhanced)
   // ==========================================
 
   // Ensure toolbar cleanup runs after TextEditor is created/updated
   extend(TextEditor.prototype, 'oncreate', function () {
     setTimeout(() => {
       pageManager.cleanup();
-      // Removed aggressive loading management here
+      // Configure direct upload for this specific editor
+      pageManager.configureDirectUpload();
     }, 50);
   });
 
   extend(TextEditor.prototype, 'onupdate', function () {
-    setTimeout(() => pageManager.cleanup(), 25);
+    setTimeout(() => {
+      pageManager.cleanup();
+      pageManager.configureDirectUpload();
+    }, 25);
   });
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created

@@ -23,11 +23,17 @@ export default class PageManager {
       // Hide elements by nth-child selectors (fallback)
       this.hideByPosition();
       
-      // Hide upload buttons
+      // Hide upload buttons (but preserve direct upload)
       this.hideUploadButtons();
+      
+      // Hide gallery buttons specifically
+      this.hideGalleryButtons();
       
       // Hide rich text toggle
       this.hideRichTextToggle();
+      
+      // Configure direct upload for remaining upload buttons
+      this.configureDirectUpload();
       
     } catch (error) {
       console.warn('PageManager: Error during cleanup:', error);
@@ -85,15 +91,102 @@ export default class PageManager {
    */
   hideUploadButtons() {
     const uploadSelectors = [
-      '.item-fof-upload',
-      'li.item-fof-upload',
-      '.Button--icon[title*="upload" i]',
-      '.Button--icon[title*="file" i]'
+      // Hide general upload items but keep direct upload functionality
+      '.item-fof-upload:not(.direct-upload)',
+      'li.item-fof-upload:not(.direct-upload)'
     ];
 
     uploadSelectors.forEach(selector => {
       const elements = document.querySelectorAll(selector);
       elements.forEach(el => this.hideElement(el));
+    });
+  }
+
+  /**
+   * Hide gallery buttons but keep direct upload
+   */
+  hideGalleryButtons() {
+    const gallerySelectors = [
+      // Gallery and media selection buttons
+      '.Button--icon[title*="Gallery" i]',
+      '.Button--icon[data-tooltip*="Gallery" i]',
+      '.Button--icon[aria-label*="Gallery" i]',
+      '.Button--icon[title*="Media Gallery" i]',
+      '.Button--icon[data-tooltip*="Media Gallery" i]',
+      '.Button--icon[title*="Choose from gallery" i]',
+      '.Button--icon[data-tooltip*="Choose from gallery" i]',
+      'button[class*="gallery"]',
+      '.fof-upload-gallery',
+      '.Button[data-tooltip*="Choose from gallery" i]'
+    ];
+
+    gallerySelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        this.hideElement(el);
+        // Also remove from DOM to prevent conflicts
+        if (el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      });
+    });
+  }
+
+  /**
+   * Configure direct upload functionality
+   */
+  configureDirectUpload() {
+    const textEditors = document.querySelectorAll('.TextEditor');
+    
+    textEditors.forEach(editor => {
+      const toolbar = editor.querySelector('.TextEditor-toolbar');
+      if (!toolbar || toolbar.classList.contains('configured-direct-upload')) return;
+      
+      toolbar.classList.add('configured-direct-upload');
+      
+      // Find and enhance upload buttons for direct upload
+      const uploadButtons = toolbar.querySelectorAll([
+        '.Button--icon[title*="Upload" i]:not([title*="Gallery" i])',
+        '.Button--icon[data-tooltip*="Upload" i]:not([data-tooltip*="Gallery" i])',
+        '.fof-upload-button:not(.fof-upload-gallery)',
+        'button[class*="upload"]:not([class*="gallery"])'
+      ].join(','));
+      
+      uploadButtons.forEach(btn => {
+        if (btn.style.display === 'none') {
+          btn.style.display = 'inline-block';
+          btn.style.visibility = 'visible';
+        }
+        
+        btn.classList.add('Button--direct-upload');
+        
+        // Enhance file input for direct upload
+        const fileInput = btn.querySelector('input[type="file"]') || btn.nextElementSibling;
+        if (fileInput && fileInput.type === 'file') {
+          fileInput.accept = 'image/*,video/*,audio/*,application/pdf,.doc,.docx,.txt';
+          fileInput.multiple = false;
+          
+          // Add upload feedback
+          const originalChange = fileInput.onchange;
+          fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              btn.style.opacity = '0.7';
+              if (app.alerts) {
+                app.alerts.show({ type: 'success' }, `Đang tải lên: ${file.name}...`);
+              }
+              
+              setTimeout(() => {
+                btn.style.opacity = '1';
+              }, 2000);
+            }
+            
+            if (originalChange) {
+              originalChange.call(fileInput, e);
+            }
+          };
+        }
+      });
     });
   }
 
