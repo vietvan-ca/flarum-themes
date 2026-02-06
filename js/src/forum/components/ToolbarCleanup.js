@@ -136,58 +136,69 @@ export default class PageManager {
    * Configure direct upload functionality
    */
   configureDirectUpload() {
-    const textEditors = document.querySelectorAll('.TextEditor');
-    
-    textEditors.forEach(editor => {
-      const toolbar = editor.querySelector('.TextEditor-toolbar');
-      if (!toolbar || toolbar.classList.contains('configured-direct-upload')) return;
+    try {
+      const textEditors = document.querySelectorAll('.TextEditor');
       
-      toolbar.classList.add('configured-direct-upload');
-      
-      // Find and enhance upload buttons for direct upload
-      const uploadButtons = toolbar.querySelectorAll([
-        '.Button--icon[title*="Upload" i]:not([title*="Gallery" i])',
-        '.Button--icon[data-tooltip*="Upload" i]:not([data-tooltip*="Gallery" i])',
-        '.fof-upload-button:not(.fof-upload-gallery)',
-        'button[class*="upload"]:not([class*="gallery"])'
-      ].join(','));
-      
-      uploadButtons.forEach(btn => {
-        if (btn.style.display === 'none') {
-          btn.style.display = 'inline-block';
-          btn.style.visibility = 'visible';
-        }
+      textEditors.forEach(editor => {
+        const toolbar = editor.querySelector('.TextEditor-toolbar');
+        if (!toolbar || toolbar.classList.contains('configured-direct-upload')) return;
         
-        btn.classList.add('Button--direct-upload');
+        toolbar.classList.add('configured-direct-upload');
         
-        // Enhance file input for direct upload
-        const fileInput = btn.querySelector('input[type="file"]') || btn.nextElementSibling;
-        if (fileInput && fileInput.type === 'file') {
-          fileInput.accept = 'image/*,video/*,audio/*,application/pdf,.doc,.docx,.txt';
-          fileInput.multiple = false;
-          
-          // Add upload feedback
-          const originalChange = fileInput.onchange;
-          fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              btn.style.opacity = '0.7';
-              if (app.alerts) {
-                app.alerts.show({ type: 'success' }, `Đang tải lên: ${file.name}...`);
-              }
-              
-              setTimeout(() => {
-                btn.style.opacity = '1';
-              }, 2000);
+        // Find and enhance upload buttons for direct upload
+        const uploadButtons = toolbar.querySelectorAll([
+          '.Button--icon[title*="Upload" i]:not([title*="Gallery" i])',
+          '.Button--icon[data-tooltip*="Upload" i]:not([data-tooltip*="Gallery" i])',
+          '.fof-upload-button:not(.fof-upload-gallery)',
+          'button[class*="upload"]:not([class*="gallery"])'
+        ].join(','));
+        
+        uploadButtons.forEach(btn => {
+          try {
+            if (btn.style && btn.style.display === 'none') {
+              btn.style.display = 'inline-block';
+              btn.style.visibility = 'visible';
             }
             
-            if (originalChange) {
-              originalChange.call(fileInput, e);
+            btn.classList.add('Button--direct-upload');
+            
+            // Enhance file input for direct upload
+            const fileInput = btn.querySelector('input[type="file"]') || btn.nextElementSibling;
+            if (fileInput && fileInput.type === 'file') {
+              fileInput.accept = 'image/*,video/*,audio/*,application/pdf,.doc,.docx,.txt';
+              fileInput.multiple = false;
+              
+              // Add upload feedback
+              const originalChange = fileInput.onchange;
+              fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file && btn.style) {
+                  btn.style.opacity = '0.7';
+                  if (app && app.alerts) {
+                    app.alerts.show({ type: 'success' }, `Đang tải lên: ${file.name}...`);
+                  }
+                  
+                  setTimeout(() => {
+                    if (btn.style) {
+                      btn.style.opacity = '1';
+                    }
+                  }, 2000);
+                }
+                
+                if (originalChange) {
+                  originalChange.call(fileInput, e);
+                }
+              };
             }
-          };
-        }
+          } catch (error) {
+            // Ignore individual button enhancement errors
+            console.warn('Error configuring upload button:', error);
+          }
+        });
       });
-    });
+    } catch (error) {
+      console.warn('Error in configureDirectUpload:', error);
+    }
   }
 
   /**

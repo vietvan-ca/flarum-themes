@@ -578,24 +578,42 @@ app.initializers.add('vietvan-ca-themes', () => {
   initializeTextColors();
 
   // ==========================================
-  // TextEditor Extensions (Enhanced)
+  // TextEditor Extensions (Removed to prevent context issues)
   // ==========================================
 
-  // Ensure toolbar cleanup runs after TextEditor is created/updated
-  extend(TextEditor.prototype, 'oncreate', function () {
-    setTimeout(() => {
-      pageManager.cleanup();
-      // Configure direct upload for this specific editor
-      pageManager.configureDirectUpload();
-    }, 50);
-  });
-
-  extend(TextEditor.prototype, 'onupdate', function () {
-    setTimeout(() => {
-      pageManager.cleanup();
-      pageManager.configureDirectUpload();
-    }, 25);
-  });
+  // Alternative approach: Use DOM observation for toolbar cleanup
+  const observeTextEditors = () => {
+    const observer = new MutationObserver((mutations) => {
+      let needsCleanup = false;
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.matches?.('.TextEditor') || 
+                node.querySelector?.('.TextEditor') || 
+                node.matches?.('.TextEditor-toolbar') || 
+                node.querySelector?.('.TextEditor-toolbar')) {
+              needsCleanup = true;
+            }
+          }
+        });
+      });
+      
+      if (needsCleanup) {
+        setTimeout(() => {
+          pageManager.cleanup();
+          pageManager.configureDirectUpload();
+        }, 100);
+      }
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  };
+  
+  // Start observing after a delay
+  setTimeout(observeTextEditors, 1000);
 
   // Use oncreate to inject custom mobile drawer after IndexPage is created
   /*

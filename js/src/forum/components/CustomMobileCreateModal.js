@@ -72,11 +72,16 @@ export default class CustomMobileCreateModal extends Component {
                 oninput={(value) => this.setContent(value)}
                 oncreate={(vnode) => { 
                   this.editorRef = vnode; 
-                  // Use setTimeout to ensure DOM is ready
-                  setTimeout(() => this.configureDirectUpload(), 100);
+                  // Use multiple timeouts to ensure proper initialization
+                  setTimeout(() => {
+                    this.configureDirectUpload();
+                  }, 200);
+                  setTimeout(() => {
+                    this.configureDirectUpload();
+                  }, 500);
                 }}
                 onupdate={() => {
-                  setTimeout(() => this.configureDirectUpload(), 50);
+                  setTimeout(() => this.configureDirectUpload(), 100);
                 }}
               />
             </div>
@@ -126,6 +131,11 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   configureDirectUpload() {
+    // Add safety check to prevent errors
+    if (!document.querySelector('.CustomMobileCreateModal')) {
+      return; // Modal not ready yet
+    }
+    
     // Wait for toolbar to be rendered
     setTimeout(() => {
       const editorContainer = document.querySelector('.CustomMobileCreateModal .TextEditor-container');
@@ -148,9 +158,17 @@ export default class CustomMobileCreateModal extends Component {
       buttonsToHide.forEach(selector => {
         const elements = editorContainer.querySelectorAll(selector);
         elements.forEach(el => {
-          el.style.display = 'none';
-          el.style.visibility = 'hidden';
-          el.remove();
+          if (el && el.style) {
+            el.style.display = 'none';
+            el.style.visibility = 'hidden';
+            try {
+              if (el.parentNode) {
+                el.parentNode.removeChild(el);
+              }
+            } catch (e) {
+              // Ignore removal errors
+            }
+          }
         });
       });
 
@@ -190,40 +208,51 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   enhanceDirectUpload(container) {
+    if (!container) return;
+    
     // Find upload buttons and enhance them for direct upload
     const uploadButtons = container.querySelectorAll('.Button--icon, .fof-upload-button');
     
     uploadButtons.forEach(btn => {
-      const fileInput = btn.querySelector('input[type="file"]') || btn.previousElementSibling;
-      
-      if (fileInput && fileInput.type === 'file') {
-        // Ensure direct upload behavior
-        fileInput.accept = 'image/*,video/*,audio/*,application/pdf,.doc,.docx,.txt';
-        fileInput.multiple = false;
+      try {
+        const fileInput = btn.querySelector('input[type="file"]') || btn.previousElementSibling;
         
-        // Add direct upload handler
-        const originalHandler = fileInput.onchange;
-        fileInput.onchange = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            // Show upload feedback
-            btn.style.opacity = '0.7';
-            btn.style.pointerEvents = 'none';
-            
-            // Call original handler if exists, otherwise handle directly
-            if (originalHandler) {
-              originalHandler.call(fileInput, e);
-            } else {
-              this.handleDirectUpload(file, btn);
+        if (fileInput && fileInput.type === 'file') {
+          // Ensure direct upload behavior
+          fileInput.accept = 'image/*,video/*,audio/*,application/pdf,.doc,.docx,.txt';
+          fileInput.multiple = false;
+          
+          // Add direct upload handler
+          const originalHandler = fileInput.onchange;
+          fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              // Show upload feedback
+              if (btn.style) {
+                btn.style.opacity = '0.7';
+                btn.style.pointerEvents = 'none';
+              }
+              
+              // Call original handler if exists, otherwise handle directly
+              if (originalHandler) {
+                originalHandler.call(fileInput, e);
+              } else {
+                this.handleDirectUpload(file, btn);
+              }
+              
+              // Reset button after upload
+              setTimeout(() => {
+                if (btn.style) {
+                  btn.style.opacity = '1';
+                  btn.style.pointerEvents = 'auto';
+                }
+              }, 2000);
             }
-            
-            // Reset button after upload
-            setTimeout(() => {
-              btn.style.opacity = '1';
-              btn.style.pointerEvents = 'auto';
-            }, 2000);
-          }
-        };
+          };
+        }
+      } catch (error) {
+        // Ignore individual button enhancement errors
+        console.warn('Error enhancing upload button:', error);
       }
     });
   }
