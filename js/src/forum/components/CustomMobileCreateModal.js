@@ -13,7 +13,8 @@ export default class CustomMobileCreateModal extends Component {
     super.oninit(vnode);
     
     this.title = '';
-    this.editor = null;
+    this.editorRef = null;
+    this._content = '';
     this.selectedTag = '';
     this.isSubmitting = false;
   }
@@ -69,12 +70,14 @@ export default class CustomMobileCreateModal extends Component {
                 placeholder="Viết nội dung bài viết (không bắt buộc)..."
                 value={this.getContent()}
                 oninput={(value) => this.setContent(value)}
-                oncreate={vnode => { 
-                  this.editor = vnode; 
-                  // Hide gallery buttons and keep only direct upload
-                  this.configureDirectUpload();
+                oncreate={(vnode) => { 
+                  this.editorRef = vnode; 
+                  // Use setTimeout to ensure DOM is ready
+                  setTimeout(() => this.configureDirectUpload(), 100);
                 }}
-                onupdate={() => this.configureDirectUpload()}
+                onupdate={() => {
+                  setTimeout(() => this.configureDirectUpload(), 50);
+                }}
               />
             </div>
           </div>
@@ -105,16 +108,20 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   getContent() {
-    if (this.editor && this.editor.state) {
-      return this.editor.state.value || '';
+    // Try to get content from the TextEditor component if available
+    if (this.editorRef && this.editorRef.state && this.editorRef.state.value !== undefined) {
+      return this.editorRef.state.value;
     }
+    // Fallback to stored content
     return this._content || '';
   }
 
   setContent(value) {
+    // Store the content value
     this._content = value;
-    if (this.editor && this.editor.state) {
-      this.editor.state.value = value;
+    // Try to update the editor if available
+    if (this.editorRef && this.editorRef.state) {
+      this.editorRef.state.value = value;
     }
   }
 
@@ -272,9 +279,11 @@ export default class CustomMobileCreateModal extends Component {
   hide() {
     document.body.classList.remove('mobile-create-modal-open');
     this.title = '';
+    this._content = '';
     this.setContent('');
     this.selectedTag = '';
     this.isSubmitting = false;
+    this.editorRef = null;
     m.redraw();
   }
 
