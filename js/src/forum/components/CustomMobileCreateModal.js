@@ -2,6 +2,7 @@ import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import LogInModal from 'flarum/forum/components/LogInModal';
 import ItemList from 'flarum/common/utils/ItemList';
+import TextEditor from 'flarum/common/components/TextEditor';
 
 /**
  * Custom Mobile Create Topic Modal
@@ -12,7 +13,7 @@ export default class CustomMobileCreateModal extends Component {
     super.oninit(vnode);
     
     this.title = '';
-    this.content = '';
+    this.editor = null;
     this.selectedTag = '';
     this.isSubmitting = false;
   }
@@ -59,14 +60,18 @@ export default class CustomMobileCreateModal extends Component {
             />
           </div>
 
-          {/* Content Textarea */}
+          {/* Content Editor */}
           <div className="form-group">
             <label>Nội dung (tùy chọn):</label>
-            <textarea 
-              placeholder="Viết nội dung bài viết (không bắt buộc)..."
-              value={this.content}
-              oninput={(e) => { this.content = e.target.value; }}
-            ></textarea>
+            <div className="TextEditor-container">
+              <TextEditor
+                className="TextEditor--mobile"
+                placeholder="Viết nội dung bài viết (không bắt buộc)..."
+                value={this.getContent()}
+                oninput={(value) => this.setContent(value)}
+                oncreate={vnode => { this.editor = vnode; }}
+              />
+            </div>
           </div>
         </div>
 
@@ -92,6 +97,20 @@ export default class CustomMobileCreateModal extends Component {
       .map(tag => (
         <option value={tag.id()}>{tag.name()}</option>
       ));
+  }
+
+  getContent() {
+    if (this.editor && this.editor.state) {
+      return this.editor.state.value || '';
+    }
+    return this._content || '';
+  }
+
+  setContent(value) {
+    this._content = value;
+    if (this.editor && this.editor.state) {
+      this.editor.state.value = value;
+    }
   }
 
   canSubmit() {
@@ -134,7 +153,7 @@ export default class CustomMobileCreateModal extends Component {
   hide() {
     document.body.classList.remove('mobile-create-modal-open');
     this.title = '';
-    this.content = '';
+    this.setContent('');
     this.selectedTag = '';
     this.isSubmitting = false;
     m.redraw();
@@ -152,7 +171,7 @@ export default class CustomMobileCreateModal extends Component {
         type: 'discussions',
         attributes: {
           title: this.title,
-          content: this.content.trim() || ' ' // Ensure there's at least a space if content is empty
+          content: this.getContent().trim() || ' ' // Ensure there's at least a space if content is empty
         }
       }
     };
