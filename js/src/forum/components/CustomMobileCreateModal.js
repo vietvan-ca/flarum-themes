@@ -21,7 +21,7 @@ export default class CustomMobileCreateModal extends Component {
     this.composer = app.composer;
     this.selectedTag = '';
     this.isSubmitting = false;
-    this.editor = null;
+    this.editor = ''; // Initialize as empty string instead of null
     
     // Use pending state from static properties
     this.mode = CustomMobileCreateModal.pendingMode || 'create';
@@ -152,9 +152,9 @@ export default class CustomMobileCreateModal extends Component {
   canSubmit() {
     if (this.mode === 'reply') {
       // For replies, only need content
-      const hasContent = this.editor && typeof this.editor === 'string' && this.editor.trim().length > 0;
-      const canSubmit = hasContent && app.session.user;
-      console.log('Reply canSubmit check:', { hasContent, editor: this.editor, canSubmit });
+      const hasContent = typeof this.editor === 'string' && this.editor.trim().length > 0;
+      const canSubmit = hasContent && !!app.session.user;
+      console.log('Reply canSubmit check:', { hasContent, editorLength: this.editor?.length, canSubmit });
       return canSubmit;
     } else {
       // For creating topics, need title
