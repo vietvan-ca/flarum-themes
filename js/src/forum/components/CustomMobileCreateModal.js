@@ -215,6 +215,20 @@ export default class CustomMobileCreateModal extends Component {
     // Only on mobile
     if (window.innerWidth > 768) return;
     
+    // Check if user is logged in first - redirect to login without showing form
+    if (!app.session.user) {
+      app.modal.show(LogInModal);
+      return;
+    }
+    
+    // Check if user can start discussions
+    if (!app.forum.attribute('canStartDiscussion')) {
+      if (app.alerts) {
+        app.alerts.show({ type: 'error' }, 'Bạn không có quyền tạo chủ đề mới');
+      }
+      return;
+    }
+    
     // Hide any existing Flarum composer immediately 
     const composer = document.querySelector('#composer');
     if (composer) {
