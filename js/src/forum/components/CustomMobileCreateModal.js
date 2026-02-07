@@ -13,7 +13,7 @@ export default class CustomMobileCreateModal extends Component {
     super.oninit(vnode);
     
     this.title = '';
-    this._content = '';
+    this.composer = app.composer;
     this.selectedTag = '';
     this.isSubmitting = false;
     this.editor = null;
@@ -61,16 +61,17 @@ export default class CustomMobileCreateModal extends Component {
             />
           </div>
 
-          {/* Content Editor - Simple textarea instead of TextEditor to avoid rendering issues */}
+          {/* Content Editor - Using TextEditor for rich text support */}
           <div className="form-group">
             <label>Nội dung (tùy chọn):</label>
-            <textarea 
-              className="FormControl"
-              placeholder="Viết nội dung bài viết (không bắt buộc)..."
-              value={this.getContent()}
-              oninput={(e) => this.setContent(e.target.value)}
-              rows="10"
-            />
+            <div className="CustomMobileCreateModal-editor">
+              {TextEditor.component({
+                placeholder: 'Viết nội dung bài viết (không bắt buộc)...',
+                onchange: (value) => this.editor = value,
+                onsubmit: () => this.submit(),
+                value: this.editor || ''
+              })}
+            </div>
           </div>
         </div>
 
@@ -99,13 +100,13 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   getContent() {
-    // Use stored content value
-    return this._content || '';
+    // Get content from editor
+    return this.editor || '';
   }
 
   setContent(value) {
-    // Store the content value
-    this._content = value;
+    // Set editor content
+    this.editor = value;
   }
 
   canSubmit() {
@@ -148,8 +149,7 @@ export default class CustomMobileCreateModal extends Component {
   hide() {
     document.body.classList.remove('mobile-create-modal-open');
     this.title = '';
-    this._content = '';
-    this.setContent('');
+    this.editor = '';
     this.selectedTag = '';
     this.isSubmitting = false;
     m.redraw();
@@ -162,12 +162,13 @@ export default class CustomMobileCreateModal extends Component {
     m.redraw();
 
     // Use Flarum's request system to submit data
+    const content = this.getContent().trim() || ' '; // Ensure there's at least a space if content is empty
     const requestData = {
       data: {
         type: 'discussions',
         attributes: {
           title: this.title,
-          content: this.getContent().trim() || ' ' // Ensure there's at least a space if content is empty
+          content: content
         }
       }
     };

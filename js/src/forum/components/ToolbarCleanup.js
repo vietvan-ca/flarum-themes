@@ -117,18 +117,45 @@ export default class PageManager {
       '.Button--icon[data-tooltip*="Choose from gallery" i]',
       'button[class*="gallery"]',
       '.fof-upload-gallery',
-      '.Button[data-tooltip*="Choose from gallery" i]'
+      '.Button[data-tooltip*="Choose from gallery" i]',
+      // Target fof-upload gallery button specifically
+      '.TextEditor-toolbar .fof-upload-button[title*="Gallery"]',
+      '.TextEditor-toolbar button[class*="Gallery"]',
+      '.fof-upload-button-gallery',
+      // Target the second upload button (gallery) in fof-upload
+      '.TextEditor-toolbar .fof-upload-button:nth-of-type(2)',
+      '.item-fof-upload .fof-upload-button:last-child'
     ];
 
     gallerySelectors.forEach(selector => {
       const elements = document.querySelectorAll(selector);
       elements.forEach(el => {
-        this.hideElement(el);
-        // Also remove from DOM to prevent conflicts
-        if (el.parentNode) {
-          el.parentNode.removeChild(el);
+        // Check if it's a gallery button (not direct upload)
+        const isGallery = el.textContent?.includes('Gallery') || 
+                         el.title?.includes('Gallery') ||
+                         el.getAttribute('data-tooltip')?.includes('Gallery') ||
+                         el.querySelector('.fa-images') !== null;
+        
+        if (isGallery || selector.includes('Gallery') || selector.includes('gallery')) {
+          this.hideElement(el);
+          // Also remove from DOM to prevent conflicts
+          if (el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
         }
       });
+    });
+    
+    // Additional check: Hide any upload button with images icon (gallery)
+    const uploadButtons = document.querySelectorAll('.TextEditor-toolbar .fof-upload-button, .item-fof-upload button');
+    uploadButtons.forEach(btn => {
+      const hasGalleryIcon = btn.querySelector('.fa-images, .fas.fa-images');
+      if (hasGalleryIcon) {
+        this.hideElement(btn);
+        if (btn.parentNode) {
+          btn.parentNode.removeChild(btn);
+        }
+      }
     });
   }
 
