@@ -229,3 +229,8 @@ li.item-fof-upload:not(.direct-upload) {
 #modal>div.ModalManager.modal>div.Modal.modal-dialog.Modal--large.fof-file-manager-modal.in>div>div.Modal-header>div>button {
   background: var(--button-bg);
 }
+
+// Hide specific submit button in TextEditor toolbar within mobile modal
+#mobile-create-modal-container > div > div.CustomMobileCreateModal-content > div:nth-child(3) > div > div > ul > li.item-submit.App-primaryControl > button {
+  display: none !important;
+}
