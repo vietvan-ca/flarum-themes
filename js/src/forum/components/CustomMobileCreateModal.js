@@ -35,7 +35,7 @@ export default class CustomMobileCreateModal extends Component {
     if (window.innerWidth > 768) return null; // Desktop only shows default composer
 
     return (
-      <div className={`CustomMobileCreateModal ${this.isVisible() ? 'visible' : ''} ${this.mode === 'reply' ? 'reply-mode' : 'create-mode'} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
+      <div className={`CustomMobileCreateModal visible ${this.mode === 'reply' ? 'reply-mode' : 'create-mode'} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
         {/* Header */}
         <div className="CustomMobileCreateModal-header">
           <h2>{this.mode === 'reply' ? (this.discussion ? `Trả lời: ${this.discussion.title()}` : 'Viết phản hồi') : 'Tạo chủ đề mới'}</h2>
@@ -148,46 +148,15 @@ export default class CustomMobileCreateModal extends Component {
     }
   }
 
-  isVisible() {
-    return document.body.classList.contains('mobile-create-modal-open');
-  }
-
-  show() {
-    if (window.innerWidth <= 768) {
-      // Check if user can start discussions
-      if (!app.session.user) {
-        app.modal.show(LogInModal);
-        return;
-      }
-      
-      if (!app.forum.attribute('canStartDiscussion')) {
-        if (app.alerts) {
-          app.alerts.show({ type: 'error' }, 'Bạn không có quyền tạo chủ đề mới');
-        }
-        return;
-      }
-      
-      document.body.classList.add('mobile-create-modal-open');
-      
-      // Hide any existing Flarum composer
-      const composer = document.querySelector('#composer');
-      if (composer) {
-        composer.style.display = 'none';
-      }
-      
-      m.redraw();
-    }
-  }
-
   hide() {
+    // Unmount the modal component
+    const container = document.querySelector('#mobile-create-modal-container');
+    if (container) {
+      m.mount(container, null);
+      container.remove();
+    }
+    
     document.body.classList.remove('mobile-create-modal-open');
-    this.title = '';
-    this.editor = '';
-    this.selectedTag = '';
-    this.isSubmitting = false;
-    this.mode = 'create';
-    this.discussion = null;
-    this.replyingTo = null;
     
     // Reset static pending state
     CustomMobileCreateModal.pendingMode = 'create';
@@ -199,8 +168,6 @@ export default class CustomMobileCreateModal extends Component {
     if (composer) {
       composer.style.display = '';
     }
-    
-    m.redraw();
   }
 
   submit() {
@@ -389,14 +356,19 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   static hide() {
+    // Unmount the modal component
+    const container = document.querySelector('#mobile-create-modal-container');
+    if (container) {
+      m.mount(container, null);
+      container.remove();
+    }
+    
     document.body.classList.remove('mobile-create-modal-open');
     
     // Reset static pending state
     CustomMobileCreateModal.pendingMode = 'create';
     CustomMobileCreateModal.pendingDiscussion = null;
     CustomMobileCreateModal.pendingReplyingTo = null;
-    
-    m.redraw();
   }
 }
 
