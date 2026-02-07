@@ -38,7 +38,7 @@ export default class CustomMobileCreateModal extends Component {
       <div className={`CustomMobileCreateModal visible ${this.mode === 'reply' ? 'reply-mode' : 'create-mode'} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
         {/* Header */}
         <div className="CustomMobileCreateModal-header">
-          <h2>{this.mode === 'reply' ? (this.discussion ? `Trả lời: ${this.discussion.title()}` : 'Viết phản hồi') : 'Tạo chủ đề mới'}</h2>
+          <h2>{this.mode === 'reply' ? (this.replyingTo ? `Trả lời ${this.replyingTo.user()?.displayName() || 'người dùng'}` : (this.discussion ? `Trả lời: ${this.discussion.title()}` : 'Viết phản hồi')) : 'Tạo chủ đề mới'}</h2>
           <button 
             className="close-btn"
             onclick={() => this.hide()}
@@ -95,6 +95,12 @@ export default class CustomMobileCreateModal extends Component {
           ) : (
             // REPLY MODE - Simple comment-style interface
             <div className="CustomMobileCreateModal-replyBox">
+              {this.replyingTo && (
+                <div className="CustomMobileCreateModal-replyingTo">
+                  <i className="fas fa-reply"></i>
+                  <span>Đang trả lời <strong>{this.replyingTo.user()?.displayName() || 'người dùng'}</strong></span>
+                </div>
+              )}
               {TextEditor.component({
                 placeholder: 'Viết phản hồi của bạn...',
                 onchange: (value) => {
@@ -254,7 +260,7 @@ export default class CustomMobileCreateModal extends Component {
     }
 
     const content = this.getContent().trim();
-    console.log('Submitting reply with content:', content, 'to discussion:', this.discussion.id());
+    console.log('Submitting reply with content:', content, 'to discussion:', this.discussion.id(), 'replying to post:', this.replyingTo?.id());
     
     const requestData = {
       data: {
@@ -269,6 +275,14 @@ export default class CustomMobileCreateModal extends Component {
         }
       }
     };
+    
+    // Add replyTo relationship if replying to a specific post
+    if (this.replyingTo && this.replyingTo.id()) {
+      requestData.data.relationships.replyTo = {
+        data: { type: 'posts', id: this.replyingTo.id() }
+      };
+      console.log('Added replyTo relationship for post:', this.replyingTo.id());
+    }
     
     console.log('API request data:', requestData);
 

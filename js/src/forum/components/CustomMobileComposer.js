@@ -91,6 +91,17 @@ export default class CustomMobileComposer {
           return;
         }
         
+        // Try to find the specific post being replied to
+        let replyingToPost = null;
+        const postElement = target.closest('.Post, [data-id]');
+        if (postElement) {
+          const postId = postElement.getAttribute('data-id');
+          if (postId) {
+            replyingToPost = app.store.getById('posts', postId);
+            console.log('Found post being replied to:', postId, replyingToPost);
+          }
+        }
+        
         // Prevent default composer from opening
         setTimeout(() => {
           const composer = document.querySelector('#composer');
@@ -99,8 +110,8 @@ export default class CustomMobileComposer {
           }
         }, 50);
         
-        console.log('Intercepted reply click on mobile');
-        CustomMobileCreateModal.show('reply', discussion);
+        console.log('Intercepted reply click on mobile, replying to post:', replyingToPost?.id());
+        CustomMobileCreateModal.show('reply', discussion, replyingToPost);
         return false;
       }
     }, true); // Use capture phase for earlier interception
