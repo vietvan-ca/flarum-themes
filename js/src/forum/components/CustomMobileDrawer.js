@@ -22,6 +22,7 @@ function trans(key, fallback) {
 export default class CustomMobileDrawer extends Component {
   oninit(vnode) {
     super.oninit(vnode);
+    this.isDrawerOpen = false;
   }
 
   view() {
@@ -32,7 +33,7 @@ export default class CustomMobileDrawer extends Component {
           className="CustomMobileDrawer-toggleBtn"
           onclick={() => this.toggleDrawer()}
         >
-          <i className="fas fa-bars"></i>
+          <i className={this.isDrawerOpen ? "fas fa-times" : "fas fa-bars"}></i>
         </button>
 
         <div className="CustomMobileDrawer">
@@ -315,6 +316,8 @@ export default class CustomMobileDrawer extends Component {
     if (drawer) {
       drawer.style.right = '-100%';
       document.body.classList.remove('vietvan-drawer-open');
+      this.isDrawerOpen = false;
+      m.redraw();
     }
 
     // Generate state parameter for security
@@ -412,7 +415,9 @@ export default class CustomMobileDrawer extends Component {
       const isOpen = drawer.style.right === '0px';
       drawer.style.right = isOpen ? '-100%' : '0px';
       document.body.classList.toggle('vietvan-drawer-open', !isOpen);
+      this.isDrawerOpen = !isOpen;
       console.log('Drawer toggled:', !isOpen);
+      m.redraw();
     }
   }
 
@@ -425,6 +430,8 @@ export default class CustomMobileDrawer extends Component {
     if (drawer) {
       drawer.style.right = '-100%';
       document.body.classList.remove('vietvan-drawer-open');
+      this.isDrawerOpen = false;
+      m.redraw();
     }
 
     // Find and click the default Flarum login button to trigger SSO
