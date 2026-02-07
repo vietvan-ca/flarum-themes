@@ -73,6 +73,29 @@
     display: none !important;
   }
 
+  // Reply mode adjustments - cleaner header
+  &.reply-mode {
+    .CustomMobileCreateModal-header {
+      h2 {
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: calc(100% - 50px);
+      }
+    }
+
+    .CustomMobileCreateModal-content {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .CustomMobileCreateModal-footer {
+      border-top: 1px solid #e8e8e8;
+    }
+  }
+
   &-header {
     display: flex;
     align-items: center;
@@ -102,6 +125,51 @@
     padding: 20px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+
+    // Reply mode - fullscreen editor
+    .CustomMobileCreateModal-replyBox {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      
+      .TextEditor-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        
+        .TextEditor {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          border: none;
+          
+          &-editor {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            overflow-y: auto;
+            
+            &:focus {
+              outline: none;
+            }
+          }
+          
+          &-toolbar {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e8e8e8;
+            background: #f8f8f8;
+            flex-shrink: 0;
+          }
+        }
+        
+        &:focus-within {
+          border-color: #C22126;
+          box-shadow: 0 0 0 2px rgba(194, 33, 38, 0.2);
+        }
+      }
+    }
 
     .form-group {
       margin-bottom: 20px;
@@ -258,6 +326,31 @@
       background: #C22126;
       color: white;
       border: none;
+  // Reply mode dark support
+  &.reply-mode {
+    .CustomMobileCreateModal-replyBox {
+      .TextEditor-container {
+        border-color: #555 !important;
+        
+        &:focus-within {
+          border-color: #C22126 !important;
+        }
+        
+        .TextEditor {
+          &-editor {
+            background: #2d2d2d !important;
+            color: #fff !important;
+          }
+          
+          &-toolbar {
+            background: #3d3d3d !important;
+            border-color: #555 !important;
+          }
+        }
+      }
+    }
+  }
+
       border-radius: 8px;
       padding: 12px 20px;
       font-size: 16px;

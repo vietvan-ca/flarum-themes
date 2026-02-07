@@ -26,10 +26,10 @@ export default class CustomMobileCreateModal extends Component {
     if (window.innerWidth > 768) return null; // Desktop only shows default composer
 
     return (
-      <div className={`CustomMobileCreateModal ${this.isVisible() ? 'visible' : ''} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
+      <div className={`CustomMobileCreateModal ${this.isVisible() ? 'visible' : ''} ${this.mode === 'reply' ? 'reply-mode' : 'create-mode'} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
         {/* Header */}
         <div className="CustomMobileCreateModal-header">
-          <h2>{this.mode === 'reply' ? 'Viết phản hồi' : 'Tạo chủ đề mới'}</h2>
+          <h2>{this.mode === 'reply' ? (this.discussion ? `Trả lời: ${this.discussion.title()}` : 'Viết phản hồi') : 'Tạo chủ đề mới'}</h2>
           <button 
             className="close-btn"
             onclick={() => this.hide()}
@@ -41,53 +41,56 @@ export default class CustomMobileCreateModal extends Component {
 
         {/* Content */}
         <div className="CustomMobileCreateModal-content">
-          {/* Tags Selection - Only for create mode */}
-          {this.mode === 'create' && (
-            <div className="form-group">
-              <label>Chọn chủ đề (tùy chọn):</label>
-              <select 
-                value={this.selectedTag}
-                onchange={(e) => { this.selectedTag = e.target.value; }}
-              >
-                <option value="">-- Chọn chủ đề --</option>
-                {this.getTagOptions()}
-              </select>
-            </div>
-          )}
+          {this.mode === 'create' ? (
+            // CREATE MODE - Structured form with labels
+            <>
+              {/* Tags Selection */}
+              <div className="form-group">
+                <label>Chọn chủ đề (tùy chọn):</label>
+                <select 
+                  value={this.selectedTag}
+                  onchange={(e) => { this.selectedTag = e.target.value; }}
+                >
+                  <option value="">-- Chọn chủ đề --</option>
+                  {this.getTagOptions()}
+                </select>
+              </div>
 
-          {/* Title Input - Only for create mode */}
-          {this.mode === 'create' && (
-            <div className="form-group">
-              <label>Tiêu đề:</label>
-              <input 
-                type="text" 
-                placeholder="Nhập tiêu đề bài viết..."
-                value={this.title}
-                oninput={(e) => { this.title = e.target.value; }}
-              />
-            </div>
-          )}
+              {/* Title Input */}
+              <div className="form-group">
+                <label>Tiêu đề:</label>
+                <input 
+                  type="text" 
+                  placeholder="Nhập tiêu đề bài viết..."
+                  value={this.title}
+                  oninput={(e) => { this.title = e.target.value; }}
+                />
+              </div>
 
-          {/* Discussion Title Display - For reply mode */}
-          {this.mode === 'reply' && this.discussion && (
-            <div className="form-group">
-              <label>Đang trả lời trong:</label>
-              <div className="discussion-title">{this.discussion.title()}</div>
-            </div>
-          )}
-
-          {/* Content Editor - Using TextEditor for rich text support */}
-          <div className="form-group">
-            <label>{this.mode === 'reply' ? 'Nội dung phản hồi:' : 'Nội dung (tùy chọn):'}</label>
-            <div className="CustomMobileCreateModal-editor">
+              {/* Content Editor */}
+              <div className="form-group">
+                <label>Nội dung (tùy chọn):</label>
+                <div className="CustomMobileCreateModal-editor">
+                  {TextEditor.component({
+                    placeholder: 'Viết nội dung bài viết (không bắt buộc)...',
+                    onchange: (value) => this.editor = value,
+                    onsubmit: () => this.submit(),
+                    value: this.editor || ''
+                  })}
+                </div>
+              </div>
+            </>
+          ) : (
+            // REPLY MODE - Simple comment-style interface
+            <div className="CustomMobileCreateModal-replyBox">
               {TextEditor.component({
-                placeholder: this.mode === 'reply' ? 'Viết phản hồi của bạn...' : 'Viết nội dung bài viết (không bắt buộc)...',
+                placeholder: 'Viết phản hồi của bạn...',
                 onchange: (value) => this.editor = value,
                 onsubmit: () => this.submit(),
                 value: this.editor || ''
               })}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer */}
