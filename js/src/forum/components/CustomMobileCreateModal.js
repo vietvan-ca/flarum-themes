@@ -6,9 +6,14 @@ import TextEditor from 'flarum/common/components/TextEditor';
 
 /**
  * Custom Mobile Create Topic Modal
- * A full-page mobile-optimized modal for creating new topics
+ * A full-page mobile-optimized modal for creating new topics and replies
  */
 export default class CustomMobileCreateModal extends Component {
+  // Static properties to store pending modal state
+  static pendingMode = 'create';
+  static pendingDiscussion = null;
+  static pendingReplyingTo = null;
+
   oninit(vnode) {
     super.oninit(vnode);
     
@@ -17,9 +22,13 @@ export default class CustomMobileCreateModal extends Component {
     this.selectedTag = '';
     this.isSubmitting = false;
     this.editor = null;
-    this.mode = 'create'; // 'create' or 'reply'
-    this.discussion = null; // For reply mode
-    this.replyingTo = null; // Post being replied to
+    
+    // Use pending state from static properties
+    this.mode = CustomMobileCreateModal.pendingMode || 'create';
+    this.discussion = CustomMobileCreateModal.pendingDiscussion || null;
+    this.replyingTo = CustomMobileCreateModal.pendingReplyingTo || null;
+    
+    console.log('Modal initialized with mode:', this.mode, 'discussion:', this.discussion);
   }
 
   view() {
@@ -179,6 +188,11 @@ export default class CustomMobileCreateModal extends Component {
     this.mode = 'create';
     this.discussion = null;
     this.replyingTo = null;
+    
+    // Reset static pending state
+    CustomMobileCreateModal.pendingMode = 'create';
+    CustomMobileCreateModal.pendingDiscussion = null;
+    CustomMobileCreateModal.pendingReplyingTo = null;
     
     // Restore the default composer if needed
     const composer = document.querySelector('#composer');
@@ -341,47 +355,47 @@ export default class CustomMobileCreateModal extends Component {
       return;
     }
     
+    // Set pending state BEFORE mounting/showing
+    CustomMobileCreateModal.pendingMode = mode;
+    CustomMobileCreateModal.pendingDiscussion = discussion;
+    CustomMobileCreateModal.pendingReplyingTo = replyingTo;
+    
+    console.log('Setting modal mode to:', mode, 'with discussion:', discussion);
+    
     // Hide any existing Flarum composer immediately 
     const composer = document.querySelector('#composer');
     if (composer) {
       composer.style.display = 'none';
     }
 
-    // Mount the component if not already mounted
+    // Mount the component if not already mounted, or remount to reset state
     let container = document.querySelector('#mobile-create-modal-container');
-    let instance;
-    if (!container) {
+    
+    if (container) {
+      // Unmount and remount to ensure fresh state
+      m.mount(container, null);
+    } else {
       container = document.createElement('div');
       container.id = 'mobile-create-modal-container';
       document.body.appendChild(container);
-      m.mount(container, {
-        view: () => m(CustomMobileCreateModal)
-      });
     }
-
-    // Get the component instance and set mode
-    setTimeout(() => {
-      const component = container.querySelector('.CustomMobileCreateModal');
-      if (component && component.__mithril) {
-        const vnode = component.__mithril;
-        if (vnode.state) {
-          vnode.state.mode = mode;
-          vnode.state.discussion = discussion;
-          vnode.state.replyingTo = replyingTo;
-          vnode.state.title = '';
-          vnode.state.editor = '';
-          vnode.state.selectedTag = '';
-        }
-      }
-      
-      // Show the modal
-      document.body.classList.add('mobile-create-modal-open');
-      m.redraw();
-    }, 10);
+    
+    // Mount with fresh state
+    m.mount(container, CustomMobileCreateModal);
+    
+    // Show the modal immediately
+    document.body.classList.add('mobile-create-modal-open');
+    m.redraw();
   }
 
   static hide() {
     document.body.classList.remove('mobile-create-modal-open');
+    
+    // Reset static pending state
+    CustomMobileCreateModal.pendingMode = 'create';
+    CustomMobileCreateModal.pendingDiscussion = null;
+    CustomMobileCreateModal.pendingReplyingTo = null;
+    
     m.redraw();
   }
 }

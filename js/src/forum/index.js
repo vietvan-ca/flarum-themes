@@ -389,7 +389,6 @@ app.initializers.add('vietvan-ca-themes', () => {
       if (needsCleanup) {
         setTimeout(() => {
           pageManager.cleanup();
-          pageManager.configureDirectUpload();
         }, 100);
       }
     });

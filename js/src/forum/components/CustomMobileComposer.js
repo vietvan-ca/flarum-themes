@@ -7,13 +7,10 @@ import CustomMobileCreateModal from './CustomMobileCreateModal';
  */
 export default class CustomMobileComposer {
   static init() {
-    // Intercept create topic button clicks on mobile
+    // Intercept create topic and reply button clicks on mobile
     this.interceptCreateTopicButtons();
-
-    // Mount the modal component
-    setTimeout(() => {
-      this.mountModal();
-    }, 1000);
+    
+    // No need to pre-mount modal, it will mount when needed with correct state
   }
 
   static interceptCreateTopicButtons() {
@@ -131,15 +128,5 @@ export default class CustomMobileComposer {
     });
 
     console.log('Create topic and reply button interception initialized');
-  }
-
-  static mountModal() {
-    if (window.innerWidth <= 768 && !document.querySelector('#mobile-create-modal-container')) {
-      const container = document.createElement('div');
-      container.id = 'mobile-create-modal-container';
-      document.body.appendChild(container);
-      m.mount(container, CustomMobileCreateModal);
-      console.log('Mobile create modal mounted');
-    }
   }
 }
