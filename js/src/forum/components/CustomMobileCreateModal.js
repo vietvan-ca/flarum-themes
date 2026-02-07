@@ -82,7 +82,10 @@ export default class CustomMobileCreateModal extends Component {
                 <div className="CustomMobileCreateModal-editor">
                   {TextEditor.component({
                     placeholder: 'Viết nội dung bài viết (không bắt buộc)...',
-                    onchange: (value) => this.editor = value,
+                    onchange: (value) => {
+                      this.editor = value;
+                      m.redraw();
+                    },
                     onsubmit: () => this.submit(),
                     value: this.editor || ''
                   })}
@@ -94,7 +97,11 @@ export default class CustomMobileCreateModal extends Component {
             <div className="CustomMobileCreateModal-replyBox">
               {TextEditor.component({
                 placeholder: 'Viết phản hồi của bạn...',
-                onchange: (value) => this.editor = value,
+                onchange: (value) => {
+                  this.editor = value;
+                  console.log('Editor value changed:', value);
+                  m.redraw();
+                },
                 onsubmit: () => this.submit(),
                 value: this.editor || ''
               })}
@@ -139,7 +146,10 @@ export default class CustomMobileCreateModal extends Component {
   canSubmit() {
     if (this.mode === 'reply') {
       // For replies, only need content
-      return this.editor && this.editor.trim() && app.session.user;
+      const hasContent = this.editor && typeof this.editor === 'string' && this.editor.trim().length > 0;
+      const canSubmit = hasContent && app.session.user;
+      console.log('Reply canSubmit check:', { hasContent, editor: this.editor, canSubmit });
+      return canSubmit;
     } else {
       // For creating topics, need title
       return this.title.trim() && 
@@ -238,9 +248,14 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   submitReply() {
-    if (!this.discussion) return;
+    if (!this.discussion) {
+      console.error('No discussion found for reply');
+      return;
+    }
 
     const content = this.getContent().trim();
+    console.log('Submitting reply with content:', content, 'to discussion:', this.discussion.id());
+    
     const requestData = {
       data: {
         type: 'posts',
@@ -254,12 +269,15 @@ export default class CustomMobileCreateModal extends Component {
         }
       }
     };
+    
+    console.log('API request data:', requestData);
 
     app.request({
       method: 'POST',
       url: app.forum.attribute('apiUrl') + '/posts',
       body: requestData
     }).then((response) => {
+      console.log('Reply submitted successfully:', response);
       // Success - reload the discussion to show the new post
       const post = app.store.pushPayload(response);
       

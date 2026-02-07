@@ -326,6 +326,29 @@
       background: #C22126;
       color: white;
       border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Prevent body scroll when modal is open
+body.mobile-create-modal-open {
+  overflow: hidden !important;
+}
+
+// Dark mode support
+body.dark .CustomMobileCreateModal {
+  background: #2d2d2d;
+
   // Reply mode dark support
   &.reply-mode {
     .CustomMobileCreateModal-replyBox {
@@ -350,29 +373,6 @@
       }
     }
   }
-
-      border-radius: 8px;
-      padding: 12px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      
-      &:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-      }
-    }
-  }
-}
-
-// Prevent body scroll when modal is open
-body.mobile-create-modal-open {
-  overflow: hidden !important;
-}
-
-// Dark mode support
-body.dark .CustomMobileCreateModal {
-  background: #2d2d2d;
 
   &-header {
     background: #3d3d3d;
