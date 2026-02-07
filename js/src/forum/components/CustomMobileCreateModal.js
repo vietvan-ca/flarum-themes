@@ -21,7 +21,7 @@ export default class CustomMobileCreateModal extends Component {
     this.composer = app.composer;
     this.selectedTag = '';
     this.isSubmitting = false;
-    this.editor = ''; // Initialize as empty string instead of null
+    this.content = ''; // Store editor content here
     
     // Use pending state from static properties
     this.mode = CustomMobileCreateModal.pendingMode || 'create';
@@ -83,11 +83,11 @@ export default class CustomMobileCreateModal extends Component {
                   {TextEditor.component({
                     placeholder: 'Viết nội dung bài viết (không bắt buộc)...',
                     onchange: (value) => {
-                      this.editor = value;
+                      this.content = value;
                       m.redraw();
                     },
                     onsubmit: () => this.submit(),
-                    value: this.editor || ''
+                    value: this.content || ''
                   })}
                 </div>
               </div>
@@ -104,12 +104,12 @@ export default class CustomMobileCreateModal extends Component {
               {TextEditor.component({
                 placeholder: 'Viết phản hồi của bạn...',
                 onchange: (value) => {
-                  this.editor = value;
+                  this.content = value;
                   console.log('Editor value changed:', value);
                   m.redraw();
                 },
                 onsubmit: () => this.submit(),
-                value: this.editor || ''
+                value: this.content || ''
               })}
             </div>
           )}
@@ -141,20 +141,20 @@ export default class CustomMobileCreateModal extends Component {
 
   getContent() {
     // Get content from editor
-    return this.editor || '';
+    return this.content || '';
   }
 
   setContent(value) {
     // Set editor content
-    this.editor = value;
+    this.content = value;
   }
 
   canSubmit() {
     if (this.mode === 'reply') {
       // For replies, only need content
-      const hasContent = typeof this.editor === 'string' && this.editor.trim().length > 0;
+      const hasContent = typeof this.content === 'string' && this.content.trim().length > 0;
       const canSubmit = hasContent && !!app.session.user;
-      console.log('Reply canSubmit check:', { hasContent, editorLength: this.editor?.length, canSubmit });
+      console.log('Reply canSubmit check:', { hasContent, contentLength: this.content?.length, canSubmit });
       return canSubmit;
     } else {
       // For creating topics, need title
