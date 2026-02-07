@@ -23,6 +23,17 @@ export default class CustomMobileDrawer extends Component {
   oninit(vnode) {
     super.oninit(vnode);
     this.isDrawerOpen = false;
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  oncreate(vnode) {
+    super.oncreate(vnode);
+    document.addEventListener('click', this.handleClickOutside);
+  }
+
+  onremove(vnode) {
+    super.onremove(vnode);
+    document.removeEventListener('click', this.handleClickOutside);
   }
 
   view() {
@@ -404,6 +415,21 @@ export default class CustomMobileDrawer extends Component {
         </ul>
       </div>
     );
+  }
+
+  /**
+   * Handle clicks outside the drawer to close it
+   */
+  handleClickOutside(e) {
+    if (!this.isDrawerOpen) return;
+
+    const drawer = document.querySelector('.CustomMobileDrawer, .vietvan-mobile-drawer');
+    const toggleBtn = document.querySelector('.CustomMobileDrawer-toggleBtn');
+    
+    // Check if click is outside both drawer and toggle button
+    if (drawer && toggleBtn && !drawer.contains(e.target) && !toggleBtn.contains(e.target)) {
+      this.toggleDrawer();
+    }
   }
 
   /**
