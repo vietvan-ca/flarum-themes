@@ -17,7 +17,7 @@ export default class CustomMobileComposer {
   }
 
   static interceptCreateTopicButtons() {
-    // Use event delegation to catch all create topic button clicks
+    // Use event delegation to catch all create topic and reply button clicks
     document.addEventListener('click', (e) => {
       // Only on mobile
       if (window.innerWidth > 768) return;
@@ -27,7 +27,7 @@ export default class CustomMobileComposer {
       
       if (!target) return;
 
-      // Check various ways to identify create topic buttons
+      // Check for create topic buttons
       const buttonSelectors = [
         '.CustomMobileDiscussionToolbar-button',
         '.item-newDiscussion',
@@ -46,6 +46,23 @@ export default class CustomMobileComposer {
                              target.getAttribute('aria-label')?.includes('Start') ||
                              target.getAttribute('aria-label')?.includes('discussion');
       
+      // Check for reply buttons
+      const replySelectors = [
+        '.item-reply',
+        '.Button--reply',
+        '[title*="reply"]',
+        '[title*="Reply"]',
+        '[data-original-title*="reply"]',
+        '[data-original-title*="Reply"]'
+      ];
+
+      const isReplyButton = replySelectors.some(selector => target.matches(selector)) ||
+                            target.querySelector('.fa-reply') ||
+                            target.textContent.includes('Reply') ||
+                            target.textContent.includes('Trả lời') ||
+                            target.getAttribute('aria-label')?.includes('Reply') ||
+                            target.getAttribute('aria-label')?.includes('reply');
+
       if (isCreateButton) {
         e.preventDefault();
         e.stopPropagation();
@@ -55,12 +72,38 @@ export default class CustomMobileComposer {
         setTimeout(() => {
           const composer = document.querySelector('#composer');
           if (composer) {
-            composer.remove();
+            composer.style.display = 'none';
           }
         }, 50);
         
         console.log('Intercepted create topic click on mobile');
-        CustomMobileCreateModal.show();
+        CustomMobileCreateModal.show('create');
+        return false;
+      }
+
+      if (isReplyButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        // Get the current discussion from app state or page
+        const discussion = app.current?.data?.discussion || app.discussions?.current();
+        
+        if (!discussion) {
+          console.error('Could not find current discussion for reply');
+          return;
+        }
+        
+        // Prevent default composer from opening
+        setTimeout(() => {
+          const composer = document.querySelector('#composer');
+          if (composer) {
+            composer.style.display = 'none';
+          }
+        }, 50);
+        
+        console.log('Intercepted reply click on mobile');
+        CustomMobileCreateModal.show('reply', discussion);
         return false;
       }
     }, true); // Use capture phase for earlier interception
@@ -87,7 +130,7 @@ export default class CustomMobileComposer {
       subtree: true
     });
 
-    console.log('Create topic button interception initialized with aggressive blocking');
+    console.log('Create topic and reply button interception initialized');
   }
 
   static mountModal() {

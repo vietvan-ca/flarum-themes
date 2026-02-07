@@ -17,6 +17,9 @@ export default class CustomMobileCreateModal extends Component {
     this.selectedTag = '';
     this.isSubmitting = false;
     this.editor = null;
+    this.mode = 'create'; // 'create' or 'reply'
+    this.discussion = null; // For reply mode
+    this.replyingTo = null; // Post being replied to
   }
 
   view() {
@@ -26,7 +29,7 @@ export default class CustomMobileCreateModal extends Component {
       <div className={`CustomMobileCreateModal ${this.isVisible() ? 'visible' : ''} ${document.body.classList.contains('dark') ? 'dark' : ''}`}>
         {/* Header */}
         <div className="CustomMobileCreateModal-header">
-          <h2>Tạo chủ đề mới</h2>
+          <h2>{this.mode === 'reply' ? 'Viết phản hồi' : 'Tạo chủ đề mới'}</h2>
           <button 
             className="close-btn"
             onclick={() => this.hide()}
@@ -38,35 +41,47 @@ export default class CustomMobileCreateModal extends Component {
 
         {/* Content */}
         <div className="CustomMobileCreateModal-content">
-          {/* Tags Selection */}
-          <div className="form-group">
-            <label>Chọn chủ đề (tùy chọn):</label>
-            <select 
-              value={this.selectedTag}
-              onchange={(e) => { this.selectedTag = e.target.value; }}
-            >
-              <option value="">-- Chọn chủ đề --</option>
-              {this.getTagOptions()}
-            </select>
-          </div>
+          {/* Tags Selection - Only for create mode */}
+          {this.mode === 'create' && (
+            <div className="form-group">
+              <label>Chọn chủ đề (tùy chọn):</label>
+              <select 
+                value={this.selectedTag}
+                onchange={(e) => { this.selectedTag = e.target.value; }}
+              >
+                <option value="">-- Chọn chủ đề --</option>
+                {this.getTagOptions()}
+              </select>
+            </div>
+          )}
 
-          {/* Title Input */}
-          <div className="form-group">
-            <label>Tiêu đề:</label>
-            <input 
-              type="text" 
-              placeholder="Nhập tiêu đề bài viết..."
-              value={this.title}
-              oninput={(e) => { this.title = e.target.value; }}
-            />
-          </div>
+          {/* Title Input - Only for create mode */}
+          {this.mode === 'create' && (
+            <div className="form-group">
+              <label>Tiêu đề:</label>
+              <input 
+                type="text" 
+                placeholder="Nhập tiêu đề bài viết..."
+                value={this.title}
+                oninput={(e) => { this.title = e.target.value; }}
+              />
+            </div>
+          )}
+
+          {/* Discussion Title Display - For reply mode */}
+          {this.mode === 'reply' && this.discussion && (
+            <div className="form-group">
+              <label>Đang trả lời trong:</label>
+              <div className="discussion-title">{this.discussion.title()}</div>
+            </div>
+          )}
 
           {/* Content Editor - Using TextEditor for rich text support */}
           <div className="form-group">
-            <label>Nội dung (tùy chọn):</label>
+            <label>{this.mode === 'reply' ? 'Nội dung phản hồi:' : 'Nội dung (tùy chọn):'}</label>
             <div className="CustomMobileCreateModal-editor">
               {TextEditor.component({
-                placeholder: 'Viết nội dung bài viết (không bắt buộc)...',
+                placeholder: this.mode === 'reply' ? 'Viết phản hồi của bạn...' : 'Viết nội dung bài viết (không bắt buộc)...',
                 onchange: (value) => this.editor = value,
                 onsubmit: () => this.submit(),
                 value: this.editor || ''
@@ -110,9 +125,15 @@ export default class CustomMobileCreateModal extends Component {
   }
 
   canSubmit() {
-    return this.title.trim() && 
-           app.session.user && 
-           app.forum.attribute('canStartDiscussion');
+    if (this.mode === 'reply') {
+      // For replies, only need content
+      return this.editor && this.editor.trim() && app.session.user;
+    } else {
+      // For creating topics, need title
+      return this.title.trim() && 
+             app.session.user && 
+             app.forum.attribute('canStartDiscussion');
+    }
   }
 
   isVisible() {
@@ -152,6 +173,16 @@ export default class CustomMobileCreateModal extends Component {
     this.editor = '';
     this.selectedTag = '';
     this.isSubmitting = false;
+    this.mode = 'create';
+    this.discussion = null;
+    this.replyingTo = null;
+    
+    // Restore the default composer if needed
+    const composer = document.querySelector('#composer');
+    if (composer) {
+      composer.style.display = '';
+    }
+    
     m.redraw();
   }
 
@@ -161,6 +192,16 @@ export default class CustomMobileCreateModal extends Component {
     this.isSubmitting = true;
     m.redraw();
 
+    if (this.mode === 'reply') {
+      // Submit reply
+      this.submitReply();
+    } else {
+      // Submit new discussion
+      this.submitDiscussion();
+    }
+  }
+
+  submitDiscussion() {
     // Use Flarum's request system to submit data
     const content = this.getContent().trim() || ' '; // Ensure there's at least a space if content is empty
     const requestData = {
@@ -212,7 +253,74 @@ export default class CustomMobileCreateModal extends Component {
     });
   }
 
-  static show() {
+  submitReply() {
+    if (!this.discussion) return;
+
+    const content = this.getContent().trim();
+    const requestData = {
+      data: {
+        type: 'posts',
+        attributes: {
+          content: content
+        },
+        relationships: {
+          discussion: {
+            data: { type: 'discussions', id: this.discussion.id() }
+          }
+        }
+      }
+    };
+
+    app.request({
+      method: 'POST',
+      url: app.forum.attribute('apiUrl') + '/posts',
+      body: requestData
+    }).then((response) => {
+      // Success - reload the discussion to show the new post
+      const post = app.store.pushPayload(response);
+      
+      // Refresh the discussion to show the new post
+      if (this.discussion) {
+        this.discussion.freshness = new Date();
+        this.discussion.lastPostedAt = new Date();
+        this.discussion.lastPostedUser = app.session.user;
+        if (this.discussion.data) {
+          this.discussion.data.attributes.lastPostedAt = new Date();
+        }
+      }
+      
+      m.redraw();
+      this.hide();
+      
+      // Scroll to the new post after a brief delay
+      setTimeout(() => {
+        const postElement = document.querySelector(`[data-id="${post.id()}"]`);
+        if (postElement) {
+          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }).catch((error) => {
+      // Error handling
+      console.error('Failed to create reply:', error);
+      
+      // Show error message
+      let errorMessage = 'Có lỗi xảy ra khi đăng phản hồi';
+      if (error && error.errors && error.errors.length > 0) {
+        errorMessage = error.errors[0].detail || errorMessage;
+      }
+      
+      if (app.alerts) {
+        app.alerts.show({ type: 'error' }, errorMessage);
+      } else {
+        alert(errorMessage);
+      }
+    }).finally(() => {
+      this.isSubmitting = false;
+      m.redraw();
+    });
+  }
+
+  static show(mode = 'create', discussion = null, replyingTo = null) {
     // Only on mobile
     if (window.innerWidth > 768) return;
     
@@ -222,8 +330,8 @@ export default class CustomMobileCreateModal extends Component {
       return;
     }
     
-    // Check if user can start discussions
-    if (!app.forum.attribute('canStartDiscussion')) {
+    // Check permissions based on mode
+    if (mode === 'create' && !app.forum.attribute('canStartDiscussion')) {
       if (app.alerts) {
         app.alerts.show({ type: 'error' }, 'Bạn không có quyền tạo chủ đề mới');
       }
@@ -238,16 +346,35 @@ export default class CustomMobileCreateModal extends Component {
 
     // Mount the component if not already mounted
     let container = document.querySelector('#mobile-create-modal-container');
+    let instance;
     if (!container) {
       container = document.createElement('div');
       container.id = 'mobile-create-modal-container';
       document.body.appendChild(container);
-      m.mount(container, CustomMobileCreateModal);
+      m.mount(container, {
+        view: () => m(CustomMobileCreateModal)
+      });
     }
 
-    // Show the modal
-    document.body.classList.add('mobile-create-modal-open');
-    m.redraw();
+    // Get the component instance and set mode
+    setTimeout(() => {
+      const component = container.querySelector('.CustomMobileCreateModal');
+      if (component && component.__mithril) {
+        const vnode = component.__mithril;
+        if (vnode.state) {
+          vnode.state.mode = mode;
+          vnode.state.discussion = discussion;
+          vnode.state.replyingTo = replyingTo;
+          vnode.state.title = '';
+          vnode.state.editor = '';
+          vnode.state.selectedTag = '';
+        }
+      }
+      
+      // Show the modal
+      document.body.classList.add('mobile-create-modal-open');
+      m.redraw();
+    }, 10);
   }
 
   static hide() {
@@ -255,3 +382,4 @@ export default class CustomMobileCreateModal extends Component {
     m.redraw();
   }
 }
+
